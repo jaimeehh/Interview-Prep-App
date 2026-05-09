@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PrepAI — Entrevistas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- PROFILE SELECTOR -->
+<div id="authScreen" class="screen active">
+  <div class="auth-logo">Prep<span>AI</span></div>
+  <div class="auth-tag">Tu entrenador personal de entrevistas</div>
+  <div class="auth-card">
+    <div class="card-title">¿Quién está practicando hoy?</div>
+    <div id="profileList" class="profile-list"></div>
+    <button class="btn-p" onclick="showCreateProfile()" style="margin-top:10px;">+ Crear nuevo perfil</button>
+
+    <div id="createProfileBox" style="display:none;margin-top:16px;">
+      <label class="lbl">Nombre completo</label>
+      <input class="inp" id="newProfileName" placeholder="Ej: Jaime Hernández" />
+      <label class="lbl">Formación / titular profesional</label>
+      <input class="inp" id="newProfileEducation" placeholder="Ej: Executive Master in Big Data Science" />
+      <label class="lbl">Roles objetivo</label>
+      <input class="inp" id="newProfileRoles" placeholder="Business Analyst, Data Analyst, Consultant" />
+      <button class="btn-p" onclick="createProfileFromForm()">Crear perfil →</button>
+    </div>
+    <div class="auth-err" id="authErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen" class="screen">
+  <div class="topbar">
+    <div class="topbar-logo">Prep<span>AI</span></div>
+    <div class="ttabs">
+      <button class="ttab active" onclick="goTab('pitch',this)">Pitch</button>
+      <button class="ttab" onclick="goTab('cards',this)">🃏 Reto</button>
+      <button class="ttab" onclick="goTab('star',this)">STAR</button>
+      <button class="ttab" onclick="goTab('practice',this)">Simulación</button>
+      <button class="ttab" onclick="goTab('history',this)">Historial</button>
+    </div>
+    <button class="ubtn" id="userBtn" onclick="toggleMenu()">?</button>
+  </div>
+
+  <div class="umenu" id="umenu">
+    <div class="um-name" id="umName">—</div>
+    <div class="um-item" onclick="goTab('history',null);toggleMenu()">📊 Mi historial</div>
+    <div class="um-item" onclick="changeProfile()">👤 Cambiar perfil</div>
+    <div class="um-item danger" onclick="doLogout()">← Cerrar perfil</div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── PITCH ── -->
+    <div id="tab-pitch" class="tab-panel active">
+      <div class="page-title">Tu Pitch</div>
+      <div class="page-sub">Presente → Pasado → Futuro · ~90 seg</div>
+      <div class="card">
+        <div class="p-phase">
+          <div class="p-orb o-now">🎯</div>
+          <div><div class="p-lbl">Presente</div>
+          <div class="p-txt">Actualmente estoy cursando el Executive Master in Big Data Science en la Universidad de Navarra, compaginándolo con mi trabajo en ASISA dentro de la Dirección General Médica, donde participo en proyectos de estrategia interna y toma de decisiones basada en datos.</div></div>
+        </div>
+        <div class="sep"></div>
+        <div class="p-phase">
+          <div class="p-orb o-past">📌</div>
+          <div><div class="p-lbl">Pasado</div>
+          <div class="p-txt">Previamente desarrollé software de planificación quirúrgica que redujo las listas de espera un 30%, co-desarrollé MindSafe —app de salud mental con 300+ descargas y 70% de engagement en cuatro meses— y realicé investigación en IA médica en Quirón Salud.</div></div>
+        </div>
+        <div class="sep"></div>
+        <div class="p-phase">
+          <div class="p-orb o-fut">🚀</div>
+          <div><div class="p-lbl">Futuro</div>
+          <div class="p-txt">A futuro, me gustaría seguir desarrollándome en la intersección entre data science, transformación de negocio y healthcare, aportando valor real y medible desde el primer día. Por eso veo en [EMPRESA] una excelente oportunidad para empezar.</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">✦ Adaptar con IA</div>
+        <label class="lbl">Empresa y rol</label>
+        <input class="inp" id="pCo" placeholder="McKinsey, IQVIA, Roche…" style="margin-bottom:8px;" />
+        <input class="inp" id="pRole" placeholder="Data Analyst, Consultant…" style="margin-bottom:10px;" />
+        <label class="lbl">Sube oferta o descripción del puesto (opcional)</label>
+        <div class="file-drop" id="fileDrop" onclick="document.getElementById('fileInp').click()">
+          <input type="file" id="fileInp" accept=".txt,.pdf,.doc,.docx" onchange="handleFile(event)" />
+          <div style="font-size:26px;">📄</div>
+          <p id="fileLabel">Toca para subir PDF, Word o TXT</p>
+        </div>
+        <button class="btn-t full" id="genPBtn" onclick="genPitch()">
+          <span id="gpTxt">Generar pitch adaptado</span>
+          <div class="spin" id="gpSpin"></div>
+        </button>
+        <div class="gen-out" id="genOut"></div>
+      </div>
+    </div>
+
+    <!-- ── FLASHCARDS ── -->
+    <div id="tab-cards" class="tab-panel">
+      <div class="page-title">Reto Diario</div>
+      <div class="page-sub">5 tarjetas · voltea para ver la respuesta STAR</div>
+
+      <!-- Company selector -->
+      <div class="card" id="fcSetupCard">
+        <div class="card-title">¿Para qué empresa practicas hoy?</div>
+        <div class="co-chips" id="coChips">
+          <div class="co-chip add" onclick="addCoChip()">+ Añadir empresa</div>
+        </div>
+        <input class="inp" id="newCoInp" placeholder="ej: McKinsey, Deloitte…" style="display:none;margin-bottom:8px;" onkeydown="if(event.key==='Enter')confirmCo()" />
+        <button class="btn-t full" id="fcStartBtn" onclick="startFlashcards()">
+          <span id="fcStartTxt">Empezar reto ✦</span>
+          <div class="spin" id="fcSpin"></div>
+        </button>
+      </div>
+
+      <!-- Cards area -->
+      <div id="fcArea" style="display:none;">
+        <div class="fc-header">
+          <div class="fc-progress">
+            <div class="fc-prog-track"><div class="fc-prog-fill" id="fcProgFill" style="width:20%;"></div></div>
+            <span class="fc-prog-txt" id="fcProgTxt">1 / 5</span>
+          </div>
+          <span class="badge b-terra" id="fcCompanyBadge"></span>
+        </div>
+
+        <div class="fc-scene" onclick="flipCard()">
+          <div class="fc-card" id="fcCard">
+            <!-- FRONT -->
+            <div class="fc-face fc-front">
+              <div class="fc-tap-hint">👆 Toca para ver la respuesta</div>
+              <div class="fc-company" id="fcFrontBadge"></div>
+              <div class="fc-question" id="fcQuestion">—</div>
+            </div>
+            <!-- BACK -->
+            <div class="fc-face fc-back" id="fcBack">
+              <div id="fcBackContent"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="fcRateArea" style="display:none;">
+          <div style="font-size:12px;font-weight:600;color:var(--text3);margin-bottom:8px;text-align:center;">¿Cómo te ha salido?</div>
+          <div class="fc-rate">
+            <button class="rate-btn rate-easy" onclick="rateCard('easy')">✓ Bien</button>
+            <button class="rate-btn rate-medium" onclick="rateCard('medium')">△ Regular</button>
+            <button class="rate-btn rate-hard" onclick="rateCard('hard')">✗ Difícil</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily done -->
+      <div class="daily-done" id="fcDone" style="display:none;">
+        <div class="daily-done-ico">🎉</div>
+        <h3>¡Reto completado!</h3>
+        <p style="margin-bottom:16px;">Has practicado las 5 tarjetas de hoy</p>
+        <div id="fcDoneStats"></div>
+        <button class="btn-t full" onclick="resetFlashcards()" style="margin-top:16px;">Practicar más →</button>
+      </div>
+    </div>
+
+    <!-- ── STAR ── -->
+    <div id="tab-star" class="tab-panel">
+      <div class="page-title">Banco STAR</div>
+      <div class="page-sub">Toca para ver la respuesta completa</div>
+      <div class="filter-row" id="filterRow"></div>
+      <div id="starList"></div>
+    </div>
+
+    <!-- ── PRACTICE ── -->
+    <div id="tab-practice" class="tab-panel">
+      <div id="practiceSetup">
+        <div class="page-title">Simulación</div>
+        <div class="page-sub">La IA genera 8 preguntas reales para tu proceso</div>
+        <div class="card">
+          <label class="lbl">Empresa y rol</label>
+          <input class="inp" id="iCo" placeholder="McKinsey, Deloitte, IQVIA, Roche…" style="margin-bottom:8px;" />
+          <input class="inp" id="iRole" placeholder="Data Consultant, Business Analyst…" style="margin-bottom:12px;" />
+          <label class="lbl">Tipo de proceso</label>
+          <div class="tgrid" style="margin-bottom:12px;">
+            <div class="tcard sel" id="tc-consulting" onclick="selType('consulting')"><div class="tcard-ico">🏢</div><div class="tcard-lbl">Consultoría</div><div class="tcard-sub">MBB/Big4</div></div>
+            <div class="tcard" id="tc-data" onclick="selType('data')"><div class="tcard-ico">📊</div><div class="tcard-lbl">Data/Tech</div><div class="tcard-sub">IQVIA…</div></div>
+            <div class="tcard" id="tc-health" onclick="selType('health')"><div class="tcard-ico">🏥</div><div class="tcard-lbl">Healthcare</div><div class="tcard-sub">Corporativo</div></div>
+            <div class="tcard" id="tc-general" onclick="selType('general')"><div class="tcard-ico">⚡</div><div class="tcard-lbl">General</div><div class="tcard-sub">Competencias</div></div>
+          </div>
+          <label class="lbl">Modo de respuesta</label>
+          <div style="display:flex;gap:8px;margin-bottom:4px;">
+            <div class="tcard sel" id="tm-text" onclick="selMode('text')" style="flex:1;"><div class="tcard-ico">✏️</div><div class="tcard-lbl">Escrita + IA</div></div>
+            <div class="tcard" id="tm-video" onclick="selMode('video')" style="flex:1;"><div class="tcard-ico">🎙️</div><div class="tcard-lbl">Cámara + voz</div></div>
+          </div>
+          <button class="btn-t full" id="startBtn" onclick="startInterview()" style="margin-top:12px;">
+            <span id="startTxt">Generar entrevista ✦</span>
+            <div class="spin" id="startSpin"></div>
+          </button>
+        </div>
+      </div>
+      <div class="load-ov" id="loadOv">
+        <div class="ldots"><span></span><span></span><span></span></div>
+        <p>Generando preguntas para <strong id="loadCo">tu entrevista</strong>…</p>
+      </div>
+      <div id="interviewWrap" style="display:none;">
+        <div class="prog-meta">
+          <span class="prog-n" id="qNum">Pregunta 1 de 8</span>
+          <span class="prog-n" id="qCat"></span>
+        </div>
+        <div class="prog-track" style="margin-bottom:14px;"><div class="prog-fill" id="progFill" style="width:12.5%;"></div></div>
+        <div class="q-box">
+          <div id="qLBdg" class="q-lang ql-es">🇪🇸 Español</div>
+          <div class="q-txt" id="qTxt">—</div>
+        </div>
+        <div id="textMode">
+          <div class="answer-wrap">
+            <textarea class="answer-ta" id="answerTa" placeholder="Empieza por la Situación…" oninput="updateCC()"></textarea>
+            <span class="char-c" id="charC">0</span>
+          </div>
+          <div class="speech-row">
+            <button class="mic-btn" id="micBtn" onclick="toggleSpeech()">🎤</button>
+            <span class="speech-hint" id="sHint">Toca para dictar</span>
+          </div>
+          <div class="brow">
+            <button class="btn-t" onclick="getAIFb()" style="flex:1;">
+              <span id="fbTxt">Analizar ✦</span><div class="spin" id="fbSpin"></div>
+            </button>
+            <button class="btn-o" onclick="toggleModel()">Ver respuesta</button>
+          </div>
+          <div class="fb-box" id="fbBox">
+            <div class="fb-title"><span class="badge b-terra"><span class="ldot"></span>IA</span> Feedback</div>
+            <div class="fb-text" id="fbContent"></div>
+          </div>
+          <div class="model-box" id="modelBox">
+            <div class="fb-title">📖 Respuesta modelo</div>
+            <div id="modelContent"></div>
+          </div>
+        </div>
+        <div id="videoMode" style="display:none;">
+          <div class="vid-wrap">
+            <video id="vidEl" autoplay muted playsinline></video>
+            <div class="vid-ph" id="vidPh"><div style="font-size:36px;">📷</div><p>Activa la cámara</p></div>
+          </div>
+          <div class="t-row">
+            <div class="t-track"><div class="t-fill" id="tFill" style="width:100%;"></div></div>
+            <div class="t-num" id="tNum">1:30</div>
+            <div class="rec-bdg" id="recBdg"><span class="rec-d"></span>REC</div>
+          </div>
+          <div class="speech-row" style="margin-bottom:8px;">
+            <button class="mic-btn" id="micBtnV" onclick="toggleSpeechV()">🎤</button>
+            <span class="speech-hint" id="sHintV">Activa para transcribir</span>
+          </div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Transcripción</div>
+          <div class="tr-box" id="trBox"></div>
+          <div class="brow">
+            <button class="btn-o" id="camBtn" onclick="toggleCam()">📷 Activar cámara</button>
+            <button class="btn-sage" id="timerBtn" onclick="toggleTimer()" style="display:none;">▶ Empezar</button>
+          </div>
+          <div class="fb-box" id="vFbBox">
+            <div class="fb-title">📋 Tips post-práctica</div>
+            <div class="fb-text" id="vFbContent"></div>
+          </div>
+        </div>
+        <div class="nav-btns">
+          <button class="btn-prv" onclick="prevQ()">← Atrás</button>
+          <button class="btn-nxt" id="nxtBtn" onclick="nextQ()">Siguiente →</button>
+        </div>
+      </div>
+      <div id="summaryWrap" style="display:none;">
+        <div class="page-title">¡Completada! 🎉</div>
+        <div class="page-sub" style="margin-bottom:14px;">Guardada en tu historial</div>
+        <div class="sum-card">
+          <div class="score-n" id="scoreN">8/8</div>
+          <div class="score-s">preguntas practicadas</div>
+          <div id="recBadgeSum" style="margin-top:8px;display:none;"><span class="rec-pill">⭐ Nuevo récord</span></div>
+        </div>
+        <div class="card" id="sumQList"></div>
+        <button class="btn-t full" onclick="restartPractice()" style="margin-top:4px;">← Nueva entrevista</button>
+      </div>
+    </div>
+
+    <!-- ── HISTORY ── -->
+    <div id="tab-history" class="tab-panel">
+      <div class="page-title">Historial</div>
+      <div class="page-sub">Tus sesiones guardadas</div>
+      <div id="histContent"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
