@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>PrepAI — Entrevistas</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0f2a44">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PrepAI">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -47,6 +53,15 @@
     </div>
     <button class="ubtn" id="userBtn" onclick="toggleMenu()">?</button>
   </div>
+
+  <nav class="bottom-nav" aria-label="Navegación móvil">
+    <button class="bnav active" onclick="goTab('cards',this)" data-tab="cards"><span>⚡</span><small>Reto</small></button>
+    <button class="bnav" onclick="goTab('star',this)" data-tab="star"><span>📚</span><small>STAR</small></button>
+    <button class="bnav" onclick="goTab('questions',this)" data-tab="questions"><span>❓</span><small>Preguntas</small></button>
+    <button class="bnav" onclick="goTab('calendar',this)" data-tab="calendar"><span>🗓️</span><small>Jobs</small></button>
+    <button class="bnav" onclick="goTab('practice',this)" data-tab="practice"><span>🎯</span><small>Sim</small></button>
+    <button class="bnav" onclick="toggleMenu()"><span>👤</span><small>Perfil</small></button>
+  </nav>
 
   <div class="umenu" id="umenu">
     <div class="um-name" id="umName">—</div>
@@ -133,6 +148,13 @@
             <span class="mode-title">Mis preguntas</span>
             <span class="mode-sub">Usa las preguntas guardadas por ti</span>
           </button>
+        </div>
+
+        <div class="setup-label">Idioma de las preguntas</div>
+        <div class="segmented" id="fcLangSegment">
+          <button class="seg-btn" id="fcLang-es" onclick="setFlashcardLangMode('es')">🇪🇸 Español</button>
+          <button class="seg-btn sel" id="fcLang-mixed" onclick="setFlashcardLangMode('mixed')">🔀 Mixto</button>
+          <button class="seg-btn" id="fcLang-en" onclick="setFlashcardLangMode('en')">🇬🇧 Inglés</button>
         </div>
 
         <div id="fcCompanyWrap">
@@ -456,5 +478,10 @@
 
 <script src="data.js"></script>
 <script src="app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js').catch(() => {}));
+}
+</script>
 </body>
 </html>

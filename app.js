@@ -172,6 +172,7 @@ function selectProfile(id){
   document.getElementById('authScreen').classList.remove('active');
   document.getElementById('appScreen').classList.add('active');
   loadProfileIntoApp();
+  if (window.matchMedia && window.matchMedia('(max-width: 760px)').matches) goTab('cards', null);
 }
 
 function loadProfileIntoApp(){
@@ -218,9 +219,11 @@ window.addEventListener('DOMContentLoaded',()=>{
 function goTab(t,btn){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ttab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+t).classList.add('active');
-  if(btn)btn.classList.add('active');
-  else document.querySelectorAll('.ttab').forEach(b=>{if(b.getAttribute('onclick')?.includes("'"+t+"'"))b.classList.add('active');});
+  document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('active'));
+  const panel=document.getElementById('tab-'+t);
+  if(panel) panel.classList.add('active');
+  document.querySelectorAll('.ttab').forEach(b=>{if(b.getAttribute('onclick')?.includes("'"+t+"'"))b.classList.add('active');});
+  document.querySelectorAll('.bnav').forEach(b=>{if(b.dataset?.tab===t)b.classList.add('active');});
   if(t==='history')renderHistory();
   if(t==='cards')initFlashcards();
   if(t==='questions'){renderCustomQuestionFormOptions();renderCustomQuestions();}
@@ -452,6 +455,7 @@ let fcRatings={easy:0,medium:0,hard:0};
 let userCompanies=[];
 let fcSelectedCo='';
 let fcMode='company'; // company | star | questions
+let fcLangMode='mixed'; // es | mixed | en
 
 function loadUserCompanies(){
   if(!CU)return;
@@ -715,6 +719,222 @@ function resetFlashcards(){
   setFlashcardMode(fcMode || 'company');
 }
 
+
+
+/* ══════════════════════════════════
+   FLASHCARDS — v5: móvil + rotación + preguntas ES/EN
+══════════════════════════════════ */
+const FALLBACK_EN_QUESTIONS = {
+  initiative: [
+    'Tell me about a time you created value from scratch.',
+    'Describe a project where you took ownership without being asked.'
+  ],
+  communication: [
+    'Tell me about a time you had to communicate difficult findings to senior stakeholders.',
+    'Describe a time when you influenced senior stakeholders with data.'
+  ],
+  pressure: [
+    'Tell me about a time you worked under significant time pressure.',
+    'Describe a situation where you had to deliver a critical result quickly.'
+  ],
+  failure: [
+    'Tell me about a failure and what you learned from it.',
+    'Describe a project that did not go as expected.'
+  ],
+  leadership: [
+    'Tell me about a time you led or delegated work to others.',
+    'Describe a situation where you helped others perform better.'
+  ],
+  adaptability: [
+    'Tell me about a time you had to adapt to a new culture or environment.',
+    'Describe an international experience where you had to adjust quickly.'
+  ],
+  learning: [
+    'Tell me about a time you had to learn something quickly.',
+    'Describe a situation where you had to get up to speed with a new tool.'
+  ]
+};
+
+function setFlashcardLangMode(mode){
+  fcLangMode = mode;
+  document.querySelectorAll('[id^="fcLang-"]').forEach(el=>el.classList.remove('sel'));
+  const active=document.getElementById('fcLang-'+mode);
+  if(active) active.classList.add('sel');
+}
+
+function allowedFlashcardLangs(){
+  if(fcLangMode === 'es') return ['es'];
+  if(fcLangMode === 'en') return ['en'];
+  return ['es','en'];
+}
+
+function hashText(text){
+  let h=0; const str=String(text||'');
+  for(let i=0;i<str.length;i++){ h=((h<<5)-h)+str.charCodeAt(i); h|=0; }
+  return Math.abs(h).toString(36);
+}
+
+function getFlashcardRecentKeys(){
+  const profile = getCurrentProfile();
+  return profile?.flashcardRecentKeys || [];
+}
+
+function saveFlashcardRecentKeys(cards){
+  if(!CU) return;
+  const ud=getUD(CU.username);
+  const old=ud.flashcardRecentKeys || [];
+  const next=[...cards.map(c=>c.key).filter(Boolean), ...old]
+    .filter((v,i,a)=>v && a.indexOf(v)===i)
+    .slice(0,30);
+  ud.flashcardRecentKeys=next;
+  saveUD(CU.username,ud);
+}
+
+function getQuestionsForStory(story, lang){
+  const direct = story.questions?.[lang] || [];
+  if(lang === 'en') return [...direct, ...(FALLBACK_EN_QUESTIONS[story.tag] || [])].filter(Boolean);
+  return [...direct, story.q].filter(Boolean);
+}
+
+function companyQuestionText(base, company, lang){
+  if(!company) return base;
+  if(lang === 'en') return `For ${company}, ${base.charAt(0).toLowerCase()+base.slice(1)}`;
+  return `Pensando en ${company}, ${base.charAt(0).toLowerCase()+base.slice(1)}`;
+}
+
+function storyRelevanceScore(story, company=''){
+  const hay=`${story.title||''} ${story.sit||''} ${story.act||''} ${story.res||''}`.toLowerCase();
+  const keys=['asisa','asegur','sanitas','proveedor','dirección médica','data','datos','sql','dashboard','healthcare','hospital','quir'];
+  let score=0;
+  keys.forEach(k=>{ if(hay.includes(k)) score+=1; });
+  if(company && hay.includes(company.toLowerCase())) score+=4;
+  return score;
+}
+
+function buildStoryQuestionPool({company='', preferCompany=false}={}){
+  const langs=allowedFlashcardLangs();
+  const pool=[];
+  SD.forEach(story=>{
+    langs.forEach(lang=>{
+      const questions=getQuestionsForStory(story, lang);
+      questions.forEach(question=>{
+        const q=companyQuestionText(question, company, lang);
+        pool.push({
+          type: preferCompany ? 'company-story' : 'star',
+          q,
+          star: story,
+          lang,
+          category: story.tagLabel || 'STAR',
+          company,
+          score: storyRelevanceScore(story, company) + (preferCompany ? 3 : 0) + Math.random(),
+          key: `${preferCompany?'co':'star'}:${story.id}:${lang}:${hashText(question)}:${company.toLowerCase()}`
+        });
+      });
+    });
+  });
+  return pool;
+}
+
+function sampleFlashcards(pool, count=5){
+  const recent=new Set(getFlashcardRecentKeys());
+  const fresh=pool.filter(c=>!recent.has(c.key));
+  const stale=pool.filter(c=>recent.has(c.key));
+  const sortFn=(a,b)=>(b.score||0)-(a.score||0) || Math.random()-.5;
+  const selected=[...fresh.sort(sortFn), ...stale.sort(sortFn)].slice(0,count);
+  saveFlashcardRecentKeys(selected);
+  return selected;
+}
+
+function buildCompanyCards(company){
+  const profile = getCurrentProfile();
+  const langs=allowedFlashcardLangs();
+  const custom = (profile?.customQuestions || [])
+    .filter(q => !q.companies?.length || q.companies.some(c => c.toLowerCase() === company.toLowerCase()))
+    .filter(q => fcLangMode === 'mixed' || (q.lang || 'es') === fcLangMode)
+    .map(q=>({
+      type:'custom', q:q.question, custom:q, lang:q.lang==='en'?'en':'es',
+      category:q.competency || 'Personalizada', company,
+      score: 6 + Math.random(), key:`custom:${q.id || hashText(q.question)}:${company.toLowerCase()}`
+    }));
+  const storyPool=buildStoryQuestionPool({company, preferCompany:true});
+  return sampleFlashcards([...custom, ...storyPool], 5);
+}
+
+function buildStarCards(){
+  return sampleFlashcards(buildStoryQuestionPool(), 5);
+}
+
+function buildQuestionCards(){
+  const profile = getCurrentProfile();
+  const custom = [...(profile?.customQuestions || [])]
+    .filter(q => fcLangMode === 'mixed' || (q.lang || 'es') === fcLangMode)
+    .map(q=>({
+      type:'custom', q:q.question, custom:q, lang:q.lang==='en'?'en':'es',
+      category:q.competency || 'Personalizada', score: 8 + Math.random(),
+      key:`custom:${q.id || hashText(q.question)}`
+    }));
+  if(custom.length) return sampleFlashcards(custom, 5);
+  return buildStarCards();
+}
+
+function initFlashcards(){
+  document.getElementById('fcSetupCard').style.display='block';
+  document.getElementById('fcArea').style.display='none';
+  document.getElementById('fcDone').style.display='none';
+  loadUserCompanies();
+  setFlashcardMode(fcMode || 'company');
+  setFlashcardLangMode(fcLangMode || 'mixed');
+}
+
+function storyHtml(s, company, lang='es'){
+  const labels = lang === 'en'
+    ? {why:`🎯 Why it fits ${escapeHtml(company || '')}`, s:'📍 Situation', t:'🎯 Task', a:'⚡ Action', r:'📊 Result', l:'💡 Learning'}
+    : {why:`🎯 Por qué encaja con ${escapeHtml(company || '')}`, s:'📍 Situación', t:'🎯 Tarea', a:'⚡ Acción', r:'📊 Resultado', l:'💡 Aprendizaje'};
+  const why = company ? `<div class="fc-back-step"><div class="fc-slbl lc">${labels.why}</div><div class="fc-stxt fc-adapt">${lang==='en'
+    ? `It shows real experience in healthcare, data, structured analysis and measurable impact. Use it to connect your profile with similar business problems at ${escapeHtml(company)}.`
+    : `Demuestra experiencia real en healthcare, datos, análisis estructurado e impacto medible. Úsala para conectar tu perfil con problemas de negocio similares en ${escapeHtml(company)}.`}</div></div>` : '';
+  return `
+    ${why}
+    <div class="fc-back-step"><div class="fc-slbl ls">${labels.s}</div><div class="fc-stxt">${escapeHtml(s.sit)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl lt">${labels.t}</div><div class="fc-stxt">${escapeHtml(s.tsk)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl la">${labels.a}</div><div class="fc-stxt">${escapeHtml(s.act)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl lr">${labels.r}</div><div class="fc-stxt fc-result">${escapeHtml(s.res)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl ll">${labels.l}</div><div class="fc-stxt">${escapeHtml(s.lrn)}</div></div>`;
+}
+
+function renderFcCard(){
+  const c=fcCards[fcIdx];
+  const pct=Math.round(((fcIdx+1)/fcCards.length)*100);
+  document.getElementById('fcProgFill').style.width=pct+'%';
+  document.getElementById('fcProgTxt').textContent=`${fcIdx+1} / ${fcCards.length}`;
+  document.getElementById('fcCompanyBadge').textContent=c.company || (fcMode==='questions'?'Mis preguntas':'STAR');
+
+  const langEmoji=c.lang==='en'?'🇬🇧':'🇪🇸';
+  const modeLabel = c.type==='custom' ? 'Pregunta guardada' : c.type==='company-story' ? 'Story adaptada' : 'STAR';
+  document.getElementById('fcFrontBadge').innerHTML=`<span class="badge ${c.lang==='en'?'b-sky':'b-amber'}">${langEmoji} ${escapeHtml(c.category)}</span><span class="badge b-warm">${modeLabel}</span>`;
+  document.getElementById('fcQuestion').textContent=c.q;
+
+  let backHtml='';
+  if((c.type==='star' || c.type==='company-story') && c.star){
+    backHtml=`<div class="fc-story-title">${c.lang==='en'?'Recommended story':'Historia recomendada'}: ${escapeHtml(c.star.title || c.star.q)}</div>${storyHtml(c.star, c.company, c.lang)}`;
+  } else if(c.type==='custom' && c.custom){
+    const linked = c.custom.answerType === 'story' ? getStoryById(c.custom.linkedStoryId) : null;
+    if(linked){
+      backHtml=`<div class="fc-story-title">${c.lang==='en'?'Linked story':'Story asociada'}: ${escapeHtml(linked.title || linked.q)}</div>${storyHtml(linked, c.company, c.lang)}`;
+    }else{
+      const suggested = pickStoryForQuestion(c.custom.question, c.company);
+      backHtml=`
+        <div class="fc-story-title">${c.lang==='en'?'Saved answer':'Respuesta guardada'}</div>
+        <div class="fc-back-step"><div class="fc-slbl lr">📝 ${c.lang==='en'?'Your answer':'Tu respuesta'}</div><div class="fc-stxt fc-result">${escapeHtml(c.custom.customAnswer || 'Sin respuesta guardada.')}</div></div>
+        <div class="fc-back-step"><div class="fc-slbl lc">💡 ${c.lang==='en'?'Alternative story':'Story alternativa sugerida'}</div><div class="fc-stxt">${escapeHtml(suggested?.title || '')}</div></div>`;
+    }
+  }
+  document.getElementById('fcBackContent').innerHTML=backHtml;
+  const card=document.getElementById('fcCard');
+  card.classList.remove('flipped');
+  fcFlipped=false;fcRated=false;
+  document.getElementById('fcRateArea').style.display='none';
+}
 
 function renderPitch(profile){
   const pitch = profile.pitch || DEFAULT_PROFILE.pitch;
