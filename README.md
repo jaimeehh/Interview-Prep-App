@@ -73,3 +73,25 @@ git add .
 git commit -m "Add custom questions and local profile export"
 git push
 ```
+
+
+## Calendario de candidaturas
+
+La app incluye una pestaña **Calendario** para importar tu Excel de candidaturas (`.xlsx`, `.xls` o `.csv`).
+
+Columnas reconocidas:
+
+- EMPRESA
+- TIPO
+- PUESTO
+- ENTREVISTAS
+- FECHA_LIMITE
+- FECHA_APLICADA
+- Inglés
+- Sueldo
+- Lugar
+- link
+
+Los datos se guardan por perfil en `localStorage`. También puedes exportarlos a CSV para volver a abrirlos en Excel.
+
+Nota: no hay conexión en vivo con Excel/OneDrive. Es importación/exportación local, adecuada para una app personal en Vercel sin base de datos.

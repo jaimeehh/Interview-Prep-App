@@ -85,6 +85,7 @@ function getProfile(id){
   base.companies ||= [];
   base.starStories ||= [];
   base.customQuestions ||= [];
+  base.applications ||= [];
   base.history ||= [];
   base.preferences ||= { interviewLanguageMode: 'mixed', practiceMode: 'text' };
   base.initials ||= initialsFromName(base.name);
@@ -154,6 +155,7 @@ function createProfileFromForm(){
     companies: [],
     starStories: [],
     customQuestions: [],
+    applications: [],
     history: [],
     preferences: { interviewLanguageMode: 'mixed', practiceMode: 'text' }
   };
@@ -182,6 +184,7 @@ function loadProfileIntoApp(){
   renderPitch(profile);
   renderCustomQuestionFormOptions();
   renderCustomQuestions();
+  renderApplications();
   renderHistory();
 }
 
@@ -221,6 +224,7 @@ function goTab(t,btn){
   if(t==='history')renderHistory();
   if(t==='cards')initFlashcards();
   if(t==='questions'){renderCustomQuestionFormOptions();renderCustomQuestions();}
+  if(t==='calendar'){renderApplications();}
 }
 
 /* ══════════════════════════════════
@@ -992,6 +996,290 @@ function restartPractice(){
   stopSpeech();stopSpeechV();
   if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
   resetTimer();
+}
+
+
+/* ══════════════════════════════════
+   APPLICATIONS / CALENDAR — saved per local profile
+══════════════════════════════════ */
+function normalizeHeader(h){
+  return String(h || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+}
+function excelSerialToISO(n){
+  if(!n || isNaN(n)) return '';
+  const epoch = new Date(Date.UTC(1899, 11, 30));
+  const date = new Date(epoch.getTime() + Number(n) * 86400000);
+  return date.toISOString().slice(0,10);
+}
+function parseDateSmart(value){
+  if(value === null || value === undefined) return '';
+  if(typeof value === 'number') return excelSerialToISO(value);
+  let s = String(value).trim();
+  if(!s || s === '0' || s === '00/01/1900') return '';
+  s = s.replace(/\u00a0/g,' ').trim();
+  const lower = s.toLowerCase();
+  const monthMap = {jan:1,january:1,ene:1,enero:1,feb:2,february:2,febrero:2,mar:3,march:3,marzo:3,apr:4,april:4,abril:4,may:5,mayo:5,jun:6,june:6,junio:6,jul:7,july:7,julio:7,aug:8,august:8,ago:8,agosto:8,sep:9,september:9,septiembre:9,oct:10,october:10,octubre:10,nov:11,november:11,noviembre:11,dec:12,december:12,dic:12,diciembre:12};
+  let m;
+  if((m = lower.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/))){
+    let d=+m[1], mo=+m[2], y=+m[3]; if(y<100) y+=2000;
+    return `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+  if((m = lower.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/))) return `${m[1]}-${String(+m[2]).padStart(2,'0')}-${String(+m[3]).padStart(2,'0')}`;
+  if((m = lower.match(/(\d{1,2})(?:st|nd|rd|th)?\s+([a-záéíóú]+)\s+(\d{4})/))){
+    const mo = monthMap[m[2]]; if(mo) return `${m[3]}-${String(mo).padStart(2,'0')}-${String(+m[1]).padStart(2,'0')}`;
+  }
+  if((m = lower.match(/([a-záéíóú]+)[\-\s]+(\d{2,4})/))){
+    const mo = monthMap[m[1]]; let y=+m[2]; if(y<100) y+=2000; if(mo) return `${y}-${String(mo).padStart(2,'0')}-01`;
+  }
+  if((m = lower.match(/(\d{1,2})\s+de\s+([a-záéíóú]+)\s+de\s+(\d{4})/))){
+    const mo = monthMap[m[2]]; if(mo) return `${m[3]}-${String(mo).padStart(2,'0')}-${String(+m[1]).padStart(2,'0')}`;
+  }
+  return '';
+}
+function appFromRow(row){
+  const map = {};
+  Object.keys(row || {}).forEach(k => map[normalizeHeader(k)] = row[k]);
+  const get = (...keys) => keys.map(k=>map[normalizeHeader(k)]).find(v=>v!==undefined && v!==null && String(v).trim() !== '') || '';
+  const empresa = get('empresa','company');
+  const puesto = get('puesto','role','position','job');
+  if(!empresa && !puesto) return null;
+  return {
+    id: `app_${Date.now()}_${Math.random().toString(16).slice(2)}`,
+    empresa: String(empresa || '').trim(),
+    tipo: String(get('tipo','sector','categoria') || '').trim(),
+    puesto: String(puesto || '').trim(),
+    entrevistas: String(get('entrevistas','entrevista','proceso','estado') || '').trim(),
+    fechaLimite: parseDateSmart(get('fecha_limite','fechalimite','deadline','fecha límite','FECHA_LIMTE')),
+    fechaAplicada: parseDateSmart(get('fecha_aplicada','fechaaplicada','applied','aplicada','FECHA_APLiCADA')),
+    ingles: String(get('ingles','inglés','english') || '').trim(),
+    sueldo: String(get('sueldo','salary') || '').trim(),
+    lugar: String(get('lugar','location','ubicacion') || '').trim(),
+    link: String(get('link','url') || '').trim(),
+    createdAt: todayISO(),
+    updatedAt: todayISO()
+  };
+}
+function getApplications(){
+  const p=getCurrentProfile();
+  p.applications ||= [];
+  return p.applications;
+}
+function saveApplications(items){
+  const p=getCurrentProfile(); if(!p) return;
+  p.applications = items;
+  saveCurrentProfile(p);
+}
+function loadDefaultApplications(){
+  const p=getCurrentProfile(); if(!p) return;
+  if(!confirm('¿Cargar la tabla de ejemplo? Se añadirá a tus candidaturas actuales.')) return;
+  const existing = p.applications || [];
+  const incoming = (DEFAULT_APPLICATIONS || []).map(x=>({...x,id:`app_${Date.now()}_${Math.random().toString(16).slice(2)}`,createdAt:todayISO(),updatedAt:todayISO()}));
+  p.applications = [...incoming, ...existing];
+  saveCurrentProfile(p);
+  showJobsMsg(`${incoming.length} candidaturas cargadas.`);
+  renderApplications();
+}
+function showJobsMsg(msg){
+  const el=document.getElementById('jobsImportMsg'); if(!el) return;
+  el.style.display='block'; el.textContent=msg;
+}
+function importApplicationsFile(event){
+  const file=event.target.files?.[0]; if(!file) return;
+  const ext=file.name.split('.').pop().toLowerCase();
+  const reader=new FileReader();
+  reader.onload = e => {
+    try{
+      let rows=[];
+      if(ext === 'csv'){
+        rows = parseCSVText(e.target.result);
+      } else {
+        if(typeof XLSX === 'undefined') throw new Error('No se ha cargado la librería XLSX. Prueba con CSV o revisa conexión.');
+        const workbook = XLSX.read(e.target.result, {type:'array'});
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        rows = XLSX.utils.sheet_to_json(sheet, {defval:''});
+      }
+      const apps = rows.map(appFromRow).filter(Boolean);
+      if(!apps.length) throw new Error('No he encontrado filas válidas. Revisa cabeceras: EMPRESA, TIPO, PUESTO, FECHA_LIMITE, FECHA_APLICADA...');
+      const p=getCurrentProfile(); p.applications ||= [];
+      p.applications = [...apps, ...p.applications];
+      saveCurrentProfile(p);
+      showJobsMsg(`${apps.length} candidaturas importadas desde ${file.name}.`);
+      renderApplications();
+    }catch(err){ alert(err.message || 'Error importando el archivo'); }
+    event.target.value='';
+  };
+  if(ext === 'csv') reader.readAsText(file);
+  else reader.readAsArrayBuffer(file);
+}
+function parseCSVText(text){
+  const rows=[]; let row=[], val='', q=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i], nx=text[i+1];
+    if(ch==='"' && q && nx==='"'){ val+='"'; i++; }
+    else if(ch==='"'){ q=!q; }
+    else if(ch===',' && !q){ row.push(val); val=''; }
+    else if((ch==='\n' || ch==='\r') && !q){ if(ch==='\r' && nx==='\n') i++; row.push(val); if(row.some(x=>String(x).trim())) rows.push(row); row=[]; val=''; }
+    else val+=ch;
+  }
+  row.push(val); if(row.some(x=>String(x).trim())) rows.push(row);
+  const headers=rows.shift() || [];
+  return rows.map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]||''])));
+}
+function renderApplications(){
+  const listEl=document.getElementById('applicationsList');
+  if(!listEl || !CU) return;
+  let apps = getApplications();
+  renderApplicationTypeOptions(apps);
+  const q=(document.getElementById('appSearch')?.value || '').toLowerCase().trim();
+  const type=document.getElementById('appTypeFilter')?.value || 'all';
+  const status=document.getElementById('appStatusFilter')?.value || 'all';
+  const filtered=apps.filter(a=>{
+    const blob=[a.empresa,a.tipo,a.puesto,a.entrevistas,a.ingles,a.sueldo,a.lugar,a.link].join(' ').toLowerCase();
+    if(q && !blob.includes(q)) return false;
+    if(type!=='all' && String(a.tipo||'').toLowerCase()!==type) return false;
+    if(status==='deadline' && !a.fechaLimite) return false;
+    if(status==='applied' && !a.fechaAplicada) return false;
+    if(status==='pending' && a.fechaAplicada) return false;
+    if(status==='interview' && !String(a.entrevistas||'').trim()) return false;
+    return true;
+  });
+  renderApplicationStats(apps);
+  renderCalendarGrid(filtered);
+  if(!filtered.length){ listEl.innerHTML='<div class="app-empty">No hay candidaturas con esos filtros.</div>'; return; }
+  listEl.innerHTML=filtered.map(renderApplicationCard).join('');
+}
+function renderApplicationTypeOptions(apps){
+  const sel=document.getElementById('appTypeFilter'); if(!sel) return;
+  const current=sel.value || 'all';
+  const types=[...new Set(apps.map(a=>String(a.tipo||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  sel.innerHTML='<option value="all">Todos</option>'+types.map(t=>`<option value="${escapeHtml(t.toLowerCase())}">${escapeHtml(t)}</option>`).join('');
+  if([...sel.options].some(o=>o.value===current)) sel.value=current;
+}
+function daysUntil(iso){
+  if(!iso) return null;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const d=new Date(iso+'T00:00:00');
+  return Math.round((d-today)/86400000);
+}
+function formatDateES(iso){
+  if(!iso) return '—';
+  const d=new Date(iso+'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'});
+}
+function renderApplicationStats(apps){
+  const el=document.getElementById('applicationStats'); if(!el) return;
+  const applied=apps.filter(a=>a.fechaAplicada).length;
+  const deadlines=apps.filter(a=>a.fechaLimite).length;
+  const interviews=apps.filter(a=>String(a.entrevistas||'').trim()).length;
+  const soon=apps.filter(a=>{const d=daysUntil(a.fechaLimite); return d!==null && d>=0 && d<=14;}).length;
+  el.innerHTML=`
+    <div class="app-stat"><div class="app-stat-v">${apps.length}</div><div class="app-stat-l">Total</div></div>
+    <div class="app-stat"><div class="app-stat-v">${applied}</div><div class="app-stat-l">Aplicadas</div></div>
+    <div class="app-stat"><div class="app-stat-v">${deadlines}</div><div class="app-stat-l">Deadlines</div></div>
+    <div class="app-stat"><div class="app-stat-v">${soon}</div><div class="app-stat-l">Próx. 14 días</div></div>`;
+}
+function renderCalendarGrid(apps){
+  const el=document.getElementById('calendarGrid'); if(!el) return;
+  const dated=apps.filter(a=>a.fechaLimite).sort((a,b)=>a.fechaLimite.localeCompare(b.fechaLimite));
+  if(!dated.length){ el.innerHTML='<div class="app-empty">Sin fechas límite en el calendario.</div>'; return; }
+  const groups={};
+  dated.forEach(a=>{ const key=a.fechaLimite.slice(0,7); (groups[key] ||= []).push(a); });
+  const months=Object.keys(groups).sort().slice(0,6);
+  el.innerHTML=months.map(k=>{
+    const date=new Date(k+'-01T00:00:00');
+    const title=date.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+    return `<div class="month-card"><div class="month-title"><span>${title}</span><span>${groups[k].length}</span></div><div class="month-list">${groups[k].map(a=>{
+      const day=String(new Date(a.fechaLimite+'T00:00:00').getDate()).padStart(2,'0');
+      return `<div class="month-item"><div class="month-day">${day}</div><div><div class="month-company">${escapeHtml(a.empresa)}</div><div class="month-role">${escapeHtml(a.puesto)}</div></div></div>`;
+    }).join('')}</div></div>`;
+  }).join('');
+}
+function renderApplicationCard(a){
+  const d=daysUntil(a.fechaLimite);
+  const deadlineBadge = a.fechaLimite ? `<span class="badge ${d!==null && d>=0 && d<=14 ? 'deadline-soon':'deadline-ok'}">⏰ ${formatDateES(a.fechaLimite)}</span>` : '';
+  const appliedBadge = a.fechaAplicada ? `<span class="badge applied">✓ Aplicada ${formatDateES(a.fechaAplicada)}</span>` : '';
+  const safeLink = a.link && /^https?:\/\//i.test(a.link) ? a.link : '';
+  return `<div class="app-card">
+    <div class="app-top"><div><div class="app-company">${escapeHtml(a.empresa || 'Sin empresa')}</div><div class="app-role">${escapeHtml(a.puesto || 'Sin puesto')}</div></div><span class="badge b-sky">${escapeHtml(a.tipo || '—')}</span></div>
+    <div class="app-meta">
+      ${deadlineBadge}${appliedBadge}
+      ${a.entrevistas?`<span class="badge b-purple">${escapeHtml(a.entrevistas)}</span>`:''}
+      ${a.ingles?`<span class="badge b-warm">Inglés ${escapeHtml(a.ingles)}</span>`:''}
+      ${a.lugar?`<span class="badge b-sage">📍 ${escapeHtml(a.lugar)}</span>`:''}
+      ${a.sueldo?`<span class="badge b-amber">${escapeHtml(a.sueldo)}€</span>`:''}
+    </div>
+    ${safeLink?`<a class="app-link" href="${escapeHtml(safeLink)}" target="_blank" rel="noopener">Abrir oferta ↗</a>`:''}
+    <div class="app-actions"><button class="btn-o" onclick="editApplication('${escapeHtml(a.id)}')">Editar</button><button class="btn-o danger-lite" onclick="deleteApplication('${escapeHtml(a.id)}')">Borrar</button></div>
+  </div>`;
+}
+function clearApplicationForm(){
+  ['appId','appCompany','appType','appRole','appInterviews','appDeadline','appApplied','appEnglish','appSalary','appLocation','appLink'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
+  const t=document.getElementById('applicationFormTitle'); if(t) t.textContent='+ Añadir candidatura';
+}
+function saveApplication(){
+  const p=getCurrentProfile(); if(!p) return;
+  p.applications ||= [];
+  const id=document.getElementById('appId').value || `app_${Date.now()}`;
+  const item={
+    id,
+    empresa:document.getElementById('appCompany').value.trim(),
+    tipo:document.getElementById('appType').value.trim(),
+    puesto:document.getElementById('appRole').value.trim(),
+    entrevistas:document.getElementById('appInterviews').value.trim(),
+    fechaLimite:document.getElementById('appDeadline').value,
+    fechaAplicada:document.getElementById('appApplied').value,
+    ingles:document.getElementById('appEnglish').value.trim(),
+    sueldo:document.getElementById('appSalary').value.trim(),
+    lugar:document.getElementById('appLocation').value.trim(),
+    link:document.getElementById('appLink').value.trim(),
+    createdAt:p.applications.find(a=>a.id===id)?.createdAt || todayISO(),
+    updatedAt:todayISO()
+  };
+  if(!item.empresa && !item.puesto){ alert('Añade al menos empresa o puesto'); return; }
+  const idx=p.applications.findIndex(a=>a.id===id);
+  if(idx>=0) p.applications[idx]=item; else p.applications.unshift(item);
+  saveCurrentProfile(p);
+  clearApplicationForm();
+  renderApplications();
+}
+function editApplication(id){
+  const a=getApplications().find(x=>x.id===id); if(!a) return;
+  document.getElementById('appId').value=a.id;
+  document.getElementById('appCompany').value=a.empresa||'';
+  document.getElementById('appType').value=a.tipo||'';
+  document.getElementById('appRole').value=a.puesto||'';
+  document.getElementById('appInterviews').value=a.entrevistas||'';
+  document.getElementById('appDeadline').value=a.fechaLimite||'';
+  document.getElementById('appApplied').value=a.fechaAplicada||'';
+  document.getElementById('appEnglish').value=a.ingles||'';
+  document.getElementById('appSalary').value=a.sueldo||'';
+  document.getElementById('appLocation').value=a.lugar||'';
+  document.getElementById('appLink').value=a.link||'';
+  document.getElementById('applicationFormTitle').textContent='Editar candidatura';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function deleteApplication(id){
+  if(!confirm('¿Borrar esta candidatura?')) return;
+  const p=getCurrentProfile(); if(!p) return;
+  p.applications=(p.applications||[]).filter(a=>a.id!==id);
+  saveCurrentProfile(p);
+  renderApplications();
+}
+function csvEscape(v){
+  const s=String(v ?? '');
+  return /[",\n\r;]/.test(s) ? '"'+s.replaceAll('"','""')+'"' : s;
+}
+function exportApplicationsCSV(){
+  if(!CU){ alert('Selecciona un perfil primero'); return; }
+  const apps=getApplications();
+  const headers=['EMPRESA','TIPO','PUESTO','ENTREVISTAS','FECHA_LIMITE','FECHA_APLICADA','Inglés','Sueldo','Lugar','link'];
+  const rows=apps.map(a=>[a.empresa,a.tipo,a.puesto,a.entrevistas,a.fechaLimite,a.fechaAplicada,a.ingles,a.sueldo,a.lugar,a.link]);
+  const csv=[headers,...rows].map(r=>r.map(csvEscape).join(';')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`candidaturas_${CU.username}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 }
 
 /* HISTORY */

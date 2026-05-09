@@ -6,6 +6,7 @@
 <title>PrepAI — Entrevistas</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -40,6 +41,7 @@
       <button class="ttab" onclick="goTab('cards',this)">🃏 Reto</button>
       <button class="ttab" onclick="goTab('star',this)">STAR</button>
       <button class="ttab" onclick="goTab('questions',this)">Preguntas</button>
+      <button class="ttab" onclick="goTab('calendar',this)">Calendario</button>
       <button class="ttab" onclick="goTab('practice',this)">Simulación</button>
       <button class="ttab" onclick="goTab('history',this)">Historial</button>
     </div>
@@ -51,6 +53,7 @@
     <div class="um-item" onclick="goTab('history',null);toggleMenu()">📊 Mi historial</div>
     <div class="um-item" onclick="goTab('questions',null);toggleMenu()">❓ Mis preguntas</div>
     <div class="um-item" onclick="exportCurrentProfile()">⬇️ Exportar perfil</div>
+    <div class="um-item" onclick="exportApplicationsCSV()">📄 Exportar trabajos CSV</div>
     <label class="um-item" for="importProfileInput">⬆️ Importar perfil</label>
     <input id="importProfileInput" type="file" accept="application/json,.json" onchange="importProfileFile(event)" style="display:none;" />
     <div class="um-item" onclick="changeProfile()">👤 Cambiar perfil</div>
@@ -229,6 +232,77 @@
         <div class="card-title">Preguntas guardadas</div>
         <div id="customQuestionsList"></div>
       </div>
+    </div>
+
+
+
+    <!-- ── APPLICATIONS / CALENDAR ── -->
+    <div id="tab-calendar" class="tab-panel">
+      <div class="page-title">Calendario de candidaturas</div>
+      <div class="page-sub">Controla deadlines, fechas aplicadas y entrevistas desde tu Excel de trabajos.</div>
+
+      <div class="card">
+        <div class="card-title">Importar desde Excel</div>
+        <p class="mini-copy">Puedes subir .xlsx, .xls o .csv. La app leerá columnas como EMPRESA, TIPO, PUESTO, ENTREVISTAS, FECHA_LIMITE, FECHA_APLICADA, Inglés, Sueldo, Lugar y link.</p>
+        <div class="brow">
+          <label class="btn-t" for="jobsFileInput">📎 Importar Excel/CSV</label>
+          <input id="jobsFileInput" type="file" accept=".xlsx,.xls,.csv" onchange="importApplicationsFile(event)" style="display:none" />
+          <button class="btn-o" onclick="loadDefaultApplications()">Cargar ejemplo actual</button>
+          <button class="btn-o" onclick="exportApplicationsCSV()">Exportar CSV</button>
+        </div>
+        <div class="gen-out" id="jobsImportMsg"></div>
+      </div>
+
+      <div class="app-stats" id="applicationStats"></div>
+
+      <div class="card">
+        <div class="card-title">Filtros</div>
+        <div class="form-grid three">
+          <div>
+            <label class="lbl">Buscar</label>
+            <input class="inp" id="appSearch" placeholder="Roche, data, Madrid..." oninput="renderApplications()" />
+          </div>
+          <div>
+            <label class="lbl">Tipo</label>
+            <select class="inp" id="appTypeFilter" onchange="renderApplications()"></select>
+          </div>
+          <div>
+            <label class="lbl">Estado</label>
+            <select class="inp" id="appStatusFilter" onchange="renderApplications()">
+              <option value="all">Todos</option>
+              <option value="deadline">Con deadline</option>
+              <option value="applied">Aplicadas</option>
+              <option value="pending">Pendientes</option>
+              <option value="interview">Con entrevista/proceso</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="calendar-grid" id="calendarGrid"></div>
+
+      <div class="card">
+        <div class="card-title" id="applicationFormTitle">+ Añadir candidatura</div>
+        <input type="hidden" id="appId" />
+        <div class="form-grid two">
+          <div><label class="lbl">Empresa</label><input class="inp" id="appCompany" placeholder="Roche" /></div>
+          <div><label class="lbl">Tipo</label><input class="inp" id="appType" placeholder="Farmacéutica, Consultora..." /></div>
+          <div><label class="lbl">Puesto</label><input class="inp" id="appRole" placeholder="Data Analyst" /></div>
+          <div><label class="lbl">Entrevistas / proceso</label><input class="inp" id="appInterviews" placeholder="JUNIOR, Programa, 1ª entrevista..." /></div>
+          <div><label class="lbl">Fecha límite</label><input class="inp" id="appDeadline" type="date" /></div>
+          <div><label class="lbl">Fecha aplicada</label><input class="inp" id="appApplied" type="date" /></div>
+          <div><label class="lbl">Inglés</label><input class="inp" id="appEnglish" placeholder="B2, C1" /></div>
+          <div><label class="lbl">Sueldo</label><input class="inp" id="appSalary" placeholder="23000" /></div>
+          <div><label class="lbl">Lugar</label><input class="inp" id="appLocation" placeholder="Madrid" /></div>
+          <div><label class="lbl">Link</label><input class="inp" id="appLink" placeholder="https://..." /></div>
+        </div>
+        <div class="brow">
+          <button class="btn-t" onclick="saveApplication()">Guardar candidatura</button>
+          <button class="btn-o" onclick="clearApplicationForm()">Limpiar</button>
+        </div>
+      </div>
+
+      <div id="applicationsList"></div>
     </div>
 
     <!-- ── PRACTICE ── -->

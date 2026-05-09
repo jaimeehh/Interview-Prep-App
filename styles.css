@@ -1,14 +1,15 @@
+
 :root {
-  --cream:#faf6ef; --warm0:#f5ede0; --warm1:#e8d5b7; --warm2:#d4b896;
-  --warm3:#b8956a; --warm4:#8b6440; --warm5:#5c3d1e;
-  --terra:#c4613a; --terra-l:#f0d4c8; --terra-m:#e08060;
-  --sage:#6b8f71; --sage-l:#d4e8d6;
-  --amber:#d4860a; --amber-l:#fef0c7;
-  --sky:#4a7fa5; --sky-l:#daeaf5;
+  --cream:#f7f9fc; --warm0:#eef4fb; --warm1:#dbeafe; --warm2:#bfdbfe;
+  --warm3:#60a5fa; --warm4:#2563eb; --warm5:#0f2f57;
+  --terra:#2563eb; --terra-l:#dbeafe; --terra-m:#3b82f6;
+  --sage:#0f766e; --sage-l:#ccfbf1;
+  --amber:#d97706; --amber-l:#fff7ed;
+  --sky:#0284c7; --sky-l:#e0f2fe;
   --purple:#7c3aed; --purple-l:#ede9fe;
-  --text:#3a2a1a; --text2:#6b5040; --text3:#9a7a60;
-  --border:rgba(180,140,100,0.2); --border2:rgba(180,140,100,0.38);
-  --shadow:0 2px 12px rgba(90,50,20,0.08); --shadow-md:0 4px 24px rgba(90,50,20,0.13);
+  --text:#0f172a; --text2:#334155; --text3:#64748b;
+  --border:rgba(37,99,235,0.12); --border2:rgba(37,99,235,0.26);
+  --shadow:0 2px 14px rgba(15,47,87,0.06); --shadow-md:0 8px 30px rgba(15,47,87,0.11);
   --r:16px; --rsm:10px; --rxs:6px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -273,3 +274,39 @@ input,textarea,button,select{font-family:'DM Sans',sans-serif;}
 .qcard-answer{font-size:13px;line-height:1.65;color:var(--text2);background:var(--warm0);border-radius:8px;padding:10px 12px;border-left:3px solid var(--warm3);white-space:pre-wrap;}
 .danger-lite{color:var(--terra)!important;border-color:var(--terra-l)!important;}
 @media(min-width:600px){.form-grid{grid-template-columns:1fr 1fr;}}
+
+
+/* APPLICATIONS / CALENDAR */
+.mini-copy{font-size:13px;line-height:1.6;color:var(--text3);margin-bottom:10px;}
+.form-grid.two{grid-template-columns:1fr;}
+.form-grid.three{grid-template-columns:1fr;}
+.app-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
+.app-stat{background:#fff;border:1px solid var(--border);border-radius:var(--rsm);padding:12px;box-shadow:var(--shadow);}
+.app-stat-v{font-family:'Fraunces',sans-serif;font-size:24px;font-weight:800;color:var(--terra);line-height:1;}
+.app-stat-l{font-size:11px;color:var(--text3);margin-top:4px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+.calendar-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:14px;}
+.month-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);}
+.month-title{font-family:'Fraunces',sans-serif;font-weight:800;color:var(--warm5);margin-bottom:8px;display:flex;justify-content:space-between;gap:8px;}
+.month-list{display:flex;flex-direction:column;gap:7px;}
+.month-item{display:grid;grid-template-columns:42px 1fr;gap:9px;align-items:start;background:var(--warm0);border-radius:9px;padding:8px;border-left:3px solid var(--terra);}
+.month-day{font-family:'Fraunces',sans-serif;font-size:18px;font-weight:800;color:var(--terra);text-align:center;}
+.month-company{font-size:13px;font-weight:800;color:var(--text);line-height:1.25;}
+.month-role{font-size:12px;color:var(--text3);line-height:1.35;margin-top:2px;}
+.app-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow);}
+.app-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:8px;}
+.app-company{font-family:'Fraunces',sans-serif;font-size:16px;font-weight:800;color:var(--warm5);}
+.app-role{font-size:13px;color:var(--text2);line-height:1.45;margin-top:2px;}
+.app-meta{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0;}
+.app-link{font-size:12px;color:var(--terra);font-weight:700;text-decoration:none;}
+.app-link:hover{text-decoration:underline;}
+.app-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
+.app-empty{text-align:center;background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:28px;color:var(--text3);box-shadow:var(--shadow);}
+.badge.deadline-soon{background:#fee2e2;color:#dc2626;}
+.badge.deadline-ok{background:var(--sky-l);color:var(--sky);}
+.badge.applied{background:var(--sage-l);color:var(--sage);}
+@media(min-width:600px){
+  .form-grid.two{grid-template-columns:1fr 1fr;}
+  .form-grid.three{grid-template-columns:1fr 1fr 1fr;}
+  .app-stats{grid-template-columns:repeat(4,1fr);}
+  .calendar-grid{grid-template-columns:1fr 1fr;}
+}
