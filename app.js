@@ -445,11 +445,13 @@ function importProfileFile(event){
 }
 
 /* ══════════════════════════════════
-   FLASHCARDS
+   FLASHCARDS — v4: pregunta → story asociada → respuesta útil
 ══════════════════════════════════ */
 let fcCards=[], fcIdx=0, fcFlipped=false, fcRated=false;
 let fcRatings={easy:0,medium:0,hard:0};
 let userCompanies=[];
+let fcSelectedCo='';
+let fcMode='company'; // company | star | questions
 
 function loadUserCompanies(){
   if(!CU)return;
@@ -460,14 +462,31 @@ function loadUserCompanies(){
 
 function renderCoChips(){
   const container=document.getElementById('coChips');
+  if(!container) return;
   container.innerHTML=userCompanies.map((c,i)=>`
-    <div class="co-chip${fcSelectedCo===c?' sel':''}" onclick="selectCo('${c}')">${c}
-      <span onclick="event.stopPropagation();removeCo(${i})" style="margin-left:4px;opacity:.5;font-size:11px;">✕</span>
+    <div class="co-chip${fcSelectedCo===c?' sel':''}" onclick="selectCo('${escapeHtml(c)}')">${escapeHtml(c)}
+      <span onclick="event.stopPropagation();removeCo(${i})" style="margin-left:4px;opacity:.55;font-size:11px;">✕</span>
     </div>`).join('')+
     `<div class="co-chip add" onclick="addCoChip()">+ Añadir</div>`;
 }
 
-let fcSelectedCo='';
+function setFlashcardMode(mode){
+  fcMode = mode;
+  document.querySelectorAll('[id^="fcMode-"]').forEach(el=>el.classList.remove('sel'));
+  const active=document.getElementById('fcMode-'+mode);
+  if(active) active.classList.add('sel');
+  const wrap=document.getElementById('fcCompanyWrap');
+  if(wrap) wrap.style.display = mode === 'company' ? 'block' : 'none';
+  const explain=document.getElementById('fcExplain');
+  if(explain){
+    explain.textContent = {
+      company:'Cada tarjeta tendrá una pregunta y, al voltearla, te dirá qué historia usar, la respuesta STAR y por qué encaja con la empresa.',
+      star:'Repasarás historias STAR completas. Primero intentas contarla tú; después comparas con la estructura S/T/A/R/L.',
+      questions:'Practicarás tus preguntas guardadas. Si están vinculadas a una story, verás esa story completa; si tienen respuesta propia, verás tu respuesta.'
+    }[mode];
+  }
+}
+
 function selectCo(c){
   fcSelectedCo=c;
   renderCoChips();
@@ -476,6 +495,7 @@ function removeCo(i){
   userCompanies.splice(i,1);
   if(!CU)return;
   const ud=getUD(CU.username);ud.companies=userCompanies;saveUD(CU.username,ud);
+  if(!userCompanies.includes(fcSelectedCo)) fcSelectedCo='';
   renderCoChips();
 }
 function addCoChip(){
@@ -502,49 +522,104 @@ function initFlashcards(){
   document.getElementById('fcArea').style.display='none';
   document.getElementById('fcDone').style.display='none';
   loadUserCompanies();
+  setFlashcardMode(fcMode || 'company');
 }
 
-async function startFlashcards(){
-  if(!fcSelectedCo){alert('Selecciona o añade una empresa primero');return;}
+function pickStoryForQuestion(question, company){
+  const text = `${question||''} ${company||''}`.toLowerCase();
+  const stories = [...SD];
+  const score = s => {
+    let n=0;
+    const hay = `${s.title||''} ${s.q||''} ${s.tag||''} ${s.tagLabel||''} ${s.sit||''} ${s.act||''} ${s.res||''}`.toLowerCase();
+    const keywordMap = [
+      ['senior', 'communication'], ['directiv', 'communication'], ['stakeholder', 'communication'], ['comunica', 'communication'],
+      ['presión', 'pressure'], ['pressure', 'pressure'], ['deadline', 'pressure'], ['urgencia', 'pressure'],
+      ['lider', 'leadership'], ['deleg', 'leadership'], ['team', 'leadership'], ['equipo', 'leadership'],
+      ['fracaso', 'failure'], ['error', 'failure'], ['failure', 'failure'],
+      ['internacional', 'adaptability'], ['florida', 'adaptability'], ['adapt', 'adaptability'],
+      ['iniciativa', 'initiative'], ['initiative', 'initiative'], ['desde cero', 'initiative'],
+      ['sql', 'initiative'], ['data', 'initiative'], ['datos', 'initiative'], ['impact', 'initiative'],
+      ['hospital', 'pressure'], ['quir', 'pressure'], ['lista de espera', 'pressure'],
+      ['sanitas', 'initiative'], ['asisa', 'initiative'], ['asegur', 'initiative'], ['red médica', 'initiative'], ['proveedor', 'initiative']
+    ];
+    keywordMap.forEach(([kw,tag])=>{ if(text.includes(kw) && (s.tag===tag || hay.includes(kw))) n+=2; });
+    if(company && hay.includes(company.toLowerCase())) n+=3;
+    return n + Math.random()*0.25;
+  };
+  return stories.sort((a,b)=>score(b)-score(a))[0] || stories[0];
+}
+
+function starQuestionForStory(story, company){
+  const qs = [...(story.questions?.es || []), story.q].filter(Boolean);
+  const base = qs[Math.floor(Math.random()*qs.length)] || story.q;
+  if(fcMode === 'company' && company){
+    return `Pensando en ${company}, ${base.charAt(0).toLowerCase()+base.slice(1)}`;
+  }
+  return base;
+}
+
+function buildCompanyCards(company){
+  const profile = getCurrentProfile();
+  const custom = (profile?.customQuestions || [])
+    .filter(q => !q.companies?.length || q.companies.some(c => c.toLowerCase() === company.toLowerCase()))
+    .sort(()=>Math.random()-.5)
+    .slice(0,2)
+    .map(q=>({type:'custom',q:q.question,custom:q,lang:q.lang==='en'?'en':'es',category:q.competency || 'Personalizada',company}));
+
+  const priorityStories = [...SD]
+    .sort((a,b)=>{
+      const aText=`${a.title} ${a.sit} ${a.act}`.toLowerCase();
+      const bText=`${b.title} ${b.sit} ${b.act}`.toLowerCase();
+      const keys=['asisa','asegur','sanitas','proveedor','dirección médica','data','sql','dashboard','healthcare'];
+      const sa=keys.reduce((acc,k)=>acc+(aText.includes(k)?1:0),0);
+      const sb=keys.reduce((acc,k)=>acc+(bText.includes(k)?1:0),0);
+      return sb-sa || Math.random()-.5;
+    })
+    .slice(0, 5-custom.length)
+    .map(story=>({
+      type:'company-story',
+      q: starQuestionForStory(story, company),
+      star: story,
+      lang:'es',
+      category: story.tagLabel || 'STAR',
+      company
+    }));
+
+  return [...custom, ...priorityStories].sort(()=>Math.random()-.5).slice(0,5);
+}
+
+function buildStarCards(){
+  return [...SD].sort(()=>Math.random()-.5).slice(0,5).map(story=>({
+    type:'star', q: starQuestionForStory(story), star: story, lang:'es', category: story.tagLabel || 'STAR'
+  }));
+}
+
+function buildQuestionCards(){
+  const profile = getCurrentProfile();
+  const custom = [...(profile?.customQuestions || [])].sort(()=>Math.random()-.5).slice(0,5);
+  if(custom.length){
+    return custom.map(q=>({type:'custom',q:q.question,custom:q,lang:q.lang==='en'?'en':'es',category:q.competency || 'Personalizada'}));
+  }
+  return buildStarCards();
+}
+
+function startFlashcards(){
+  if(fcMode==='company' && !fcSelectedCo){alert('Selecciona o añade una empresa primero');return;}
   document.getElementById('fcStartTxt').style.display='none';
   document.getElementById('fcSpin').style.display='block';
   document.getElementById('fcStartBtn').disabled=true;
 
-  // Generate 5 company-specific questions via AI
-  const prompt=`Eres reclutador de "${fcSelectedCo}". Genera exactamente 5 preguntas comportamentales para entrevistar a Jaime Hernández (Master Big Data Science, trabaja en ASISA en inteligencia competitiva y analítica de datos, antes software quirúrgico -30% listas espera).
-Las preguntas deben ser específicas para "${fcSelectedCo}" y retadoras. Mezcla español e inglés (3 ES, 2 EN).
-Responde SOLO en JSON sin backticks:
-{"questions":[{"lang":"es","category":"Iniciativa","question":"texto"},{"lang":"en","category":"Leadership","question":"texto"}]}`;
+  if(fcMode==='company') fcCards = buildCompanyCards(fcSelectedCo);
+  else if(fcMode==='questions') fcCards = buildQuestionCards();
+  else fcCards = buildStarCards();
 
-  let aiQuestions=[];
-  try{
-    const d=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]});
-    let text=d.content?.map(c=>c.text||'').join('')||'';
-    text=text.replace(/```json|```/g,'').trim();
-    const parsed=JSON.parse(text);
-    aiQuestions=parsed.questions||[];
-  }catch(e){
-    aiQuestions=[
-      {lang:'es',category:'Iniciativa',question:`En ${fcSelectedCo}, ¿cómo conectas tu experiencia en ASISA con los proyectos que haríais?`},
-      {lang:'en',category:'Leadership',question:`Tell me about a time you led without authority — how does that translate to ${fcSelectedCo}?`},
-      {lang:'es',category:'Impacto',question:`¿Cuál sería tu propuesta de valor diferencial para ${fcSelectedCo} basada en tus logros?`},
-      {lang:'es',category:'Aprendizaje',question:`¿Qué tendrías que aprender para rendir desde el día 1 en ${fcSelectedCo}?`},
-      {lang:'en',category:'Motivation',question:`Why ${fcSelectedCo} and why now? Be specific.`}
-    ];
+  if(!fcCards.length){
+    alert('No hay tarjetas disponibles todavía. Añade STAR stories o preguntas guardadas.');
+    document.getElementById('fcStartTxt').style.display='inline';
+    document.getElementById('fcSpin').style.display='none';
+    document.getElementById('fcStartBtn').disabled=false;
+    return;
   }
-
-  // Mix STAR stories, custom saved questions and AI questions.
-  const profile = getCurrentProfile();
-  const matchingCustom = (profile?.customQuestions || [])
-    .filter(q => !q.companies?.length || q.companies.some(c => c.toLowerCase() === fcSelectedCo.toLowerCase()))
-    .sort(()=>Math.random()-.5)
-    .slice(0,2);
-  const shuffledStar=[...SD].sort(()=>Math.random()-.5).slice(0, Math.max(2, 3 - matchingCustom.length));
-  fcCards=[
-    ...matchingCustom.map(q=>({type:'custom',q:q.question,custom:q,lang:q.lang==='en'?'en':'es',category:q.competency || 'Personalizada',company:fcSelectedCo})),
-    ...shuffledStar.map(s=>({type:'star',q:s.q,star:s,lang:'es',category:s.tagLabel})),
-    ...aiQuestions.slice(0, Math.max(1, 5 - matchingCustom.length - shuffledStar.length)).map(q=>({type:'company',q:q.question,lang:q.lang,category:q.category,company:fcSelectedCo}))
-  ].sort(()=>Math.random()-.5).slice(0,5);
 
   fcIdx=0;fcFlipped=false;fcRated=false;
   fcRatings={easy:0,medium:0,hard:0};
@@ -557,48 +632,46 @@ Responde SOLO en JSON sin backticks:
   renderFcCard();
 }
 
+function storyHtml(s, company){
+  const why = company ? `<div class="fc-back-step"><div class="fc-slbl lc">🎯 Por qué encaja con ${escapeHtml(company)}</div><div class="fc-stxt fc-adapt">Demuestra experiencia real en healthcare, datos, análisis estructurado e impacto medible. Úsala para conectar tu perfil con problemas de negocio similares en ${escapeHtml(company)}.</div></div>` : '';
+  return `
+    ${why}
+    <div class="fc-back-step"><div class="fc-slbl ls">📍 Situación</div><div class="fc-stxt">${escapeHtml(s.sit)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl lt">🎯 Tarea</div><div class="fc-stxt">${escapeHtml(s.tsk)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl la">⚡ Acción</div><div class="fc-stxt">${escapeHtml(s.act)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl lr">📊 Resultado</div><div class="fc-stxt fc-result">${escapeHtml(s.res)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl ll">💡 Aprendizaje</div><div class="fc-stxt">${escapeHtml(s.lrn)}</div></div>`;
+}
+
 function renderFcCard(){
   const c=fcCards[fcIdx];
   const pct=Math.round(((fcIdx+1)/fcCards.length)*100);
   document.getElementById('fcProgFill').style.width=pct+'%';
   document.getElementById('fcProgTxt').textContent=`${fcIdx+1} / ${fcCards.length}`;
-  document.getElementById('fcCompanyBadge').textContent=c.company||'STAR';
+  document.getElementById('fcCompanyBadge').textContent=c.company || (fcMode==='questions'?'Mis preguntas':'STAR');
 
-  // Front
   const langEmoji=c.lang==='en'?'🇬🇧':'🇪🇸';
-  document.getElementById('fcFrontBadge').innerHTML=`<span class="badge ${c.lang==='en'?'b-sky':'b-amber'}">${langEmoji} ${c.category}</span>`;
+  const modeLabel = c.type==='custom' ? 'Pregunta guardada' : c.type==='company-story' ? 'Story adaptada' : 'STAR';
+  document.getElementById('fcFrontBadge').innerHTML=`<span class="badge ${c.lang==='en'?'b-sky':'b-amber'}">${langEmoji} ${escapeHtml(c.category)}</span><span class="badge b-warm">${modeLabel}</span>`;
   document.getElementById('fcQuestion').textContent=c.q;
 
-  // Back
   let backHtml='';
-  if(c.type==='star'&&c.star){
-    const s=c.star;
-    backHtml=`
-      <div class="fc-back-step"><div class="fc-slbl ls">📍 Situación</div><div class="fc-stxt">${escapeHtml(s.sit)}</div></div>
-      <div class="fc-back-step"><div class="fc-slbl lt">🎯 Tarea</div><div class="fc-stxt">${escapeHtml(s.tsk)}</div></div>
-      <div class="fc-back-step"><div class="fc-slbl la">⚡ Acción</div><div class="fc-stxt">${escapeHtml(s.act)}</div></div>
-      <div class="fc-back-step"><div class="fc-slbl lr">📊 Resultado</div><div class="fc-stxt fc-result">${escapeHtml(s.res)}</div></div>
-      <div class="fc-back-step"><div class="fc-slbl ll">💡 Aprendizaje</div><div class="fc-stxt">${escapeHtml(s.lrn)}</div></div>`;
+  if((c.type==='star' || c.type==='company-story') && c.star){
+    backHtml=`<div class="fc-story-title">Historia recomendada: ${escapeHtml(c.star.title || c.star.q)}</div>${storyHtml(c.star, c.company)}`;
   } else if(c.type==='custom' && c.custom){
     const linked = c.custom.answerType === 'story' ? getStoryById(c.custom.linkedStoryId) : null;
     if(linked){
-      backHtml=`
-        <div class="fc-back-step"><div class="fc-slbl ls">📍 Story asociada</div><div class="fc-stxt">${escapeHtml(linked.title || linked.q)}</div></div>
-        <div class="fc-back-step"><div class="fc-slbl la">⚡ Acción</div><div class="fc-stxt">${escapeHtml(linked.act)}</div></div>
-        <div class="fc-back-step"><div class="fc-slbl lr">📊 Resultado</div><div class="fc-stxt fc-result">${escapeHtml(linked.res)}</div></div>`;
+      backHtml=`<div class="fc-story-title">Story asociada: ${escapeHtml(linked.title || linked.q)}</div>${storyHtml(linked, c.company)}`;
     }else{
-      backHtml=`<div class="fc-back-step"><div class="fc-slbl lr">Respuesta guardada</div><div class="fc-stxt fc-result">${escapeHtml(c.custom.customAnswer || 'Sin respuesta guardada.')}</div></div>`;
+      const suggested = pickStoryForQuestion(c.custom.question, c.company);
+      backHtml=`
+        <div class="fc-story-title">Respuesta guardada</div>
+        <div class="fc-back-step"><div class="fc-slbl lr">📝 Tu respuesta</div><div class="fc-stxt fc-result">${escapeHtml(c.custom.customAnswer || 'Sin respuesta guardada.')}</div></div>
+        <div class="fc-back-step"><div class="fc-slbl lc">💡 Story alternativa sugerida</div><div class="fc-stxt">${escapeHtml(suggested?.title || '')}</div></div>`;
     }
-  } else {
-    backHtml=`
-      <div class="fc-back-step"><div class="fc-slbl ls">💡 Enfoque sugerido para ${c.company||'esta empresa'}</div>
-      <div class="fc-stxt">Conecta con tu experiencia más relevante, incluye una métrica concreta y cierra con aprendizaje aplicable al rol.</div></div>
-      <div class="fc-back-step"><div class="fc-slbl lr">📊 Clave</div>
-      <div class="fc-stxt fc-result">Menciona ASISA o el hospital según aplique, con el resultado cuantificado (10% / 30% / 300 descargas).</div></div>`;
   }
   document.getElementById('fcBackContent').innerHTML=backHtml;
 
-  // Reset state
   const card=document.getElementById('fcCard');
   card.classList.remove('flipped');
   fcFlipped=false;fcRated=false;
@@ -628,26 +701,18 @@ function showFcDone(){
   document.getElementById('fcArea').style.display='none';
   document.getElementById('fcDone').style.display='block';
   document.getElementById('fcDoneStats').innerHTML=`
-    <div style="display:flex;gap:10px;justify-content:center;margin-top:8px;">
-      <div style="text-align:center;padding:10px 16px;background:#fff;border-radius:var(--rsm);border:1px solid var(--border);">
-        <div style="font-family:'Fraunces',sans-serif;font-size:22px;font-weight:700;color:var(--sage);">${fcRatings.easy}</div>
-        <div style="font-size:11px;color:var(--text3);">Bien</div>
-      </div>
-      <div style="text-align:center;padding:10px 16px;background:#fff;border-radius:var(--rsm);border:1px solid var(--border);">
-        <div style="font-family:'Fraunces',sans-serif;font-size:22px;font-weight:700;color:var(--amber);">${fcRatings.medium}</div>
-        <div style="font-size:11px;color:var(--text3);">Regular</div>
-      </div>
-      <div style="text-align:center;padding:10px 16px;background:#fff;border-radius:var(--rsm);border:1px solid var(--border);">
-        <div style="font-family:'Fraunces',sans-serif;font-size:22px;font-weight:700;color:var(--terra);">${fcRatings.hard}</div>
-        <div style="font-size:11px;color:var(--text3);">Difícil</div>
-      </div>
+    <div class="daily-result-grid">
+      <div class="daily-result"><div class="daily-result-v ok">${fcRatings.easy}</div><div class="daily-result-l">Bien · repetir más tarde</div></div>
+      <div class="daily-result"><div class="daily-result-v mid">${fcRatings.medium}</div><div class="daily-result-l">Regular · repetir pronto</div></div>
+      <div class="daily-result"><div class="daily-result-v hard">${fcRatings.hard}</div><div class="daily-result-l">Difícil · repetir mañana</div></div>
     </div>`;
 }
 
 function resetFlashcards(){
   document.getElementById('fcDone').style.display='none';
   document.getElementById('fcSetupCard').style.display='block';
-  fcSelectedCo='';renderCoChips();
+  renderCoChips();
+  setFlashcardMode(fcMode || 'company');
 }
 
 

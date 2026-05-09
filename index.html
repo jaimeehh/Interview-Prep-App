@@ -35,15 +35,15 @@
 <!-- APP -->
 <div id="appScreen" class="screen">
   <div class="topbar">
-    <div class="topbar-logo">Prep<span>AI</span></div>
+    <div class="topbar-logo"><span class="logo-mark">P</span><span class="logo-word">Prep<span>AI</span></span></div>
     <div class="ttabs">
-      <button class="ttab active" onclick="goTab('pitch',this)">Pitch</button>
-      <button class="ttab" onclick="goTab('cards',this)">🃏 Reto</button>
-      <button class="ttab" onclick="goTab('star',this)">STAR</button>
-      <button class="ttab" onclick="goTab('questions',this)">Preguntas</button>
-      <button class="ttab" onclick="goTab('calendar',this)">Calendario</button>
-      <button class="ttab" onclick="goTab('practice',this)">Simulación</button>
-      <button class="ttab" onclick="goTab('history',this)">Historial</button>
+      <button class="ttab active" onclick="goTab('pitch',this)"><span>🎙️</span> Pitch</button>
+      <button class="ttab" onclick="goTab('cards',this)"><span>⚡</span> Reto</button>
+      <button class="ttab" onclick="goTab('star',this)"><span>📚</span> STAR</button>
+      <button class="ttab" onclick="goTab('questions',this)"><span>❓</span> Preguntas</button>
+      <button class="ttab" onclick="goTab('calendar',this)"><span>🗓️</span> Calendario</button>
+      <button class="ttab" onclick="goTab('practice',this)"><span>🎯</span> Simulación</button>
+      <button class="ttab" onclick="goTab('history',this)"><span>📊</span> Historial</button>
     </div>
     <button class="ubtn" id="userBtn" onclick="toggleMenu()">?</button>
   </div>
@@ -106,16 +106,47 @@
 
     <!-- ── FLASHCARDS ── -->
     <div id="tab-cards" class="tab-panel">
-      <div class="page-title">Reto Diario</div>
-      <div class="page-sub">5 tarjetas · voltea para ver la respuesta STAR</div>
-
-      <!-- Company selector -->
-      <div class="card" id="fcSetupCard">
-        <div class="card-title">¿Para qué empresa practicas hoy?</div>
-        <div class="co-chips" id="coChips">
-          <div class="co-chip add" onclick="addCoChip()">+ Añadir empresa</div>
+      <div class="hero-strip">
+        <div>
+          <div class="page-title">Reto Diario</div>
+          <div class="page-sub">5 tarjetas · pregunta → story asociada → autoevaluación</div>
         </div>
-        <input class="inp" id="newCoInp" placeholder="ej: McKinsey, Deloitte…" style="display:none;margin-bottom:8px;" onkeydown="if(event.key==='Enter')confirmCo()" />
+        <div class="hero-pill">⚡ memoria activa</div>
+      </div>
+
+      <!-- Daily challenge setup -->
+      <div class="card fc-setup" id="fcSetupCard">
+        <div class="card-title">Elige cómo quieres entrenar hoy</div>
+        <div class="mode-grid">
+          <button class="mode-card sel" id="fcMode-company" onclick="setFlashcardMode('company')">
+            <span class="mode-ico">🏢</span>
+            <span class="mode-title">Empresa objetivo</span>
+            <span class="mode-sub">Adapta tus stories a Sanitas, Roche, Deloitte…</span>
+          </button>
+          <button class="mode-card" id="fcMode-star" onclick="setFlashcardMode('star')">
+            <span class="mode-ico">📚</span>
+            <span class="mode-title">Historias STAR</span>
+            <span class="mode-sub">Repasa tus experiencias base</span>
+          </button>
+          <button class="mode-card" id="fcMode-questions" onclick="setFlashcardMode('questions')">
+            <span class="mode-ico">❓</span>
+            <span class="mode-title">Mis preguntas</span>
+            <span class="mode-sub">Usa las preguntas guardadas por ti</span>
+          </button>
+        </div>
+
+        <div id="fcCompanyWrap">
+          <div class="setup-label">Empresa para adaptar las respuestas</div>
+          <div class="co-chips" id="coChips">
+            <div class="co-chip add" onclick="addCoChip()">+ Añadir empresa</div>
+          </div>
+          <input class="inp" id="newCoInp" placeholder="ej: Sanitas, Roche, Deloitte…" style="display:none;margin-bottom:8px;" onkeydown="if(event.key==='Enter')confirmCo()" />
+        </div>
+
+        <div class="daily-explain" id="fcExplain">
+          Cada tarjeta tendrá una pregunta y, al voltearla, te dirá qué historia usar, la respuesta STAR y por qué encaja con la empresa.
+        </div>
+
         <button class="btn-t full" id="fcStartBtn" onclick="startFlashcards()">
           <span id="fcStartTxt">Empezar reto ✦</span>
           <div class="spin" id="fcSpin"></div>

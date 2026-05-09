@@ -95,3 +95,14 @@ Columnas reconocidas:
 Los datos se guardan por perfil en `localStorage`. También puedes exportarlos a CSV para volver a abrirlos en Excel.
 
 Nota: no hay conexión en vivo con Excel/OneDrive. Es importación/exportación local, adecuada para una app personal en Vercel sin base de datos.
+
+## v4
+
+- Rediseño visual hacia blanco roto + azul premium.
+- Header renovado con navegación más clara.
+- Reto Diario rediseñado con tres modos:
+  - Empresa objetivo
+  - Historias STAR
+  - Mis preguntas
+- El reto ya no muestra respuestas genéricas: siempre intenta asociar una pregunta a una story o respuesta guardada.
+- Autoevaluación más clara: Bien, Regular, Difícil.
