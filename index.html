@@ -39,6 +39,7 @@
       <button class="ttab active" onclick="goTab('pitch',this)">Pitch</button>
       <button class="ttab" onclick="goTab('cards',this)">🃏 Reto</button>
       <button class="ttab" onclick="goTab('star',this)">STAR</button>
+      <button class="ttab" onclick="goTab('questions',this)">Preguntas</button>
       <button class="ttab" onclick="goTab('practice',this)">Simulación</button>
       <button class="ttab" onclick="goTab('history',this)">Historial</button>
     </div>
@@ -48,6 +49,10 @@
   <div class="umenu" id="umenu">
     <div class="um-name" id="umName">—</div>
     <div class="um-item" onclick="goTab('history',null);toggleMenu()">📊 Mi historial</div>
+    <div class="um-item" onclick="goTab('questions',null);toggleMenu()">❓ Mis preguntas</div>
+    <div class="um-item" onclick="exportCurrentProfile()">⬇️ Exportar perfil</div>
+    <label class="um-item" for="importProfileInput">⬆️ Importar perfil</label>
+    <input id="importProfileInput" type="file" accept="application/json,.json" onchange="importProfileFile(event)" style="display:none;" />
     <div class="um-item" onclick="changeProfile()">👤 Cambiar perfil</div>
     <div class="um-item danger" onclick="doLogout()">← Cerrar perfil</div>
   </div>
@@ -165,6 +170,65 @@
       <div class="page-sub">Toca para ver la respuesta completa</div>
       <div class="filter-row" id="filterRow"></div>
       <div id="starList"></div>
+    </div>
+
+
+
+    <!-- ── CUSTOM QUESTIONS ── -->
+    <div id="tab-questions" class="tab-panel">
+      <div class="page-title">Mis preguntas</div>
+      <div class="page-sub">Guarda preguntas reales y asócialas a una story o a una respuesta propia</div>
+
+      <div class="card">
+        <div class="card-title" id="cqFormTitle">+ Añadir pregunta</div>
+        <input type="hidden" id="cqId" />
+        <label class="lbl">Pregunta</label>
+        <textarea class="answer-ta compact" id="cqQuestion" placeholder="Ej: Tell me about a time you disagreed with a senior stakeholder."></textarea>
+
+        <div class="form-grid">
+          <div>
+            <label class="lbl">Idioma</label>
+            <select class="inp" id="cqLang">
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+              <option value="mixed">Mixto / puede salir en ambos</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Competencia</label>
+            <select class="inp" id="cqCompetency"></select>
+          </div>
+        </div>
+
+        <label class="lbl">Tipo de respuesta</label>
+        <select class="inp" id="cqAnswerType" onchange="toggleCustomAnswerMode()">
+          <option value="story">Vincular a una STAR story existente</option>
+          <option value="custom">Escribir respuesta propia</option>
+        </select>
+
+        <div id="cqStoryWrap">
+          <label class="lbl">Story asociada</label>
+          <select class="inp" id="cqLinkedStory"></select>
+        </div>
+
+        <div id="cqAnswerWrap" style="display:none;">
+          <label class="lbl">Respuesta propia</label>
+          <textarea class="answer-ta" id="cqAnswer" placeholder="Escribe aquí la respuesta que quieres guardar para esta pregunta."></textarea>
+        </div>
+
+        <label class="lbl">Empresas relacionadas</label>
+        <input class="inp" id="cqCompanies" placeholder="McKinsey, Deloitte, IQVIA…" />
+
+        <div class="brow">
+          <button class="btn-t" onclick="saveCustomQuestion()" style="flex:1;">Guardar pregunta</button>
+          <button class="btn-o" onclick="clearCustomQuestionForm()">Limpiar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Preguntas guardadas</div>
+        <div id="customQuestionsList"></div>
+      </div>
     </div>
 
     <!-- ── PRACTICE ── -->

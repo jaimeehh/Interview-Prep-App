@@ -15,6 +15,32 @@ async function callClaude(body) {
   return await res.json();
 }
 
+function escapeHtml(value){
+  return String(value ?? '')
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'",'&#039;');
+}
+function splitCSV(value){
+  return String(value || '').split(',').map(x=>x.trim()).filter(Boolean);
+}
+function todayISO(){
+  return new Date().toISOString().slice(0,10);
+}
+function downloadJSON(filename, data){
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 /* ══════════════════════════════════
    PROFILE STORAGE (local, no real login)
 ══════════════════════════════════ */
@@ -55,7 +81,14 @@ function setCurrentProfileId(id){
 }
 function getProfile(id){
   const profiles = getProfiles();
-  return profiles[id] || profiles[DEFAULT_PROFILE.id] || JSON.parse(JSON.stringify(DEFAULT_PROFILE));
+  const base = profiles[id] || profiles[DEFAULT_PROFILE.id] || JSON.parse(JSON.stringify(DEFAULT_PROFILE));
+  base.companies ||= [];
+  base.starStories ||= [];
+  base.customQuestions ||= [];
+  base.history ||= [];
+  base.preferences ||= { interviewLanguageMode: 'mixed', practiceMode: 'text' };
+  base.initials ||= initialsFromName(base.name);
+  return base;
 }
 function saveProfile(id, profile){
   const profiles = getProfiles();
@@ -120,6 +153,7 @@ function createProfileFromForm(){
     languages: { interface: 'es', practiceModes: ['es','en','mixed'] },
     companies: [],
     starStories: [],
+    customQuestions: [],
     history: [],
     preferences: { interviewLanguageMode: 'mixed', practiceMode: 'text' }
   };
@@ -146,6 +180,8 @@ function loadProfileIntoApp(){
   buildFilters();
   renderStar();
   renderPitch(profile);
+  renderCustomQuestionFormOptions();
+  renderCustomQuestions();
   renderHistory();
 }
 
@@ -184,6 +220,7 @@ function goTab(t,btn){
   else document.querySelectorAll('.ttab').forEach(b=>{if(b.getAttribute('onclick')?.includes("'"+t+"'"))b.classList.add('active');});
   if(t==='history')renderHistory();
   if(t==='cards')initFlashcards();
+  if(t==='questions'){renderCustomQuestionFormOptions();renderCustomQuestions();}
 }
 
 /* ══════════════════════════════════
@@ -205,21 +242,202 @@ function filterStar(f,el){
 function renderStar(){
   const list=SD.filter(s=>activeFilter==='all'||s.tag===activeFilter);
   document.getElementById('starList').innerHTML=list.map(s=>`
-    <div class="scard" id="sc${s.id}">
-      <div class="scard-hd" onclick="document.getElementById('sc${s.id}').classList.toggle('open')">
-        <span class="stag ${({initiative:'ti',leadership:'tl',pressure:'tp',conflict:'tc',teamwork:'tt',learning:'tn',communication:'tl',failure:'tc',adaptability:'tn'}[s.tag]||'ti')}">${s.tagLabel}</span>
-        <span class="scard-q">${s.q}</span>
+    <div class="scard" id="sc${escapeHtml(s.id)}">
+      <div class="scard-hd" onclick="document.getElementById('sc${escapeHtml(s.id)}').classList.toggle('open')">
+        <span class="stag ${({initiative:'ti',leadership:'tl',pressure:'tp',conflict:'tc',teamwork:'tt',learning:'tn',communication:'tl',failure:'tc',adaptability:'tn'}[s.tag]||'ti')}">${escapeHtml(s.tagLabel)}</span>
+        <span class="scard-q">${escapeHtml(s.q)}</span>
         <span class="scard-arr">›</span>
       </div>
       <div class="scard-body">
         <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
-        <div class="step"><div class="slbl ls">📍 Situación</div><div class="stxt">${s.sit}</div></div>
-        <div class="step"><div class="slbl lt">🎯 Tarea</div><div class="stxt">${s.tsk}</div></div>
-        <div class="step"><div class="slbl la">⚡ Acción</div><div class="stxt">${s.act}</div></div>
-        <div class="step"><div class="slbl lr">📊 Resultado</div><div class="stxt hi">${s.res}</div></div>
-        <div class="step"><div class="slbl ll">💡 Aprendizaje</div><div class="stxt">${s.lrn}</div></div>
+        <div class="step"><div class="slbl ls">📍 Situación</div><div class="stxt">${escapeHtml(s.sit)}</div></div>
+        <div class="step"><div class="slbl lt">🎯 Tarea</div><div class="stxt">${escapeHtml(s.tsk)}</div></div>
+        <div class="step"><div class="slbl la">⚡ Acción</div><div class="stxt">${escapeHtml(s.act)}</div></div>
+        <div class="step"><div class="slbl lr">📊 Resultado</div><div class="stxt hi">${escapeHtml(s.res)}</div></div>
+        <div class="step"><div class="slbl ll">💡 Aprendizaje</div><div class="stxt">${escapeHtml(s.lrn)}</div></div>
       </div>
     </div>`).join('');
+}
+
+
+/* ══════════════════════════════════
+   CUSTOM QUESTIONS — saved per local profile
+══════════════════════════════════ */
+function getCurrentProfile(){
+  return CU ? getProfile(CU.username) : null;
+}
+function saveCurrentProfile(profile){
+  if(!CU) return;
+  saveUD(CU.username, profile);
+}
+function renderCustomQuestionFormOptions(){
+  const comp = document.getElementById('cqCompetency');
+  const story = document.getElementById('cqLinkedStory');
+  if(comp){
+    comp.innerHTML = (COMPETENCIES || [])
+      .filter(c=>c.k !== 'all')
+      .map(c=>`<option value="${escapeHtml(c.k)}">${escapeHtml(c.l)}</option>`)
+      .join('') + '<option value="motivation">Motivación</option><option value="general">General</option>';
+  }
+  if(story){
+    const stories = SD || [];
+    story.innerHTML = stories.map(s=>`<option value="${escapeHtml(s.id)}">${escapeHtml(s.title || s.q)}</option>`).join('');
+  }
+}
+function toggleCustomAnswerMode(){
+  const type = document.getElementById('cqAnswerType')?.value || 'story';
+  document.getElementById('cqStoryWrap').style.display = type === 'story' ? 'block' : 'none';
+  document.getElementById('cqAnswerWrap').style.display = type === 'custom' ? 'block' : 'none';
+}
+function clearCustomQuestionForm(){
+  ['cqId','cqQuestion','cqAnswer','cqCompanies'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
+  document.getElementById('cqLang').value='es';
+  document.getElementById('cqAnswerType').value='story';
+  const comp=document.getElementById('cqCompetency'); if(comp && comp.options.length) comp.selectedIndex=0;
+  const story=document.getElementById('cqLinkedStory'); if(story && story.options.length) story.selectedIndex=0;
+  document.getElementById('cqFormTitle').textContent = '+ Añadir pregunta';
+  toggleCustomAnswerMode();
+}
+function saveCustomQuestion(){
+  const profile = getCurrentProfile();
+  if(!profile){ alert('Selecciona un perfil primero'); return; }
+  profile.customQuestions ||= [];
+  const id = document.getElementById('cqId').value || `q_${Date.now()}`;
+  const question = document.getElementById('cqQuestion').value.trim();
+  const answerType = document.getElementById('cqAnswerType').value;
+  const linkedStoryId = document.getElementById('cqLinkedStory').value;
+  const customAnswer = document.getElementById('cqAnswer').value.trim();
+  if(!question){ alert('Escribe la pregunta antes de guardar'); return; }
+  if(answerType === 'story' && !linkedStoryId){ alert('Elige una STAR story asociada'); return; }
+  if(answerType === 'custom' && !customAnswer){ alert('Escribe la respuesta propia o cambia a story asociada'); return; }
+  const item = {
+    id,
+    question,
+    lang: document.getElementById('cqLang').value,
+    competency: document.getElementById('cqCompetency').value,
+    answerType,
+    linkedStoryId: answerType === 'story' ? linkedStoryId : '',
+    customAnswer: answerType === 'custom' ? customAnswer : '',
+    companies: splitCSV(document.getElementById('cqCompanies').value),
+    updatedAt: todayISO(),
+    createdAt: profile.customQuestions.find(q=>q.id===id)?.createdAt || todayISO()
+  };
+  const idx = profile.customQuestions.findIndex(q=>q.id===id);
+  if(idx >= 0) profile.customQuestions[idx] = item;
+  else profile.customQuestions.unshift(item);
+  saveCurrentProfile(profile);
+  clearCustomQuestionForm();
+  renderCustomQuestions();
+  alert('Pregunta guardada');
+}
+function editCustomQuestion(id){
+  const profile = getCurrentProfile();
+  const item = profile?.customQuestions?.find(q=>q.id===id);
+  if(!item) return;
+  renderCustomQuestionFormOptions();
+  document.getElementById('cqId').value = item.id;
+  document.getElementById('cqQuestion').value = item.question || '';
+  document.getElementById('cqLang').value = item.lang || 'es';
+  document.getElementById('cqCompetency').value = item.competency || 'general';
+  document.getElementById('cqAnswerType').value = item.answerType || 'story';
+  document.getElementById('cqLinkedStory').value = item.linkedStoryId || '';
+  document.getElementById('cqAnswer').value = item.customAnswer || '';
+  document.getElementById('cqCompanies').value = (item.companies || []).join(', ');
+  document.getElementById('cqFormTitle').textContent = 'Editar pregunta';
+  toggleCustomAnswerMode();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function deleteCustomQuestion(id){
+  const profile = getCurrentProfile();
+  if(!profile) return;
+  if(!confirm('¿Borrar esta pregunta guardada?')) return;
+  profile.customQuestions = (profile.customQuestions || []).filter(q=>q.id !== id);
+  saveCurrentProfile(profile);
+  renderCustomQuestions();
+}
+function getStoryById(id){
+  return (SD || []).find(s=>String(s.id) === String(id));
+}
+function renderCustomQuestions(){
+  const container = document.getElementById('customQuestionsList');
+  if(!container) return;
+  const profile = getCurrentProfile();
+  const items = profile?.customQuestions || [];
+  if(!items.length){
+    container.innerHTML = '<div class="hist-empty"><div class="hist-empty-ico">❓</div><p>Aún no has guardado preguntas.<br>Añade preguntas reales de procesos y asócialas a tus stories.</p></div>';
+    return;
+  }
+  container.innerHTML = items.map(item=>{
+    const story = item.answerType === 'story' ? getStoryById(item.linkedStoryId) : null;
+    const compLabel = (COMPETENCIES.find(c=>c.k===item.competency)?.l || item.competency || 'General');
+    const langLabel = item.lang === 'en' ? '🇬🇧 EN' : item.lang === 'mixed' ? '🌍 Mixto' : '🇪🇸 ES';
+    const answerPreview = item.answerType === 'story'
+      ? `Story: ${story ? (story.title || story.q) : 'story no encontrada'}`
+      : item.customAnswer;
+    return `<div class="qcard">
+      <div class="qcard-top">
+        <div>
+          <div class="qcard-q">${escapeHtml(item.question)}</div>
+          <div class="qcard-meta"><span class="badge b-sky">${escapeHtml(langLabel)}</span><span class="badge b-warm">${escapeHtml(compLabel)}</span>${(item.companies||[]).map(c=>`<span class="badge b-terra">${escapeHtml(c)}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="qcard-answer">${escapeHtml(answerPreview)}</div>
+      <div class="brow">
+        <button class="btn-o" onclick="editCustomQuestion('${escapeHtml(item.id)}')">Editar</button>
+        <button class="btn-o" onclick="practiceCustomQuestion('${escapeHtml(item.id)}')">Practicar</button>
+        <button class="btn-o danger-lite" onclick="deleteCustomQuestion('${escapeHtml(item.id)}')">Borrar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function practiceCustomQuestion(id){
+  const profile = getCurrentProfile();
+  const item = profile?.customQuestions?.find(q=>q.id===id);
+  if(!item) return;
+  goTab('practice', null);
+  questions = [{ lang: item.lang === 'en' ? 'en' : 'es', category: item.competency || 'Personalizada', question: item.question, customId: item.id }];
+  currentQ = 0; sessionAnswered = 0; sessionStart = new Date();
+  document.getElementById('practiceSetup').style.display='none';
+  document.getElementById('summaryWrap').style.display='none';
+  document.getElementById('loadOv').style.display='none';
+  document.getElementById('interviewWrap').style.display='block';
+  renderQ();
+}
+function exportCurrentProfile(){
+  const profile = getCurrentProfile();
+  if(!profile){ alert('Selecciona un perfil primero'); return; }
+  downloadJSON(`prepai_${slugify(profile.name)}_${todayISO()}.json`, { exportedAt: new Date().toISOString(), app: 'PrepAI', profile });
+  document.getElementById('umenu')?.classList.remove('open');
+}
+function importProfileFile(event){
+  const file = event.target.files?.[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const parsed = JSON.parse(reader.result);
+      const profile = parsed.profile || parsed;
+      if(!profile.name) throw new Error('missing name');
+      const profiles = getProfiles();
+      let id = profile.id || slugify(profile.name);
+      if(profiles[id]) id = `${id}_import_${Date.now()}`;
+      profile.id = id;
+      profile.initials ||= initialsFromName(profile.name);
+      profile.companies ||= [];
+      profile.starStories ||= [];
+      profile.customQuestions ||= [];
+      profile.history ||= [];
+      profiles[id] = profile;
+      saveProfiles(profiles);
+      renderProfileSelector();
+      selectProfile(id);
+      alert('Perfil importado correctamente');
+    }catch(e){
+      alert('No he podido importar el JSON. Revisa que sea un perfil exportado desde la app.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
 }
 
 /* ══════════════════════════════════
@@ -311,12 +529,18 @@ Responde SOLO en JSON sin backticks:
     ];
   }
 
-  // Mix with STAR questions — pick 5 total (3 STAR + 2 company-specific or all 5 AI)
-  const shuffledStar=[...SD].sort(()=>Math.random()-.5).slice(0,3);
+  // Mix STAR stories, custom saved questions and AI questions.
+  const profile = getCurrentProfile();
+  const matchingCustom = (profile?.customQuestions || [])
+    .filter(q => !q.companies?.length || q.companies.some(c => c.toLowerCase() === fcSelectedCo.toLowerCase()))
+    .sort(()=>Math.random()-.5)
+    .slice(0,2);
+  const shuffledStar=[...SD].sort(()=>Math.random()-.5).slice(0, Math.max(2, 3 - matchingCustom.length));
   fcCards=[
+    ...matchingCustom.map(q=>({type:'custom',q:q.question,custom:q,lang:q.lang==='en'?'en':'es',category:q.competency || 'Personalizada',company:fcSelectedCo})),
     ...shuffledStar.map(s=>({type:'star',q:s.q,star:s,lang:'es',category:s.tagLabel})),
-    ...aiQuestions.slice(0,2).map(q=>({type:'company',q:q.question,lang:q.lang,category:q.category,company:fcSelectedCo}))
-  ].sort(()=>Math.random()-.5);
+    ...aiQuestions.slice(0, Math.max(1, 5 - matchingCustom.length - shuffledStar.length)).map(q=>({type:'company',q:q.question,lang:q.lang,category:q.category,company:fcSelectedCo}))
+  ].sort(()=>Math.random()-.5).slice(0,5);
 
   fcIdx=0;fcFlipped=false;fcRated=false;
   fcRatings={easy:0,medium:0,hard:0};
@@ -346,11 +570,21 @@ function renderFcCard(){
   if(c.type==='star'&&c.star){
     const s=c.star;
     backHtml=`
-      <div class="fc-back-step"><div class="fc-slbl ls">📍 Situación</div><div class="fc-stxt">${s.sit}</div></div>
-      <div class="fc-back-step"><div class="fc-slbl lt">🎯 Tarea</div><div class="fc-stxt">${s.tsk}</div></div>
-      <div class="fc-back-step"><div class="fc-slbl la">⚡ Acción</div><div class="fc-stxt">${s.act}</div></div>
-      <div class="fc-back-step"><div class="fc-slbl lr">📊 Resultado</div><div class="fc-stxt fc-result">${s.res}</div></div>
-      <div class="fc-back-step"><div class="fc-slbl ll">💡 Aprendizaje</div><div class="fc-stxt">${s.lrn}</div></div>`;
+      <div class="fc-back-step"><div class="fc-slbl ls">📍 Situación</div><div class="fc-stxt">${escapeHtml(s.sit)}</div></div>
+      <div class="fc-back-step"><div class="fc-slbl lt">🎯 Tarea</div><div class="fc-stxt">${escapeHtml(s.tsk)}</div></div>
+      <div class="fc-back-step"><div class="fc-slbl la">⚡ Acción</div><div class="fc-stxt">${escapeHtml(s.act)}</div></div>
+      <div class="fc-back-step"><div class="fc-slbl lr">📊 Resultado</div><div class="fc-stxt fc-result">${escapeHtml(s.res)}</div></div>
+      <div class="fc-back-step"><div class="fc-slbl ll">💡 Aprendizaje</div><div class="fc-stxt">${escapeHtml(s.lrn)}</div></div>`;
+  } else if(c.type==='custom' && c.custom){
+    const linked = c.custom.answerType === 'story' ? getStoryById(c.custom.linkedStoryId) : null;
+    if(linked){
+      backHtml=`
+        <div class="fc-back-step"><div class="fc-slbl ls">📍 Story asociada</div><div class="fc-stxt">${escapeHtml(linked.title || linked.q)}</div></div>
+        <div class="fc-back-step"><div class="fc-slbl la">⚡ Acción</div><div class="fc-stxt">${escapeHtml(linked.act)}</div></div>
+        <div class="fc-back-step"><div class="fc-slbl lr">📊 Resultado</div><div class="fc-stxt fc-result">${escapeHtml(linked.res)}</div></div>`;
+    }else{
+      backHtml=`<div class="fc-back-step"><div class="fc-slbl lr">Respuesta guardada</div><div class="fc-stxt fc-result">${escapeHtml(c.custom.customAnswer || 'Sin respuesta guardada.')}</div></div>`;
+    }
   } else {
     backHtml=`
       <div class="fc-back-step"><div class="fc-slbl ls">💡 Enfoque sugerido para ${c.company||'esta empresa'}</div>
@@ -592,16 +826,36 @@ function toggleModel(){
   const box=document.getElementById('modelBox');
   if(modelShown){box.style.display='none';modelShown=false;return;}
   const q=questions[currentQ];
+  const profile = getCurrentProfile();
+  const custom = q.customId ? profile?.customQuestions?.find(x=>x.id===q.customId) : null;
+  if(custom){
+    box.style.display='block';
+    if(custom.answerType === 'custom'){
+      document.getElementById('modelContent').innerHTML=`<div class="step"><div class="slbl lr">Respuesta guardada</div><div class="stxt hi">${escapeHtml(custom.customAnswer)}</div></div>`;
+    }else{
+      const linked = getStoryById(custom.linkedStoryId);
+      if(linked){
+        document.getElementById('modelContent').innerHTML=`
+          <div class="step"><div class="slbl ls">📍 Situación</div><div class="stxt">${escapeHtml(linked.sit)}</div></div>
+          <div class="step"><div class="slbl lt">🎯 Tarea</div><div class="stxt">${escapeHtml(linked.tsk)}</div></div>
+          <div class="step"><div class="slbl la">⚡ Acción</div><div class="stxt">${escapeHtml(linked.act)}</div></div>
+          <div class="step"><div class="slbl lr">📊 Resultado</div><div class="stxt hi">${escapeHtml(linked.res)}</div></div>
+          <div class="step"><div class="slbl ll">💡 Aprendizaje</div><div class="stxt">${escapeHtml(linked.lrn)}</div></div>`;
+      }
+    }
+    modelShown=true;
+    return;
+  }
   const cat=(q.category||'').toLowerCase();
-  const m={iniciativa:'initiative',liderazgo:'leadership',presión:'pressure','bajo presión':'pressure',conflicto:'conflict',equipo:'teamwork',aprendizaje:'learning',leadership:'leadership',initiative:'initiative','under pressure':'pressure',teamwork:'teamwork',learning:'learning'};
+  const m={iniciativa:'initiative',liderazgo:'leadership',presión:'pressure','bajo presión':'pressure',conflicto:'conflict',equipo:'teamwork',aprendizaje:'learning',communication:'communication',comunicación:'communication',leadership:'leadership',initiative:'initiative','under pressure':'pressure',teamwork:'teamwork',learning:'learning'};
   const star=SD.find(s=>s.tag===(m[cat]||'initiative'))||SD[currentQ%SD.length];
   box.style.display='block';
   document.getElementById('modelContent').innerHTML=`
-    <div class="step"><div class="slbl ls">📍 Situación</div><div class="stxt">${star.sit}</div></div>
-    <div class="step"><div class="slbl lt">🎯 Tarea</div><div class="stxt">${star.tsk}</div></div>
-    <div class="step"><div class="slbl la">⚡ Acción</div><div class="stxt">${star.act}</div></div>
-    <div class="step"><div class="slbl lr">📊 Resultado</div><div class="stxt hi">${star.res}</div></div>
-    <div class="step"><div class="slbl ll">💡 Aprendizaje</div><div class="stxt">${star.lrn}</div></div>`;
+    <div class="step"><div class="slbl ls">📍 Situación</div><div class="stxt">${escapeHtml(star.sit)}</div></div>
+    <div class="step"><div class="slbl lt">🎯 Tarea</div><div class="stxt">${escapeHtml(star.tsk)}</div></div>
+    <div class="step"><div class="slbl la">⚡ Acción</div><div class="stxt">${escapeHtml(star.act)}</div></div>
+    <div class="step"><div class="slbl lr">📊 Resultado</div><div class="stxt hi">${escapeHtml(star.res)}</div></div>
+    <div class="step"><div class="slbl ll">💡 Aprendizaje</div><div class="stxt">${escapeHtml(star.lrn)}</div></div>`;
   modelShown=true;
 }
 

@@ -383,6 +383,7 @@ const DEFAULT_PROFILE = {
       "lrn": "Aprendí que la perfección técnica solo es valiosa si llega a tiempo y ayuda a decidir."
     }
   ],
+  "customQuestions": [],
   "history": []
 };
 
