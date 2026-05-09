@@ -41,11 +41,211 @@ function downloadJSON(filename, data){
   URL.revokeObjectURL(url);
 }
 
+
+/* ══════════════════════════════════
+   LOCAL VIDEO STORAGE — IndexedDB, per profile
+══════════════════════════════════ */
+const RECORDING_DB_NAME = 'prepai_recordings_v1';
+const RECORDING_STORE = 'recordings';
+let videoRecording = false;
+let mediaRecorder = null;
+let recordedChunks = [];
+let lastRecordingUrl = null;
+
+function openRecordingDB(){
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(RECORDING_DB_NAME, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if(!db.objectStoreNames.contains(RECORDING_STORE)){
+        const store = db.createObjectStore(RECORDING_STORE, { keyPath: 'id' });
+        store.createIndex('profileId', 'profileId', { unique:false });
+        store.createIndex('createdAt', 'createdAt', { unique:false });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function saveRecordingToDB(recording){
+  const db = await openRecordingDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(RECORDING_STORE, 'readwrite');
+    tx.objectStore(RECORDING_STORE).put(recording);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function getRecordingsForProfile(profileId){
+  const db = await openRecordingDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(RECORDING_STORE, 'readonly');
+    const store = tx.objectStore(RECORDING_STORE);
+    const req = store.getAll();
+    req.onsuccess = () => {
+      const items = (req.result || [])
+        .filter(x => x.profileId === profileId)
+        .sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+      resolve(items);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function deleteRecording(id){
+  const db = await openRecordingDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(RECORDING_STORE, 'readwrite');
+    tx.objectStore(RECORDING_STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function bestVideoMimeType(){
+  const options = [
+    'video/webm;codecs=vp9,opus',
+    'video/webm;codecs=vp8,opus',
+    'video/webm',
+    'video/mp4'
+  ];
+  return options.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+}
+
+function setLatestPlayback(blob, filename='entrevista.webm'){
+  if(lastRecordingUrl) URL.revokeObjectURL(lastRecordingUrl);
+  lastRecordingUrl = URL.createObjectURL(blob);
+  const playback = document.getElementById('playbackEl');
+  const review = document.getElementById('videoReview');
+  const dl = document.getElementById('downloadRecording');
+  if(playback){ playback.src = lastRecordingUrl; }
+  if(dl){ dl.href = lastRecordingUrl; dl.download = filename; }
+  if(review){ review.style.display = 'block'; }
+}
+
+function toggleVideoRecording(){
+  if(videoRecording) stopVideoRecording();
+  else startVideoRecording();
+}
+
+function startVideoRecording(){
+  if(!camStream){ alert('Activa la cámara antes de grabar.'); return; }
+  if(!window.MediaRecorder){ alert('Tu navegador no permite grabar vídeo desde la web. Prueba con Chrome o Safari actualizado.'); return; }
+  recordedChunks = [];
+  const mimeType = bestVideoMimeType();
+  try{
+    mediaRecorder = new MediaRecorder(camStream, mimeType ? { mimeType } : undefined);
+  }catch(e){
+    alert('No se pudo iniciar la grabación en este navegador.');
+    return;
+  }
+  mediaRecorder.ondataavailable = e => { if(e.data && e.data.size > 0) recordedChunks.push(e.data); };
+  mediaRecorder.onstop = handleVideoRecordingStop;
+  mediaRecorder.start(1000);
+  videoRecording = true;
+  const btn = document.getElementById('recordBtn');
+  if(btn){ btn.textContent = '⏹ Parar grabación'; btn.classList.add('recording'); }
+}
+
+function stopVideoRecording(){
+  if(mediaRecorder && videoRecording){
+    try{ mediaRecorder.stop(); }catch(e){}
+  }
+  videoRecording = false;
+  const btn = document.getElementById('recordBtn');
+  if(btn){ btn.textContent = '⏺ Grabar'; btn.classList.remove('recording'); }
+}
+
+async function handleVideoRecordingStop(){
+  const blob = new Blob(recordedChunks, { type: recordedChunks[0]?.type || 'video/webm' });
+  if(!blob.size){ return; }
+  const profileId = CU?.username || getCurrentProfileId();
+  const q = questions[currentQ] || {};
+  const createdAt = new Date().toISOString();
+  const filename = `entrevista_${profileId}_${createdAt.slice(0,19).replace(/[:T]/g,'-')}.webm`;
+  const recording = {
+    id: `${profileId}_${Date.now()}`,
+    profileId,
+    createdAt,
+    question: q.question || '',
+    category: q.category || '',
+    lang: q.lang || '',
+    blob,
+    filename
+  };
+  try{
+    await saveRecordingToDB(recording);
+    setLatestPlayback(blob, filename);
+    renderSavedRecordings();
+  }catch(e){
+    setLatestPlayback(blob, filename);
+    alert('El vídeo se puede ver y descargar, pero no se pudo guardar en el navegador.');
+  }
+}
+
+async function renderSavedRecordings(){
+  const card = document.getElementById('recordingsCard');
+  const list = document.getElementById('recordingsList');
+  if(!card || !list) return;
+  const profileId = CU?.username || getCurrentProfileId();
+  let items = [];
+  try{ items = await getRecordingsForProfile(profileId); }catch(e){ items = []; }
+  card.style.display = 'block';
+  if(!items.length){
+    list.innerHTML = '<div class="mini-copy">Todavía no hay grabaciones guardadas para este perfil.</div>';
+    return;
+  }
+  list.innerHTML = items.slice(0,10).map(r => `
+    <div class="qitem">
+      <div class="qitem-top">
+        <div>
+          <div class="qitem-q">${escapeHtml(r.question || 'Grabación de práctica')}</div>
+          <div class="qitem-meta">${new Date(r.createdAt).toLocaleString('es-ES')} · ${escapeHtml(r.category || '')}</div>
+        </div>
+      </div>
+      <div class="brow">
+        <button class="btn-o" onclick="playSavedRecording('${r.id}')">▶️ Ver</button>
+        <button class="btn-o" onclick="downloadSavedRecording('${r.id}')">⬇️ Descargar</button>
+        <button class="btn-o danger" onclick="removeSavedRecording('${r.id}')">Borrar</button>
+      </div>
+    </div>`).join('');
+}
+
+async function findRecording(id){
+  const items = await getRecordingsForProfile(CU?.username || getCurrentProfileId());
+  return items.find(x => x.id === id);
+}
+
+async function playSavedRecording(id){
+  const rec = await findRecording(id);
+  if(rec) setLatestPlayback(rec.blob, rec.filename || 'entrevista.webm');
+}
+async function downloadSavedRecording(id){
+  const rec = await findRecording(id);
+  if(!rec) return;
+  const url = URL.createObjectURL(rec.blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = rec.filename || 'entrevista.webm';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+async function removeSavedRecording(id){
+  if(!confirm('¿Borrar esta grabación de este perfil?')) return;
+  await deleteRecording(id);
+  renderSavedRecordings();
+}
+
 /* ══════════════════════════════════
    PROFILE STORAGE (local, no real login)
 ══════════════════════════════════ */
 const PROFILE_STORE_KEY = 'prep_profiles_v2';
 const CURRENT_PROFILE_KEY = 'prep_current_profile_v2';
+const DEFAULT_PROFILE_ID = 'jaime_hernandez';
 
 const slugify = str => (str || '')
   .toLowerCase()
@@ -70,18 +270,40 @@ function ensureDefaultProfile(){
   const profiles = getProfiles();
   if (!profiles[DEFAULT_PROFILE.id]) {
     profiles[DEFAULT_PROFILE.id] = JSON.parse(JSON.stringify(DEFAULT_PROFILE));
+    profiles[DEFAULT_PROFILE.id].isDefaultProfile = true;
+    saveProfiles(profiles);
+  } else if (!profiles[DEFAULT_PROFILE.id].isDefaultProfile) {
+    profiles[DEFAULT_PROFILE.id].isDefaultProfile = true;
     saveProfiles(profiles);
   }
 }
 function getCurrentProfileId(){
-  return localStorage.getItem(CURRENT_PROFILE_KEY) || DEFAULT_PROFILE.id;
+  return localStorage.getItem(CURRENT_PROFILE_KEY) || DEFAULT_PROFILE_ID;
 }
 function setCurrentProfileId(id){
   localStorage.setItem(CURRENT_PROFILE_KEY, id);
 }
-function getProfile(id){
-  const profiles = getProfiles();
-  const base = profiles[id] || profiles[DEFAULT_PROFILE.id] || JSON.parse(JSON.stringify(DEFAULT_PROFILE));
+function createEmptyProfile(id, name='Perfil local'){
+  return {
+    id,
+    name,
+    initials: initialsFromName(name),
+    education: '',
+    targetRoles: [],
+    industries: [],
+    languages: { interface: 'es', practiceModes: ['es','en','mixed'] },
+    companies: [],
+    starStories: [],
+    customQuestions: [],
+    applications: [],
+    history: [],
+    preferences: { interviewLanguageMode: 'mixed', practiceMode: 'text' },
+    isDefaultProfile: false
+  };
+}
+
+function normalizeProfile(base){
+  base.id ||= slugify(base.name || 'perfil');
   base.companies ||= [];
   base.starStories ||= [];
   base.customQuestions ||= [];
@@ -89,7 +311,17 @@ function getProfile(id){
   base.history ||= [];
   base.preferences ||= { interviewLanguageMode: 'mixed', practiceMode: 'text' };
   base.initials ||= initialsFromName(base.name);
+  base.isDefaultProfile = base.id === DEFAULT_PROFILE_ID || base.isDefaultProfile === true;
   return base;
+}
+
+function getProfile(id){
+  const profiles = getProfiles();
+  let base = profiles[id];
+  if(!base){
+    base = id === DEFAULT_PROFILE_ID ? JSON.parse(JSON.stringify(DEFAULT_PROFILE)) : createEmptyProfile(id || slugify('perfil'));
+  }
+  return normalizeProfile(base);
 }
 function saveProfile(id, profile){
   const profiles = getProfiles();
@@ -122,7 +354,7 @@ function renderProfileSelector(){
       <span class="profile-avatar">${p.initials || initialsFromName(p.name)}</span>
       <span class="profile-meta">
         <span class="profile-name">${p.name}</span>
-        <span class="profile-sub">${p.education || (p.targetRoles||[]).join(', ') || 'Perfil local'}</span>
+        <span class="profile-sub">ID: ${p.id} · ${p.education || (p.targetRoles||[]).join(', ') || 'Perfil local'}</span>
       </span>
     </button>`).join('');
 }
@@ -159,7 +391,8 @@ function createProfileFromForm(){
     customQuestions: [],
     applications: [],
     history: [],
-    preferences: { interviewLanguageMode: 'mixed', practiceMode: 'text' }
+    preferences: { interviewLanguageMode: 'mixed', practiceMode: 'text' },
+    isDefaultProfile: false
   };
   saveProfiles(profiles);
   selectProfile(id);
@@ -170,7 +403,7 @@ function selectProfile(id){
   CU = { username:id, id, name:p.name };
   setCurrentProfileId(id);
   document.getElementById('userBtn').textContent = p.initials || initialsFromName(p.name);
-  document.getElementById('umName').textContent = p.name;
+  document.getElementById('umName').innerHTML = `${escapeHtml(p.name)}<br><small style="font-family:DM Sans,sans-serif;color:var(--text3);font-size:11px;">ID: ${escapeHtml(p.id)}</small>`;
   document.getElementById('authScreen').classList.remove('active');
   document.getElementById('appScreen').classList.add('active');
   loadProfileIntoApp();
@@ -180,9 +413,15 @@ function selectProfile(id){
 function loadProfileIntoApp(){
   if(!CU) return;
   const profile = getProfile(CU.username);
-  SD = (profile.starStories && profile.starStories.length) ? profile.starStories : DEFAULT_STAR_STORIES;
+  const isDefault = profile.id === DEFAULT_PROFILE_ID || profile.isDefaultProfile === true;
+  SD = isDefault
+    ? ((profile.starStories && profile.starStories.length) ? profile.starStories : DEFAULT_STAR_STORIES)
+    : (profile.starStories || []);
   if (typeof applyStoryTranslations === 'function') SD = applyStoryTranslations(SD);
-  if (profile.starStories && profile.starStories.length) {
+  if (isDefault && (!profile.starStories || !profile.starStories.length)) {
+    profile.starStories = SD;
+    saveCurrentProfile(profile);
+  } else if (profile.starStories && profile.starStories.length) {
     profile.starStories = SD;
     saveCurrentProfile(profile);
   }
@@ -255,7 +494,12 @@ function filterStar(f,el){
 }
 function renderStar(){
   const list=SD.filter(s=>activeFilter==='all'||s.tag===activeFilter);
-  document.getElementById('starList').innerHTML=list.map(s=>`
+  const starListEl = document.getElementById('starList');
+  if(!list.length){
+    starListEl.innerHTML = `<div class="hist-empty"><div class="hist-empty-ico">📚</div><p>Este perfil no tiene STAR stories todavía.<br>Añádelas desde data.js o crea preguntas vinculadas cuando importes historias.</p></div>`;
+    return;
+  }
+  starListEl.innerHTML=list.map(s=>`
     <div class="scard" id="sc${escapeHtml(s.id)}">
       <div class="scard-hd" onclick="document.getElementById('sc${escapeHtml(s.id)}').classList.toggle('open')">
         <span class="stag ${({initiative:'ti',leadership:'tl',pressure:'tp',conflict:'tc',teamwork:'tt',learning:'tn',communication:'tl',failure:'tc',adaptability:'tn'}[s.tag]||'ti')}">${escapeHtml(s.tagLabel)}</span>
@@ -1217,7 +1461,7 @@ async function toggleCam(){
     document.getElementById('vidPh').style.display='block';
     document.getElementById('camBtn').textContent='📷 Activar cámara';
     document.getElementById('timerBtn').style.display='none';
-    const rb=document.getElementById('recordBtn'); if(rb) rb.style.display='inline-flex';
+    const rb=document.getElementById('recordBtn'); if(rb) rb.style.display='none';
     if(videoRecording) stopVideoRecording();
     resetTimer();
   }
