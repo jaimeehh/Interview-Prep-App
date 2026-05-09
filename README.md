@@ -11,6 +11,4 @@ Aplicación local para practicar entrevistas STAR con perfiles guardados en `loc
 - `api/claude.js`: proxy serverless para Claude en Vercel.
 - `vercel.json`: rewrite `/api/claude` hacia `/api/claude.js`.
 
-## Vercel
 
-Configura la variable de entorno `ANTHROPIC_API_KEY` en Vercel.
