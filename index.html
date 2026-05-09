@@ -28,6 +28,8 @@
     <div id="createProfileBox" style="display:none;margin-top:16px;">
       <label class="lbl">Nombre completo</label>
       <input class="inp" id="newProfileName" placeholder="Ej: Jaime Hernández" />
+      <label class="lbl">ID del perfil (opcional)</label>
+      <input class="inp" id="newProfileId" placeholder="Ej: jaime_hernandez / claudia_ie" />
       <label class="lbl">Formación / titular profesional</label>
       <input class="inp" id="newProfileEducation" placeholder="Ej: Executive Master in Big Data Science" />
       <label class="lbl">Roles objetivo</label>
@@ -442,6 +444,19 @@
           <div class="brow">
             <button class="btn-o" id="camBtn" onclick="toggleCam()">📷 Activar cámara</button>
             <button class="btn-sage" id="timerBtn" onclick="toggleTimer()" style="display:none;">▶ Empezar</button>
+            <button class="btn-t" id="recordBtn" onclick="toggleVideoRecording()">⏺ Grabar</button>
+          </div>
+          <div class="video-review" id="videoReview" style="display:none;">
+            <div class="mini-copy">Última grabación de esta respuesta</div>
+            <video id="playbackEl" controls playsinline></video>
+            <div class="brow">
+              <a class="btn-o" id="downloadRecording" download="entrevista.webm">⬇️ Descargar vídeo</a>
+              <button class="btn-o" onclick="renderSavedRecordings()">Ver guardadas</button>
+            </div>
+          </div>
+          <div class="card compact-card" id="recordingsCard" style="display:none;">
+            <div class="card-title">Grabaciones guardadas</div>
+            <div id="recordingsList"></div>
           </div>
           <div class="fb-box" id="vFbBox">
             <div class="fb-title">📋 Tips post-práctica</div>

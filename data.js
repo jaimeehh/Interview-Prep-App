@@ -827,3 +827,143 @@ const INTERVIEW_LANGUAGE_MODES = [
   { id: 'en', label: 'Inglés' },
   { id: 'mixed', label: 'Modo mixto / entrevista real' }
 ];
+
+/* Bilingual STAR answer layer — v6
+   Spanish UI, but interview questions and STAR answers can appear in English.
+   The English answers are linked by story id, so existing local profiles can be enriched too.
+*/
+const STORY_EN_TRANSLATIONS = {
+  "asisa-competitive-intelligence": {
+    title: "Competitive intelligence platform at ASISA",
+    q: "Tell me about a time you took initiative to create value from scratch.",
+    questions: [
+      "Tell me about a time you took initiative to create value from scratch.",
+      "Describe a project where you used data to support a strategic decision.",
+      "Tell me about a time you identified a business gap using data.",
+      "Describe a time you built something from zero that had measurable impact."
+    ],
+    sit: "At ASISA, the Medical Direction needed to make strategic decisions about which specialists and medical centres to add to the provider network. The issue was that we did not have a clear view of how we were positioned against Spain's main health insurers, such as Sanitas, Adeslas and DKV, in terms of geographic coverage, available specialties and network density.",
+    tsk: "I was asked to develop a competitive intelligence platform to systematically compare the provider networks of the main insurers across Spain and identify strategic gaps and differentiation opportunities.",
+    act: "First, I defined the key comparison criteria with the Medical Direction: coverage by province, critical specialties, provider-to-insured ratios and response times. Then I collected and structured data from public sources, competitor websites and internal CRM data. I designed a SQL database to centralise the information and built interactive Power BI dashboards to filter by region, specialty and competitor.",
+    res: "The platform helped the Medical Direction identify three priority provinces where ASISA had lower coverage than competitors in high-demand specialties. It guided the provider acquisition strategy for the following quarter and reduced the time required to prepare ad-hoc competitive analyses for the executive committee from two weeks to two days.",
+    lrn: "I learned that technical analysis only creates impact when it is directly connected to clear business decisions."
+  },
+  "senior-communication": {
+    title: "Communicating difficult findings to senior stakeholders",
+    q: "Tell me about a time you communicated difficult findings to senior stakeholders.",
+    questions: [
+      "Tell me about a time you communicated difficult findings to senior stakeholders.",
+      "Describe a time when you had to deliver bad news using data.",
+      "Tell me about a time you influenced senior stakeholders with a structured recommendation."
+    ],
+    sit: "After developing the competitive intelligence platform, the data showed that ASISA's market position was weaker than expected: lower geographic coverage, significant gaps in some specialties and a lower provider-to-insured ratio than competitors.",
+    tsk: "I had to present these findings to senior executives in a clear, honest and constructive way. The challenge was to communicate negative information without being alarmist, while still making the urgency clear.",
+    act: "I structured the presentation in three parts: market context, direct data visualisations and actionable options with estimated costs and timelines. I also spoke individually with key executives before the meeting to anticipate questions and make sure they understood the reliability of the data.",
+    res: "The presentation was well received because it was not just 'here is the problem', but 'here are the options to solve it'. The leadership team approved an accelerated provider acquisition strategy in the three priority provinces, and the platform became a monthly reference tool for the executive committee.",
+    lrn: "I learned that communicating difficult findings is much more effective when you combine honesty, data and practical options for action."
+  },
+  "hospital-pressure": {
+    title: "Surgical scheduling software under time pressure",
+    q: "Tell me about a time you delivered results under significant time pressure.",
+    questions: [
+      "Tell me about a time you delivered results under significant time pressure.",
+      "Describe a situation where you had to build something quickly with real operational impact.",
+      "Tell me about a time you worked with busy stakeholders under a tight deadline."
+    ],
+    sit: "The Hospital Universitario del Sureste was among the lowest-ranked hospitals in the Community of Madrid in terms of surgical waiting lists. This was urgent because it affected both the hospital's reputation and patient satisfaction.",
+    tsk: "I was asked to develop surgical scheduling software to optimise operating room allocation and surgery times. The project had a tight deadline and required constant collaboration with doctors who had very limited availability.",
+    act: "I worked in fast iterations. First, I understood the doctors' current workflow without trying to change everything at once. Then I built a functional prototype, tested it with a small group of surgeons, incorporated their feedback quickly and scaled it. I held weekly meetings with the medical team to ensure the tool solved real needs rather than my assumptions.",
+    res: "We reduced surgical waiting lists by 30% in the first months. The hospital significantly improved its position in the Community of Madrid, and doctors adopted the software with little resistance because they had been involved from the beginning.",
+    lrn: "I learned that under pressure, the priority is not technical perfection but building something useful, validating it quickly with users and iterating fast."
+  },
+  "mindsafe-failure": {
+    title: "MindSafe staying on standby after the competition",
+    q: "Tell me about a failure and what you learned from it.",
+    questions: [
+      "Tell me about a failure and what you learned from it.",
+      "Describe a project that did not go as expected.",
+      "Tell me about a time you learned a business lesson from a product or startup project."
+    ],
+    sit: "I participated in the development of MindSafe, a mental health app that reached the top 15 in a startup competition with more than 500 participants in the Community of Madrid Health Tech Contest. After the competition, we had strong momentum.",
+    tsk: "As part of the technical team, I had to help scale the product after the competition and move the idea forward in a sustainable way.",
+    act: "The project faced several challenges: limited startup experience in the team, lack of dedicated time because many of us had other commitments, and difficulty aligning the team around a clear direction. We invested time without a sufficiently clear business strategy.",
+    res: "The project ended up on standby. Although it was a failure in terms of traction, it was extremely valuable: I learned how a business model canvas works, what it really takes to build a startup and how critical team alignment and dedication are.",
+    lrn: "I now evaluate projects not only by the quality of the idea, but also by the team, focus, business model and ability to execute."
+  },
+  "asisa-internship-initiative": {
+    title: "Creating value during my internship at ASISA",
+    q: "Tell me about a time you exceeded expectations in your role.",
+    questions: [
+      "Tell me about a time you exceeded expectations in your role.",
+      "Describe a time when you took ownership beyond what was expected from you.",
+      "Tell me about a time you created value without having a formal leadership role."
+    ],
+    sit: "I started as an intern in ASISA's Medical Direction, an environment with very senior profiles and executives. Initially, there were not very high expectations for my role.",
+    tsk: "I was assigned an idea the team had in mind: to analyse health insurers in Spain and better understand ASISA's competitive positioning.",
+    act: "I decided to take strong ownership of it. I structured information from multiple sources, analysed the available data and developed an interactive tool that clearly compared ASISA's positioning against other competitors.",
+    res: "I was able to present internally a project that created real value for the Medical Direction. It helped me build credibility in the team and showed that I could contribute beyond the initial expectations of an internship role.",
+    lrn: "I learned that leadership is not always about having a formal title; it is about taking responsibility and proving value through results."
+  },
+  "delegation-leadership": {
+    title: "Delegating and leading interns in an analytics project",
+    q: "Tell me about a time you delegated work and led others.",
+    questions: [
+      "Tell me about a time you delegated work and led others.",
+      "Describe a situation where you helped others perform better.",
+      "Tell me about a time you had to balance quality with developing a team."
+    ],
+    sit: "During a project at ASISA, I was given responsibility for leading several interns who joined the analytics team. Initially, I could have done most of the work myself to ensure quality, but I saw it as an opportunity to develop the team.",
+    tsk: "I had to structure the project so that the interns could contribute meaningfully while maintaining the quality of the deliverable and meeting the deadline.",
+    act: "I divided the project into clear components: data collection, initial analysis, validation and visualisation. I assigned each part according to their strengths, explained the logic behind every step and set weekly checkpoints. I gave them autonomy to solve problems while staying available when they needed guidance.",
+    res: "The project was delivered on time and with quality. The interns gained real experience and confidence, and some of them were later hired because they demonstrated value during the project.",
+    lrn: "I learned that investing time in developing others often creates a better long-term result than doing everything myself."
+  },
+  "international-adaptation-florida": {
+    title: "International adaptation during healthcare training in Florida",
+    q: "Tell me about an international or multicultural experience where you had to adapt.",
+    questions: [
+      "Tell me about an international or multicultural experience where you had to adapt.",
+      "Describe a time you had to work in a different culture or language.",
+      "Tell me about a time you adapted your communication style in an international environment."
+    ],
+    sit: "I completed a two-month training programme in Orlando, Florida, in a healthcare company. It was my first international experience working in a completely different environment: another language, another business culture and different processes from those I knew in Spain.",
+    tsk: "I had to adapt quickly to the team and contribute effectively despite cultural and communication differences, while learning how a US healthcare company operated.",
+    act: "First, I observed how the team worked before taking on tasks. I asked many questions to understand not only what they did, but why they did it. Although my English was fluent, I had to adapt to a more direct and faster communication style. I also looked for mentors in the team and shared perspectives from the Spanish healthcare model when relevant.",
+    res: "I integrated effectively into the team and contributed to real projects. The experience taught me to be more flexible, communicate more directly and value different cultural perspectives.",
+    lrn: "I learned how to adapt my working style to a new cultural environment while still contributing my own perspective."
+  },
+  "weakness-prioritization": {
+    title: "Turning technical perfectionism into business focus",
+    q: "What is a weakness you are currently working on?",
+    questions: [
+      "What is a weakness you are currently working on?",
+      "Tell me about an area of improvement and how you are addressing it.",
+      "Describe a time you had to balance technical quality with business speed."
+    ],
+    sit: "In technical projects, I sometimes spent too much time trying to make an analysis technically perfect.",
+    tsk: "I needed to improve my ability to prioritise and deliver value to the business with the right balance of speed and quality.",
+    act: "I started defining from the beginning which decision the analysis needed to support, what level of precision was sufficient and which outputs were truly useful for the stakeholder.",
+    res: "I became more efficient and improved my ability to deliver actionable analysis in environments where speed also matters.",
+    lrn: "I learned that technical perfection only creates value when it arrives on time and helps people make better decisions."
+  }
+};
+
+function applyStoryTranslations(stories) {
+  return (stories || []).map(story => {
+    const en = STORY_EN_TRANSLATIONS[story.id];
+    if (!en) return story;
+    const mergedQuestions = {
+      ...(story.questions || {}),
+      en: Array.from(new Set([...(story.questions?.en || []), ...(en.questions || [])]))
+    };
+    return { ...story, questions: mergedQuestions, en: { ...en } };
+  });
+}
+
+if (typeof DEFAULT_STAR_STORIES !== 'undefined') {
+  const enriched = applyStoryTranslations(DEFAULT_STAR_STORIES);
+  DEFAULT_STAR_STORIES.splice(0, DEFAULT_STAR_STORIES.length, ...enriched);
+}
+if (typeof DEFAULT_PROFILE !== 'undefined' && Array.isArray(DEFAULT_PROFILE.starStories)) {
+  DEFAULT_PROFILE.starStories = applyStoryTranslations(DEFAULT_PROFILE.starStories);
+}

@@ -137,13 +137,15 @@ function showCreateProfile(){
 function createProfileFromForm(){
   clearErr();
   const name = document.getElementById('newProfileName').value.trim();
+  const customIdRaw = document.getElementById('newProfileId')?.value.trim();
   const education = document.getElementById('newProfileEducation').value.trim();
   const roles = document.getElementById('newProfileRoles').value.split(',').map(x=>x.trim()).filter(Boolean);
   if(!name){ showErr('Escribe un nombre para crear el perfil'); return; }
   const profiles = getProfiles();
-  let id = slugify(name);
+  let id = customIdRaw ? slugify(customIdRaw) : slugify(name);
   let n = 2;
-  while(profiles[id]){ id = `${slugify(name)}_${n++}`; }
+  const baseId = id;
+  while(profiles[id]){ id = `${baseId}_${n++}`; }
   profiles[id] = {
     id,
     name,
@@ -179,6 +181,11 @@ function loadProfileIntoApp(){
   if(!CU) return;
   const profile = getProfile(CU.username);
   SD = (profile.starStories && profile.starStories.length) ? profile.starStories : DEFAULT_STAR_STORIES;
+  if (typeof applyStoryTranslations === 'function') SD = applyStoryTranslations(SD);
+  if (profile.starStories && profile.starStories.length) {
+    profile.starStories = SD;
+    saveCurrentProfile(profile);
+  }
   loadUserCompanies();
   buildFilters();
   renderStar();
@@ -792,7 +799,7 @@ function saveFlashcardRecentKeys(cards){
 
 function getQuestionsForStory(story, lang){
   const direct = story.questions?.[lang] || [];
-  if(lang === 'en') return [...direct, ...(FALLBACK_EN_QUESTIONS[story.tag] || [])].filter(Boolean);
+  if(lang === 'en') return [...direct, ...(story.en?.questions || []), story.en?.q, ...(FALLBACK_EN_QUESTIONS[story.tag] || [])].filter(Boolean);
   return [...direct, story.q].filter(Boolean);
 }
 
@@ -887,6 +894,7 @@ function initFlashcards(){
 }
 
 function storyHtml(s, company, lang='es'){
+  const content = lang === 'en' ? { ...s, ...(s.en || {}) } : s;
   const labels = lang === 'en'
     ? {why:`🎯 Why it fits ${escapeHtml(company || '')}`, s:'📍 Situation', t:'🎯 Task', a:'⚡ Action', r:'📊 Result', l:'💡 Learning'}
     : {why:`🎯 Por qué encaja con ${escapeHtml(company || '')}`, s:'📍 Situación', t:'🎯 Tarea', a:'⚡ Acción', r:'📊 Resultado', l:'💡 Aprendizaje'};
@@ -895,11 +903,11 @@ function storyHtml(s, company, lang='es'){
     : `Demuestra experiencia real en healthcare, datos, análisis estructurado e impacto medible. Úsala para conectar tu perfil con problemas de negocio similares en ${escapeHtml(company)}.`}</div></div>` : '';
   return `
     ${why}
-    <div class="fc-back-step"><div class="fc-slbl ls">${labels.s}</div><div class="fc-stxt">${escapeHtml(s.sit)}</div></div>
-    <div class="fc-back-step"><div class="fc-slbl lt">${labels.t}</div><div class="fc-stxt">${escapeHtml(s.tsk)}</div></div>
-    <div class="fc-back-step"><div class="fc-slbl la">${labels.a}</div><div class="fc-stxt">${escapeHtml(s.act)}</div></div>
-    <div class="fc-back-step"><div class="fc-slbl lr">${labels.r}</div><div class="fc-stxt fc-result">${escapeHtml(s.res)}</div></div>
-    <div class="fc-back-step"><div class="fc-slbl ll">${labels.l}</div><div class="fc-stxt">${escapeHtml(s.lrn)}</div></div>`;
+    <div class="fc-back-step"><div class="fc-slbl ls">${labels.s}</div><div class="fc-stxt">${escapeHtml(content.sit)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl lt">${labels.t}</div><div class="fc-stxt">${escapeHtml(content.tsk)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl la">${labels.a}</div><div class="fc-stxt">${escapeHtml(content.act)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl lr">${labels.r}</div><div class="fc-stxt fc-result">${escapeHtml(content.res)}</div></div>
+    <div class="fc-back-step"><div class="fc-slbl ll">${labels.l}</div><div class="fc-stxt">${escapeHtml(content.lrn)}</div></div>`;
 }
 
 function renderFcCard(){
@@ -916,11 +924,11 @@ function renderFcCard(){
 
   let backHtml='';
   if((c.type==='star' || c.type==='company-story') && c.star){
-    backHtml=`<div class="fc-story-title">${c.lang==='en'?'Recommended story':'Historia recomendada'}: ${escapeHtml(c.star.title || c.star.q)}</div>${storyHtml(c.star, c.company, c.lang)}`;
+    backHtml=`<div class="fc-story-title">${c.lang==='en'?'Recommended story':'Historia recomendada'}: ${escapeHtml((c.lang==='en' && c.star.en?.title) ? c.star.en.title : (c.star.title || c.star.q))}</div>${storyHtml(c.star, c.company, c.lang)}`;
   } else if(c.type==='custom' && c.custom){
     const linked = c.custom.answerType === 'story' ? getStoryById(c.custom.linkedStoryId) : null;
     if(linked){
-      backHtml=`<div class="fc-story-title">${c.lang==='en'?'Linked story':'Story asociada'}: ${escapeHtml(linked.title || linked.q)}</div>${storyHtml(linked, c.company, c.lang)}`;
+      backHtml=`<div class="fc-story-title">${c.lang==='en'?'Linked story':'Story asociada'}: ${escapeHtml((c.lang==='en' && linked.en?.title) ? linked.en.title : (linked.title || linked.q))}</div>${storyHtml(linked, c.company, c.lang)}`;
     }else{
       const suggested = pickStoryForQuestion(c.custom.question, c.company);
       backHtml=`
@@ -1064,6 +1072,7 @@ function renderQ(){
   document.getElementById('vFbBox').style.display='none';
   document.getElementById('trBox').textContent='';
   document.getElementById('trBox').style.display='none';
+  const vr=document.getElementById('videoReview'); if(vr) vr.style.display='none';
   modelShown=false;
   document.getElementById('nxtBtn').textContent=currentQ===questions.length-1?'Finalizar ✓':'Siguiente →';
   if(practiceMode==='video'){
@@ -1087,6 +1096,19 @@ function nextQ(){
 function prevQ(){
   if(currentQ===0){restartPractice();return;}
   currentQ--;renderQ();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function modelStoryHtml(story, lang='es'){
+  const content = lang === 'en' ? { ...story, ...(story.en || {}) } : story;
+  const labels = lang === 'en'
+    ? {s:'📍 Situation', t:'🎯 Task', a:'⚡ Action', r:'📊 Result', l:'💡 Learning'}
+    : {s:'📍 Situación', t:'🎯 Tarea', a:'⚡ Acción', r:'📊 Resultado', l:'💡 Aprendizaje'};
+  return `
+    <div class="step"><div class="slbl ls">${labels.s}</div><div class="stxt">${escapeHtml(content.sit)}</div></div>
+    <div class="step"><div class="slbl lt">${labels.t}</div><div class="stxt">${escapeHtml(content.tsk)}</div></div>
+    <div class="step"><div class="slbl la">${labels.a}</div><div class="stxt">${escapeHtml(content.act)}</div></div>
+    <div class="step"><div class="slbl lr">${labels.r}</div><div class="stxt hi">${escapeHtml(content.res)}</div></div>
+    <div class="step"><div class="slbl ll">${labels.l}</div><div class="stxt">${escapeHtml(content.lrn)}</div></div>`;
 }
 
 async function getAIFb(){
@@ -1124,12 +1146,7 @@ function toggleModel(){
     }else{
       const linked = getStoryById(custom.linkedStoryId);
       if(linked){
-        document.getElementById('modelContent').innerHTML=`
-          <div class="step"><div class="slbl ls">📍 Situación</div><div class="stxt">${escapeHtml(linked.sit)}</div></div>
-          <div class="step"><div class="slbl lt">🎯 Tarea</div><div class="stxt">${escapeHtml(linked.tsk)}</div></div>
-          <div class="step"><div class="slbl la">⚡ Acción</div><div class="stxt">${escapeHtml(linked.act)}</div></div>
-          <div class="step"><div class="slbl lr">📊 Resultado</div><div class="stxt hi">${escapeHtml(linked.res)}</div></div>
-          <div class="step"><div class="slbl ll">💡 Aprendizaje</div><div class="stxt">${escapeHtml(linked.lrn)}</div></div>`;
+        document.getElementById('modelContent').innerHTML = modelStoryHtml(linked, q.lang || 'es');
       }
     }
     modelShown=true;
@@ -1139,12 +1156,7 @@ function toggleModel(){
   const m={iniciativa:'initiative',liderazgo:'leadership',presión:'pressure','bajo presión':'pressure',conflicto:'conflict',equipo:'teamwork',aprendizaje:'learning',communication:'communication',comunicación:'communication',leadership:'leadership',initiative:'initiative','under pressure':'pressure',teamwork:'teamwork',learning:'learning'};
   const star=SD.find(s=>s.tag===(m[cat]||'initiative'))||SD[currentQ%SD.length];
   box.style.display='block';
-  document.getElementById('modelContent').innerHTML=`
-    <div class="step"><div class="slbl ls">📍 Situación</div><div class="stxt">${escapeHtml(star.sit)}</div></div>
-    <div class="step"><div class="slbl lt">🎯 Tarea</div><div class="stxt">${escapeHtml(star.tsk)}</div></div>
-    <div class="step"><div class="slbl la">⚡ Acción</div><div class="stxt">${escapeHtml(star.act)}</div></div>
-    <div class="step"><div class="slbl lr">📊 Resultado</div><div class="stxt hi">${escapeHtml(star.res)}</div></div>
-    <div class="step"><div class="slbl ll">💡 Aprendizaje</div><div class="stxt">${escapeHtml(star.lrn)}</div></div>`;
+  document.getElementById('modelContent').innerHTML = modelStoryHtml(star, q.lang || 'es');
   modelShown=true;
 }
 
@@ -1192,11 +1204,12 @@ function stopSpeechV(){if(recognition)try{recognition.stop();}catch(e){}speechAc
 async function toggleCam(){
   if(!camStream){
     try{
-      camStream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+      camStream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
       const v=document.getElementById('vidEl');v.srcObject=camStream;v.style.display='block';
       document.getElementById('vidPh').style.display='none';
       document.getElementById('camBtn').textContent='📷 Desactivar';
       document.getElementById('timerBtn').style.display='inline-flex';
+      const rb=document.getElementById('recordBtn'); if(rb) rb.style.display='inline-flex';
     }catch(e){alert('No se pudo acceder a la cámara.');}
   }else{
     camStream.getTracks().forEach(t=>t.stop());camStream=null;
@@ -1204,6 +1217,8 @@ async function toggleCam(){
     document.getElementById('vidPh').style.display='block';
     document.getElementById('camBtn').textContent='📷 Activar cámara';
     document.getElementById('timerBtn').style.display='none';
+    const rb=document.getElementById('recordBtn'); if(rb) rb.style.display='inline-flex';
+    if(videoRecording) stopVideoRecording();
     resetTimer();
   }
 }
@@ -1279,6 +1294,7 @@ function restartPractice(){
   document.getElementById('practiceSetup').style.display='block';
   questions=[];currentQ=0;sessionAnswered=0;
   stopSpeech();stopSpeechV();
+  if(videoRecording) stopVideoRecording();
   if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
   resetTimer();
 }

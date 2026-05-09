@@ -438,3 +438,12 @@ body{
   .umenu{top:70px;right:12px;border-radius:22px;max-width:calc(100vw - 24px)}
   .calendar-grid{grid-template-columns:1fr!important}.app-list-head{display:none}.app-row{grid-template-columns:1fr!important;gap:8px}.app-row > div{min-width:0}.qcard-actions,.app-actions{display:flex;flex-wrap:wrap;gap:8px}.qcard-actions button,.app-actions button{flex:1}
 }
+
+/* v6 video review */
+.video-review{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-top:10px;box-shadow:var(--shadow)}
+.video-review video,#playbackEl{width:100%;border-radius:12px;background:#0f172a;margin-top:8px;max-height:360px;object-fit:contain}
+.compact-card{padding:14px;margin-top:10px}
+.rec-item{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px;background:var(--warm0)}
+.rec-item-title{font-weight:700;font-size:13px;color:var(--text)}
+.rec-item-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.rec-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
