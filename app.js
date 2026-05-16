@@ -15,6 +15,43 @@ async function callClaude(body) {
   return await res.json();
 }
 
+/* ══════════════════════════════════
+   VERCEL KV — applications sync
+   Silently syncs applications[] to/from KV.
+   Falls back to localStorage if KV is unavailable.
+══════════════════════════════════ */
+function kvKey(profileId) {
+  return `applications:${profileId}`;
+}
+
+async function kvSaveApplications(profileId, apps) {
+  if (!IS_VERCEL) return; // only in production
+  try {
+    await fetch('/api/kv', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: kvKey(profileId), value: apps })
+    });
+  } catch (e) {
+    console.warn('[KV] save failed, localStorage only:', e);
+  }
+}
+
+async function kvLoadApplications(profileId) {
+  if (!IS_VERCEL) return null;
+  try {
+    const res = await fetch(`/api/kv?key=${encodeURIComponent(kvKey(profileId))}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    let val = data.value;
+    if (typeof val === 'string') { try { val = JSON.parse(val); } catch(e){} }
+    return Array.isArray(val) ? val : null;
+  } catch (e) {
+    console.warn('[KV] load failed, using localStorage:', e);
+    return null;
+  }
+}
+
 function escapeHtml(value){
   return String(value ?? '')
     .replaceAll('&','&amp;')
@@ -473,7 +510,7 @@ function goTab(t,btn){
   if(t==='history')renderHistory();
   if(t==='cards')initFlashcards();
   if(t==='questions'){renderCustomQuestionFormOptions();renderCustomQuestions();}
-  if(t==='calendar'){renderApplications();}
+  if(t==='calendar'){ syncApplicationsFromKV().then(()=>renderApplications()); }
 }
 
 /* ══════════════════════════════════
@@ -1609,10 +1646,28 @@ function getApplications(){
   p.applications ||= [];
   return p.applications;
 }
+
+/* Loads applications from KV (remote) and merges into localStorage.
+   Call once on tab open or profile switch. */
+async function syncApplicationsFromKV(){
+  if(!CU) return;
+  const remote = await kvLoadApplications(CU.id);
+  if(!remote) return; // KV empty or offline → keep local
+  const p = getCurrentProfile();
+  // merge: remote wins, keep local items not in remote
+  const remoteIds = new Set(remote.map(a=>a.id));
+  const localOnly = (p.applications||[]).filter(a=>!remoteIds.has(a.id));
+  p.applications = [...remote, ...localOnly];
+  saveCurrentProfile(p);
+  renderApplications();
+}
+
 function saveApplications(items){
   const p=getCurrentProfile(); if(!p) return;
   p.applications = items;
   saveCurrentProfile(p);
+  // async push to KV — no await, fire and forget
+  kvSaveApplications(p.id, items);
 }
 function loadDefaultApplications(){
   const p=getCurrentProfile(); if(!p) return;
@@ -1785,6 +1840,7 @@ function saveApplication(){
   const idx=p.applications.findIndex(a=>a.id===id);
   if(idx>=0) p.applications[idx]=item; else p.applications.unshift(item);
   saveCurrentProfile(p);
+  kvSaveApplications(p.id, p.applications);
   clearApplicationForm();
   renderApplications();
 }
@@ -1809,6 +1865,7 @@ function deleteApplication(id){
   const p=getCurrentProfile(); if(!p) return;
   p.applications=(p.applications||[]).filter(a=>a.id!==id);
   saveCurrentProfile(p);
+  kvSaveApplications(p.id, p.applications);
   renderApplications();
 }
 function csvEscape(v){
