@@ -967,3 +967,4 @@ if (typeof DEFAULT_STAR_STORIES !== 'undefined') {
 if (typeof DEFAULT_PROFILE !== 'undefined' && Array.isArray(DEFAULT_PROFILE.starStories)) {
   DEFAULT_PROFILE.starStories = applyStoryTranslations(DEFAULT_PROFILE.starStories);
 }
+
