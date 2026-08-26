@@ -307,12 +307,13 @@ function ensureDefaultProfile(){
   const profiles = getProfiles();
   if (!profiles[DEFAULT_PROFILE.id]) {
     profiles[DEFAULT_PROFILE.id] = JSON.parse(JSON.stringify(DEFAULT_PROFILE));
-    profiles[DEFAULT_PROFILE.id].isDefaultProfile = true;
-    saveProfiles(profiles);
-  } else if (!profiles[DEFAULT_PROFILE.id].isDefaultProfile) {
-    profiles[DEFAULT_PROFILE.id].isDefaultProfile = true;
-    saveProfiles(profiles);
+  } else {
+    // Keep the principal pitch in sync with the version shipped in data.js,
+    // while preserving the rest of the user's locally stored profile data.
+    profiles[DEFAULT_PROFILE.id].pitch = JSON.parse(JSON.stringify(DEFAULT_PROFILE.pitch));
   }
+  profiles[DEFAULT_PROFILE.id].isDefaultProfile = true;
+  saveProfiles(profiles);
 }
 function getCurrentProfileId(){
   return localStorage.getItem(CURRENT_PROFILE_KEY) || DEFAULT_PROFILE_ID;
