@@ -16,40 +16,74 @@ async function callClaude(body) {
 }
 
 /* ══════════════════════════════════
-   VERCEL KV — applications sync
-   Silently syncs applications[] to/from KV.
-   Falls back to localStorage if KV is unavailable.
+   VERCEL KV — shared data sync
+   Applications and editable interview content are shared between browsers.
+   localStorage remains the offline fallback.
 ══════════════════════════════════ */
 function kvKey(profileId) {
   return `applications:${profileId}`;
 }
 
-async function kvSaveApplications(profileId, apps) {
-  if (!IS_VERCEL) return; // only in production
+function sharedProfileKey(profileId) {
+  return `shared-profile:${profileId}`;
+}
+
+async function kvSaveValue(key, value) {
+  if (!IS_VERCEL) return 'local';
   try {
-    await fetch('/api/kv', {
+    const res = await fetch('/api/kv', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key: kvKey(profileId), value: apps })
+      body: JSON.stringify({ key, value })
     });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return 'saved';
   } catch (e) {
     console.warn('[KV] save failed, localStorage only:', e);
+    return 'error';
   }
 }
 
-async function kvLoadApplications(profileId) {
+async function kvLoadValue(key) {
   if (!IS_VERCEL) return null;
   try {
-    const res = await fetch(`/api/kv?key=${encodeURIComponent(kvKey(profileId))}`);
+    const res = await fetch(`/api/kv?key=${encodeURIComponent(key)}`);
     if (!res.ok) return null;
     const data = await res.json();
     let val = data.value;
     if (typeof val === 'string') { try { val = JSON.parse(val); } catch(e){} }
-    return Array.isArray(val) ? val : null;
+    return val ?? null;
   } catch (e) {
     console.warn('[KV] load failed, using localStorage:', e);
     return null;
   }
+}
+
+async function kvSaveApplications(profileId, apps) {
+  return kvSaveValue(kvKey(profileId), apps);
+}
+
+async function kvLoadApplications(profileId) {
+  const value = await kvLoadValue(kvKey(profileId));
+  return Array.isArray(value) ? value : null;
+}
+
+function sharedProfilePayload(profile) {
+  return {
+    customQuestions: Array.isArray(profile?.customQuestions) ? profile.customQuestions : [],
+    companies: Array.isArray(profile?.companies) ? profile.companies : [],
+    updatedAt: new Date().toISOString()
+  };
+}
+
+async function kvSaveSharedProfile(profile) {
+  if (!profile?.id) return 'error';
+  return kvSaveValue(sharedProfileKey(profile.id), sharedProfilePayload(profile));
+}
+
+async function kvLoadSharedProfile(profileId) {
+  const value = await kvLoadValue(sharedProfileKey(profileId));
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : null;
 }
 
 function escapeHtml(value){
@@ -471,6 +505,7 @@ function loadProfileIntoApp(){
   renderCustomQuestions();
   renderApplications();
   renderHistory();
+  syncSharedProfileFromKV();
 }
 
 function changeProfile(){
@@ -521,6 +556,7 @@ let SD = DEFAULT_STAR_STORIES;
 
 /* STAR render */
 let activeFilter='all';
+let starLangMode='es'; // es | en | both
 function buildFilters(){
   const tags = (typeof COMPETENCIES !== 'undefined' ? COMPETENCIES : [{k:'all',l:'Todas'}]);
   document.getElementById('filterRow').innerHTML=tags.map(t=>`<button class="fpill${t.k===activeFilter?' active':''}" onclick="filterStar('${t.k}',this)">${t.l}</button>`).join('');
@@ -530,6 +566,35 @@ function filterStar(f,el){
   document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');renderStar();
 }
+function setStarLangMode(mode){
+  starLangMode=mode;
+  document.querySelectorAll('[id^="starLang-"]').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('starLang-'+mode)?.classList.add('sel');
+  renderStar();
+}
+function starContent(story, lang){
+  return lang === 'en' && story.en ? { ...story, ...story.en } : story;
+}
+function renderStarSteps(story, lang){
+  const content=starContent(story,lang);
+  const labels=lang === 'en'
+    ? {s:'📍 Situation',t:'🎯 Task',a:'⚡ Action',r:'📊 Result',l:'💡 Learning'}
+    : {s:'📍 Situación',t:'🎯 Tarea',a:'⚡ Acción',r:'📊 Resultado',l:'💡 Aprendizaje'};
+  return `
+    <div class="step"><div class="slbl ls">${labels.s}</div><div class="stxt">${escapeHtml(content.sit)}</div></div>
+    <div class="step"><div class="slbl lt">${labels.t}</div><div class="stxt">${escapeHtml(content.tsk)}</div></div>
+    <div class="step"><div class="slbl la">${labels.a}</div><div class="stxt">${escapeHtml(content.act)}</div></div>
+    <div class="step"><div class="slbl lr">${labels.r}</div><div class="stxt hi">${escapeHtml(content.res)}</div></div>
+    <div class="step"><div class="slbl ll">${labels.l}</div><div class="stxt">${escapeHtml(content.lrn)}</div></div>`;
+}
+function renderStarVersion(story,lang){
+  const content=starContent(story,lang);
+  return `<section class="star-version" lang="${lang}">
+    <div class="star-version-title">${lang==='en'?'🇬🇧 English':'🇪🇸 Español'}</div>
+    <div class="star-version-question">${escapeHtml(content.q || story.q)}</div>
+    ${renderStarSteps(story,lang)}
+  </section>`;
+}
 function renderStar(){
   const list=SD.filter(s=>activeFilter==='all'||s.tag===activeFilter);
   const starListEl = document.getElementById('starList');
@@ -537,22 +602,49 @@ function renderStar(){
     starListEl.innerHTML = `<div class="hist-empty"><div class="hist-empty-ico">📚</div><p>Este perfil no tiene STAR stories todavía.<br>Añádelas desde data.js o crea preguntas vinculadas cuando importes historias.</p></div>`;
     return;
   }
-  starListEl.innerHTML=list.map(s=>`
+  starListEl.innerHTML=list.map(s=>{
+    const titleContent=starContent(s,starLangMode==='en'?'en':'es');
+    const body=starLangMode==='both'
+      ? `<div class="star-bilingual">${renderStarVersion(s,'es')}${renderStarVersion(s,'en')}</div>`
+      : renderStarVersion(s,starLangMode);
+    return `
     <div class="scard" id="sc${escapeHtml(s.id)}">
       <div class="scard-hd" onclick="document.getElementById('sc${escapeHtml(s.id)}').classList.toggle('open')">
         <span class="stag ${({initiative:'ti',leadership:'tl',pressure:'tp',conflict:'tc',teamwork:'tt',learning:'tn',communication:'tl',failure:'tc',adaptability:'tn'}[s.tag]||'ti')}">${escapeHtml(s.tagLabel)}</span>
-        <span class="scard-q">${escapeHtml(s.q)}</span>
+        <span class="scard-q">${escapeHtml(titleContent.q || s.q)}</span>
         <span class="scard-arr">›</span>
       </div>
       <div class="scard-body">
         <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
-        <div class="step"><div class="slbl ls">📍 Situación</div><div class="stxt">${escapeHtml(s.sit)}</div></div>
-        <div class="step"><div class="slbl lt">🎯 Tarea</div><div class="stxt">${escapeHtml(s.tsk)}</div></div>
-        <div class="step"><div class="slbl la">⚡ Acción</div><div class="stxt">${escapeHtml(s.act)}</div></div>
-        <div class="step"><div class="slbl lr">📊 Resultado</div><div class="stxt hi">${escapeHtml(s.res)}</div></div>
-        <div class="step"><div class="slbl ll">💡 Aprendizaje</div><div class="stxt">${escapeHtml(s.lrn)}</div></div>
+        ${body}
+        <button class="btn-t star-practice-btn" onclick="event.stopPropagation();practiceStarStory('${escapeHtml(s.id)}')">🎯 Practicar esta historia</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+
+function practiceStarStory(id){
+  const story=getStoryById(id);
+  if(!story) return;
+  const langs=starLangMode==='both' ? ['es','en'] : [starLangMode];
+  fcMode='star';
+  fcLangMode=starLangMode==='both' ? 'mixed' : starLangMode;
+  goTab('cards',null);
+  fcCards=langs.map(lang=>({
+    type:'star',
+    q:getQuestionsForStory(story,lang)[0] || starContent(story,lang).q || story.q,
+    star:story,
+    lang,
+    category:story.tagLabel || 'STAR',
+    key:`direct:${story.id}:${lang}`
+  }));
+  fcIdx=0;fcFlipped=false;fcRated=false;
+  fcRatings={easy:0,medium:0,hard:0};
+  document.getElementById('fcSetupCard').style.display='none';
+  document.getElementById('fcDone').style.display='none';
+  document.getElementById('fcArea').style.display='block';
+  renderFcCard();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 
@@ -565,6 +657,50 @@ function getCurrentProfile(){
 function saveCurrentProfile(profile){
   if(!CU) return;
   saveUD(CU.username, profile);
+}
+function setSharedSyncStatus(message, state=''){
+  const el = document.getElementById('cqSyncStatus');
+  if(!el) return;
+  el.textContent = message;
+  el.className = `sync-status${state ? ` ${state}` : ''}`;
+}
+async function saveSharedProfileAndReport(profile, successMessage='Cambios compartidos para todos'){
+  setSharedSyncStatus('Sincronizando…', 'syncing');
+  const result = await kvSaveSharedProfile(profile);
+  if(result === 'saved') setSharedSyncStatus(`✓ ${successMessage}`, 'ok');
+  else if(result === 'local') setSharedSyncStatus('Guardado localmente durante el desarrollo', 'local');
+  else setSharedSyncStatus('Guardado en este navegador; no se pudo sincronizar', 'error');
+  return result;
+}
+async function syncSharedProfileFromKV(){
+  const profile = getCurrentProfile();
+  if(!profile) return;
+  const profileId = profile.id;
+  if(!IS_VERCEL){
+    setSharedSyncStatus('Modo local: la versión publicada usará datos compartidos', 'local');
+    return;
+  }
+  setSharedSyncStatus('Cargando preguntas compartidas…', 'syncing');
+  const remote = await kvLoadSharedProfile(profileId);
+  if(!CU || CU.id !== profileId) return;
+
+  if(!remote){
+    const hasLocalContent = (profile.customQuestions || []).length || (profile.companies || []).length;
+    if(hasLocalContent){
+      await saveSharedProfileAndReport(profile, 'Contenido inicial publicado para todos');
+    }else{
+      setSharedSyncStatus('✓ Listo para guardar contenido compartido', 'ok');
+    }
+    return;
+  }
+
+  profile.customQuestions = Array.isArray(remote.customQuestions) ? remote.customQuestions : [];
+  profile.companies = Array.isArray(remote.companies) ? remote.companies : [];
+  saveCurrentProfile(profile);
+  loadUserCompanies();
+  renderCustomQuestions();
+  renderCustomQuestionFormOptions();
+  setSharedSyncStatus('✓ Preguntas sincronizadas para todos', 'ok');
 }
 function renderCustomQuestionFormOptions(){
   const comp = document.getElementById('cqCompetency');
@@ -594,7 +730,7 @@ function clearCustomQuestionForm(){
   document.getElementById('cqFormTitle').textContent = '+ Añadir pregunta';
   toggleCustomAnswerMode();
 }
-function saveCustomQuestion(){
+async function saveCustomQuestion(){
   const profile = getCurrentProfile();
   if(!profile){ alert('Selecciona un perfil primero'); return; }
   profile.customQuestions ||= [];
@@ -624,7 +760,10 @@ function saveCustomQuestion(){
   saveCurrentProfile(profile);
   clearCustomQuestionForm();
   renderCustomQuestions();
-  alert('Pregunta guardada');
+  const syncResult = await saveSharedProfileAndReport(profile, 'Pregunta guardada y visible para todos');
+  if(syncResult === 'saved') alert('Pregunta guardada y compartida para todos');
+  else if(syncResult === 'error') alert('La pregunta se ha guardado en este navegador, pero no se ha podido compartir. Revisa la conexión de Vercel KV.');
+  else alert('Pregunta guardada localmente');
 }
 function editCustomQuestion(id){
   const profile = getCurrentProfile();
@@ -643,13 +782,14 @@ function editCustomQuestion(id){
   toggleCustomAnswerMode();
   window.scrollTo({top:0,behavior:'smooth'});
 }
-function deleteCustomQuestion(id){
+async function deleteCustomQuestion(id){
   const profile = getCurrentProfile();
   if(!profile) return;
   if(!confirm('¿Borrar esta pregunta guardada?')) return;
   profile.customQuestions = (profile.customQuestions || []).filter(q=>q.id !== id);
   saveCurrentProfile(profile);
   renderCustomQuestions();
+  await saveSharedProfileAndReport(profile, 'Pregunta borrada para todos');
 }
 function getStoryById(id){
   return (SD || []).find(s=>String(s.id) === String(id));
@@ -784,27 +924,30 @@ function selectCo(c){
   fcSelectedCo=c;
   renderCoChips();
 }
-function removeCo(i){
+async function removeCo(i){
   userCompanies.splice(i,1);
   if(!CU)return;
   const ud=getUD(CU.username);ud.companies=userCompanies;saveUD(CU.username,ud);
   if(!userCompanies.includes(fcSelectedCo)) fcSelectedCo='';
   renderCoChips();
+  await saveSharedProfileAndReport(ud, 'Empresas actualizadas para todos');
 }
 function addCoChip(){
   const inp=document.getElementById('newCoInp');
   inp.style.display=inp.style.display==='none'?'block':'none';
   if(inp.style.display==='block')inp.focus();
 }
-function confirmCo(){
+async function confirmCo(){
   const val=document.getElementById('newCoInp').value.trim();
   if(!val)return;
   if(!userCompanies.includes(val))userCompanies.push(val);
   fcSelectedCo=val;
-  if(CU){const ud=getUD(CU.username);ud.companies=userCompanies;saveUD(CU.username,ud);}
+  let ud=null;
+  if(CU){ud=getUD(CU.username);ud.companies=userCompanies;saveUD(CU.username,ud);}
   document.getElementById('newCoInp').value='';
   document.getElementById('newCoInp').style.display='none';
   renderCoChips();
+  if(ud) await saveSharedProfileAndReport(ud, 'Empresas actualizadas para todos');
 }
 document.getElementById('newCoInp')?.addEventListener('blur',()=>{
   setTimeout(()=>{document.getElementById('newCoInp').style.display='none';},200);
@@ -993,6 +1136,8 @@ function rateCard(r){
 function showFcDone(){
   document.getElementById('fcArea').style.display='none';
   document.getElementById('fcDone').style.display='block';
+  const doneCopy=document.getElementById('fcDoneCopy');
+  if(doneCopy) doneCopy.textContent=`Has practicado ${fcCards.length} ${fcCards.length===1?'tarjeta':'tarjetas'}`;
   document.getElementById('fcDoneStats').innerHTML=`
     <div class="daily-result-grid">
       <div class="daily-result"><div class="daily-result-v ok">${fcRatings.easy}</div><div class="daily-result-l">Bien · repetir más tarde</div></div>
