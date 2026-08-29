@@ -17,17 +17,17 @@ entrenador-entrevista-star/
 
 ## Qué guarda la app
 
-No hay login real ni base de datos. La app usa perfiles locales guardados en `localStorage`:
+No hay login real. La app usa perfiles guardados en `localStorage` como copia local y Upstash Redis en Vercel para sincronizar el contenido compartido:
 
 - perfil activo
 - iniciales
 - empresas objetivo
 - historial de sesiones
-- STAR stories
-- preguntas personalizadas
+- STAR stories incluidas en el código
+- preguntas personalizadas (compartidas entre navegadores para el mismo perfil)
 - preferencias
 
-Esto sirve para uso personal/demo. Si se borran los datos del navegador, se pierde la información local salvo que se haya exportado el perfil.
+El historial, las preferencias y las grabaciones siguen siendo locales. Las preguntas personalizadas, empresas y candidaturas se sincronizan para que el mismo perfil muestre los cambios en cualquier navegador.
 
 ## Nuevas funciones añadidas
 
@@ -43,7 +43,15 @@ Cada pregunta puede tener:
 - respuesta asociada a una STAR story existente
 - respuesta propia escrita manualmente
 
-Las preguntas guardadas se pueden editar, borrar y practicar directamente.
+Las preguntas guardadas se pueden editar, borrar y practicar directamente. En la versión desplegada, cada cambio se publica en Upstash y queda visible para cualquier persona que abra el mismo perfil.
+
+### Banco STAR bilingüe
+
+La pestaña **STAR** permite:
+
+- estudiar cada historia en español o inglés
+- comparar ambas versiones en paralelo
+- practicar una historia concreta como flashcard en uno o ambos idiomas
 
 ### Exportar / importar perfil
 
@@ -62,6 +70,8 @@ El JSON incluye STAR stories, preguntas personalizadas, empresas e historial.
 
 ```txt
 ANTHROPIC_API_KEY
+KV_REST_API_URL
+KV_REST_API_TOKEN
 ```
 
 4. Despliega.

@@ -217,7 +217,7 @@
       <div class="daily-done" id="fcDone" style="display:none;">
         <div class="daily-done-ico">🎉</div>
         <h3>¡Reto completado!</h3>
-        <p style="margin-bottom:16px;">Has practicado las 5 tarjetas de hoy</p>
+        <p id="fcDoneCopy" style="margin-bottom:16px;">Has practicado las 5 tarjetas de hoy</p>
         <div id="fcDoneStats"></div>
         <button class="btn-t full" onclick="resetFlashcards()" style="margin-top:16px;">Practicar más →</button>
       </div>
@@ -226,7 +226,13 @@
     <!-- ── STAR ── -->
     <div id="tab-star" class="tab-panel">
       <div class="page-title">Banco STAR</div>
-      <div class="page-sub">Toca para ver la respuesta completa</div>
+      <div class="page-sub">Estudia y practica cada historia en español, inglés o en paralelo</div>
+      <div class="setup-label star-lang-label">Idioma de las historias</div>
+      <div class="segmented star-lang-segment" id="starLangSegment">
+        <button class="seg-btn sel" id="starLang-es" onclick="setStarLangMode('es')">🇪🇸 Español</button>
+        <button class="seg-btn" id="starLang-en" onclick="setStarLangMode('en')">🇬🇧 Inglés</button>
+        <button class="seg-btn" id="starLang-both" onclick="setStarLangMode('both')">↔ Ambos</button>
+      </div>
       <div class="filter-row" id="filterRow"></div>
       <div id="starList"></div>
     </div>
@@ -236,7 +242,8 @@
     <!-- ── CUSTOM QUESTIONS ── -->
     <div id="tab-questions" class="tab-panel">
       <div class="page-title">Mis preguntas</div>
-      <div class="page-sub">Guarda preguntas reales y asócialas a una story o a una respuesta propia</div>
+      <div class="page-sub">Guarda preguntas reales y asócialas a una story o a una respuesta propia. Se compartirán con cualquier persona que abra este perfil.</div>
+      <div class="sync-status syncing" id="cqSyncStatus" role="status" aria-live="polite">Cargando preguntas compartidas…</div>
 
       <div class="card">
         <div class="card-title" id="cqFormTitle">+ Añadir pregunta</div>
