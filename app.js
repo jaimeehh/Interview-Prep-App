@@ -36,6 +36,7 @@ async function kvSaveValue(key, value) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key, value })
     });
+    if (res.status === 503) return 'not-configured';
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return 'saved';
   } catch (e) {
@@ -686,6 +687,7 @@ async function saveSharedProfileAndReport(profile, successMessage='Cambios compa
   const result = await kvSaveSharedProfile(profile);
   if(result === 'saved') setSharedSyncStatus(`✓ ${successMessage}`, 'ok');
   else if(result === 'local') setSharedSyncStatus('Guardado localmente durante el desarrollo', 'local');
+  else if(result === 'not-configured') setSharedSyncStatus('Guardado en este navegador; falta conectar Redis en Vercel', 'error');
   else setSharedSyncStatus('Guardado en este navegador; no se pudo sincronizar', 'error');
   return result;
 }
@@ -779,6 +781,7 @@ async function saveCustomQuestion(){
   renderCustomQuestions();
   const syncResult = await saveSharedProfileAndReport(profile, 'Pregunta guardada y visible para todos');
   if(syncResult === 'saved') alert('Pregunta guardada y compartida para todos');
+  else if(syncResult === 'not-configured') alert('La pregunta se ha guardado en este navegador. Para compartirla con todos, conecta Upstash Redis al proyecto y habilita sus variables en Vercel.');
   else if(syncResult === 'error') alert('La pregunta se ha guardado en este navegador, pero no se ha podido compartir. Revisa la conexión de Vercel KV.');
   else alert('Pregunta guardada localmente');
 }

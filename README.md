@@ -66,12 +66,18 @@ El JSON incluye STAR stories, preguntas personalizadas, empresas e historial.
 
 1. Sube el proyecto a GitHub.
 2. Importa el repo en Vercel.
-3. Añade la variable de entorno:
+3. Conecta una base de datos Upstash Redis al proyecto y habilita sus variables
+   para **Production**, **Preview** y **Development**. La app admite cualquiera
+   de estos dos pares de nombres:
 
 ```txt
 ANTHROPIC_API_KEY
 KV_REST_API_URL
 KV_REST_API_TOKEN
+
+# O bien, si la integración usa los nombres actuales de Upstash:
+UPSTASH_REDIS_REST_URL
+UPSTASH_REDIS_REST_TOKEN
 ```
 
 4. Despliega.
