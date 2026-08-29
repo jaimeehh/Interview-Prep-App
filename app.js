@@ -482,12 +482,21 @@ function selectProfile(id){
   if (window.matchMedia && window.matchMedia('(max-width: 760px)').matches) goTab('cards', null);
 }
 
+function mergeShippedStarStories(storedStories){
+  const stored = Array.isArray(storedStories) ? storedStories : [];
+  const storedById = new Map(stored.map(story => [String(story.id), story]));
+  const shippedIds = new Set(DEFAULT_STAR_STORIES.map(story => String(story.id)));
+  const shippedWithLocalEdits = DEFAULT_STAR_STORIES.map(story => storedById.get(String(story.id)) || story);
+  const personalStories = stored.filter(story => !shippedIds.has(String(story.id)));
+  return [...shippedWithLocalEdits, ...personalStories];
+}
+
 function loadProfileIntoApp(){
   if(!CU) return;
   const profile = getProfile(CU.username);
   const isDefault = profile.id === DEFAULT_PROFILE_ID || profile.isDefaultProfile === true;
   SD = isDefault
-    ? ((profile.starStories && profile.starStories.length) ? profile.starStories : DEFAULT_STAR_STORIES)
+    ? mergeShippedStarStories(profile.starStories)
     : (profile.starStories || []);
   if (typeof applyStoryTranslations === 'function') SD = applyStoryTranslations(SD);
   if (isDefault && (!profile.starStories || !profile.starStories.length)) {
@@ -575,11 +584,19 @@ function setStarLangMode(mode){
 function starContent(story, lang){
   return lang === 'en' && story.en ? { ...story, ...story.en } : story;
 }
-function renderStarSteps(story, lang){
-  const content=starContent(story,lang);
-  const labels=lang === 'en'
+function storyStepLabels(story,lang){
+  if(story?.format === 'technical'){
+    return lang === 'en'
+      ? {s:'☢️ PET',t:'🩻 CT and MRI',a:'🔄 PET/CT vs PET/MR',r:'🧭 Attenuation correction',l:'🏥 Clinical judgement'}
+      : {s:'☢️ PET',t:'🩻 CT/TAC y MR',a:'🔄 PET/CT frente a PET/MR',r:'🧭 Corrección de atenuación',l:'🏥 Criterio clínico'};
+  }
+  return lang === 'en'
     ? {s:'📍 Situation',t:'🎯 Task',a:'⚡ Action',r:'📊 Result',l:'💡 Learning'}
     : {s:'📍 Situación',t:'🎯 Tarea',a:'⚡ Acción',r:'📊 Resultado',l:'💡 Aprendizaje'};
+}
+function renderStarSteps(story, lang){
+  const content=starContent(story,lang);
+  const labels=storyStepLabels(story,lang);
   return `
     <div class="step"><div class="slbl ls">${labels.s}</div><div class="stxt">${escapeHtml(content.sit)}</div></div>
     <div class="step"><div class="slbl lt">${labels.t}</div><div class="stxt">${escapeHtml(content.tsk)}</div></div>
@@ -1322,9 +1339,10 @@ function initFlashcards(){
 
 function storyHtml(s, company, lang='es'){
   const content = lang === 'en' ? { ...s, ...(s.en || {}) } : s;
-  const labels = lang === 'en'
-    ? {why:`🎯 Why it fits ${escapeHtml(company || '')}`, s:'📍 Situation', t:'🎯 Task', a:'⚡ Action', r:'📊 Result', l:'💡 Learning'}
-    : {why:`🎯 Por qué encaja con ${escapeHtml(company || '')}`, s:'📍 Situación', t:'🎯 Tarea', a:'⚡ Acción', r:'📊 Resultado', l:'💡 Aprendizaje'};
+  const labels = {
+    ...storyStepLabels(s,lang),
+    why:lang === 'en' ? `🎯 Why it fits ${escapeHtml(company || '')}` : `🎯 Por qué encaja con ${escapeHtml(company || '')}`
+  };
   const why = company ? `<div class="fc-back-step"><div class="fc-slbl lc">${labels.why}</div><div class="fc-stxt fc-adapt">${lang==='en'
     ? `It shows real experience in healthcare, data, structured analysis and measurable impact. Use it to connect your profile with similar business problems at ${escapeHtml(company)}.`
     : `Demuestra experiencia real en healthcare, datos, análisis estructurado e impacto medible. Úsala para conectar tu perfil con problemas de negocio similares en ${escapeHtml(company)}.`}</div></div>` : '';
@@ -1527,9 +1545,7 @@ function prevQ(){
 
 function modelStoryHtml(story, lang='es'){
   const content = lang === 'en' ? { ...story, ...(story.en || {}) } : story;
-  const labels = lang === 'en'
-    ? {s:'📍 Situation', t:'🎯 Task', a:'⚡ Action', r:'📊 Result', l:'💡 Learning'}
-    : {s:'📍 Situación', t:'🎯 Tarea', a:'⚡ Acción', r:'📊 Resultado', l:'💡 Aprendizaje'};
+  const labels = storyStepLabels(story,lang);
   return `
     <div class="step"><div class="slbl ls">${labels.s}</div><div class="stxt">${escapeHtml(content.sit)}</div></div>
     <div class="step"><div class="slbl lt">${labels.t}</div><div class="stxt">${escapeHtml(content.tsk)}</div></div>

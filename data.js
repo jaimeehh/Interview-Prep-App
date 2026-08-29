@@ -6,6 +6,67 @@
 */
 const DEFAULT_STAR_STORIES = [
   {
+    "id": "pet-petct-petmr-technical-knowledge",
+    "format": "technical",
+    "tag": "technical",
+    "tagLabel": "Conocimiento técnico",
+    "title": "Fundamentos de PET, CT/TAC, PET/CT y PET/MR",
+    "q": "¿Puedes explicar cómo funciona un PET y las diferencias entre PET/CT y PET/MR?",
+    "questions": {
+      "es": [
+        "¿Puedes explicar de forma sencilla cómo funciona un escáner PET?",
+        "¿Qué información aporta el PET frente al CT/TAC o la resonancia magnética?",
+        "¿Cuáles son las principales diferencias entre PET/CT y PET/MR?",
+        "¿Por qué es necesaria la corrección de atenuación en PET?",
+        "¿Por qué se utilizan pseudo-CTs en PET/MR?",
+        "¿Qué ventajas e inconvenientes tiene PET/MR frente a PET/CT?",
+        "¿En qué situaciones clínicas elegirías PET/CT y en cuáles PET/MR?"
+      ],
+      "en": [
+        "Can you explain in simple terms how a PET scanner works?",
+        "What information does PET provide compared with CT or MRI?",
+        "What are the main differences between PET/CT and PET/MR?",
+        "Why is attenuation correction necessary in PET imaging?",
+        "Why are pseudo-CT images used in PET/MR?",
+        "What are the main advantages and limitations of PET/MR compared with PET/CT?",
+        "In which clinical situations would you choose PET/CT and when would you choose PET/MR?"
+      ]
+    },
+    "sit": "El PET es una técnica de imagen funcional y molecular. Se administra un radiofármaco, como la 18F-FDG, que se distribuye según la actividad metabólica de los tejidos. Al desintegrarse, emite un positrón que se aniquila con un electrón y genera dos fotones de 511 keV emitidos aproximadamente en direcciones opuestas. El anillo de detectores registra esas coincidencias y reconstruye en tres dimensiones la distribución del radiotrazador. Por eso el PET permite observar metabolismo y función, pero por sí solo ofrece menos detalle anatómico.",
+    "tsk": "El CT o TAC utiliza rayos X y representa la atenuación y densidad de los tejidos en unidades Hounsfield. Es rápido y proporciona muy buena información anatómica, especialmente de hueso y pulmón, aunque añade radiación ionizante. La resonancia magnética utiliza campos magnéticos y radiofrecuencia, ofrece un contraste excelente de tejidos blandos y no añade radiación ionizante propia, pero la intensidad de su señal no representa directamente la densidad ni los coeficientes de atenuación.",
+    "act": "El PET/CT combina la información metabólica del PET con la anatomía del CT. El CT proporciona además una referencia directa para crear el mapa de corrección de atenuación, por lo que el proceso es rápido y robusto. El PET/MR combina PET con el mayor contraste de tejidos blandos de la MR, permite adquisiciones simultáneas y reduce la dosis asociada al componente CT, aunque el paciente sigue recibiendo el radiofármaco del PET. Sus principales retos son el coste, el tiempo de exploración, las contraindicaciones propias de la MR y una corrección de atenuación más compleja.",
+    "res": "La corrección de atenuación es necesaria porque parte de los fotones se absorben o dispersan al atravesar el cuerpo; si no se corrige, se subestima la captación y aparecen sesgos o artefactos. En PET/CT, los valores del CT pueden transformarse en coeficientes de atenuación. En PET/MR no existe esa relación directa, por lo que se utilizan segmentación de tejidos, secuencias UTE/ZTE, atlas o pseudo-CTs generados mediante inteligencia artificial. En mi TFG trabajé precisamente con una U-Net para generar pseudo-CTs a partir de MR y emplearlos como base de los mapas de atenuación.",
+    "lrn": "No existe una modalidad universalmente mejor: la elección depende de la pregunta clínica. PET/CT suele ser más accesible, rápido y sólido para anatomía ósea o pulmonar; PET/MR resulta especialmente valioso cuando importa el contraste de tejidos blandos, la adquisición simultánea o reducir radiación adicional, por ejemplo en neurología, pediatría, seguimientos repetidos y determinadas aplicaciones oncológicas. La clave es explicar siempre el equilibrio entre información metabólica, anatomía, dosis, tiempo, coste y fiabilidad de la corrección de atenuación."
+  },
+  {
+    "id": "quironsalud-tfg-petmr-ai",
+    "tag": "learning",
+    "tagLabel": "Aprendizaje técnico",
+    "title": "TFG de inteligencia artificial en PET/MR con Quirónsalud",
+    "q": "¿Cuéntame un proyecto técnicamente complejo en el que tuviste que aprender y resolver problemas nuevos?",
+    "questions": {
+      "es": [
+        "¿Cuéntame un proyecto técnicamente complejo en el que tuviste que aprender y resolver problemas nuevos?",
+        "Describe una ocasión en la que aplicaste inteligencia artificial a un problema real de salud.",
+        "Háblame de una vez en la que tuviste que aprender una herramienta nueva y superar problemas de compatibilidad.",
+        "Cuéntame una situación en la que trabajaste con datos limitados o incompletos.",
+        "Describe cómo equilibraste la precisión técnica con el impacto clínico."
+      ],
+      "en": [
+        "Tell me about a technically complex project where you had to learn and solve new problems.",
+        "Describe a time when you applied artificial intelligence to a real healthcare problem.",
+        "Tell me about a time you had to learn a new tool and overcome compatibility issues.",
+        "Describe a situation where you had to work with limited or incomplete data.",
+        "Tell me about a time you balanced technical accuracy with clinical impact."
+      ]
+    },
+    "sit": "En el contexto de mi experiencia con Quirónsalud, desarrollé mi TFG de Ingeniería Biomédica sobre la propagación de incertidumbre en la corrección de atenuación PET/MR mediante pseudo-CTs. El reto era estudiar si los errores introducidos al generar un pseudo-CT a partir de una resonancia se amplificaban al reconstruir la imagen PET final, un problema con impacto directo en la fiabilidad clínica.",
+    "tsk": "Tenía que diseñar un proceso completo que generara pseudo-CTs mediante inteligencia artificial, los integrara como mapas de atenuación en NiftyPET y cuantificara cómo se propagaba la incertidumbre hasta la reconstrucción PET, superando limitaciones de compatibilidad, capacidad computacional y disponibilidad de datos.",
+    "act": "Revisé el estado del arte y desarrollé en Python y TensorFlow una U-Net 2D con bloques residuales, una función de pérdida que daba más peso a las estructuras óseas y técnicas de data augmentation. Entrené el modelo con pares de imágenes MR y CT, generé distintas versiones de pseudo-CTs, las incorporé a NiftyPET y construí mapas de incertidumbre para comparar cada fase. Cuando la instalación de NiftyPET falló por incompatibilidades con CUDA y otras dependencias, documenté los errores, contacté con los creadores del software, ajusté el entorno y localicé una base compatible de 15 sujetos para completar el análisis.",
+    "res": "Conseguí completar el flujo de principio a fin. El modelo base alcanzó una correlación de Pearson de 0,938 y un SSIM de 0,934; las reconstrucciones PET mantuvieron un SSIM cercano a 0,989 y mostraron menos variabilidad que los pseudo-CTs. Los resultados respaldaron la hipótesis de que cierto nivel de incertidumbre intermedia es tolerable y no se amplifica hasta comprometer la calidad de la imagen PET final.",
+    "lrn": "Aprendí que en inteligencia artificial clínica no basta con optimizar un modelo: hay que entender cómo se propagan sus errores y si afectan realmente al resultado clínico. También reforcé mi capacidad para aprender herramientas complejas, resolver bloqueos técnicos y avanzar con datos limitados sin perder rigor."
+  },
+  {
     "id": "asisa-competitive-intelligence",
     "tag": "initiative",
     "tagLabel": "Iniciativa",
@@ -618,6 +679,67 @@ const DEFAULT_PROFILE = {
   },
   "starStories": [
     {
+      "id": "pet-petct-petmr-technical-knowledge",
+      "format": "technical",
+      "tag": "technical",
+      "tagLabel": "Conocimiento técnico",
+      "title": "Fundamentos de PET, CT/TAC, PET/CT y PET/MR",
+      "q": "¿Puedes explicar cómo funciona un PET y las diferencias entre PET/CT y PET/MR?",
+      "questions": {
+        "es": [
+          "¿Puedes explicar de forma sencilla cómo funciona un escáner PET?",
+          "¿Qué información aporta el PET frente al CT/TAC o la resonancia magnética?",
+          "¿Cuáles son las principales diferencias entre PET/CT y PET/MR?",
+          "¿Por qué es necesaria la corrección de atenuación en PET?",
+          "¿Por qué se utilizan pseudo-CTs en PET/MR?",
+          "¿Qué ventajas e inconvenientes tiene PET/MR frente a PET/CT?",
+          "¿En qué situaciones clínicas elegirías PET/CT y en cuáles PET/MR?"
+        ],
+        "en": [
+          "Can you explain in simple terms how a PET scanner works?",
+          "What information does PET provide compared with CT or MRI?",
+          "What are the main differences between PET/CT and PET/MR?",
+          "Why is attenuation correction necessary in PET imaging?",
+          "Why are pseudo-CT images used in PET/MR?",
+          "What are the main advantages and limitations of PET/MR compared with PET/CT?",
+          "In which clinical situations would you choose PET/CT and when would you choose PET/MR?"
+        ]
+      },
+      "sit": "El PET es una técnica de imagen funcional y molecular. Se administra un radiofármaco, como la 18F-FDG, que se distribuye según la actividad metabólica de los tejidos. Al desintegrarse, emite un positrón que se aniquila con un electrón y genera dos fotones de 511 keV emitidos aproximadamente en direcciones opuestas. El anillo de detectores registra esas coincidencias y reconstruye en tres dimensiones la distribución del radiotrazador. Por eso el PET permite observar metabolismo y función, pero por sí solo ofrece menos detalle anatómico.",
+      "tsk": "El CT o TAC utiliza rayos X y representa la atenuación y densidad de los tejidos en unidades Hounsfield. Es rápido y proporciona muy buena información anatómica, especialmente de hueso y pulmón, aunque añade radiación ionizante. La resonancia magnética utiliza campos magnéticos y radiofrecuencia, ofrece un contraste excelente de tejidos blandos y no añade radiación ionizante propia, pero la intensidad de su señal no representa directamente la densidad ni los coeficientes de atenuación.",
+      "act": "El PET/CT combina la información metabólica del PET con la anatomía del CT. El CT proporciona además una referencia directa para crear el mapa de corrección de atenuación, por lo que el proceso es rápido y robusto. El PET/MR combina PET con el mayor contraste de tejidos blandos de la MR, permite adquisiciones simultáneas y reduce la dosis asociada al componente CT, aunque el paciente sigue recibiendo el radiofármaco del PET. Sus principales retos son el coste, el tiempo de exploración, las contraindicaciones propias de la MR y una corrección de atenuación más compleja.",
+      "res": "La corrección de atenuación es necesaria porque parte de los fotones se absorben o dispersan al atravesar el cuerpo; si no se corrige, se subestima la captación y aparecen sesgos o artefactos. En PET/CT, los valores del CT pueden transformarse en coeficientes de atenuación. En PET/MR no existe esa relación directa, por lo que se utilizan segmentación de tejidos, secuencias UTE/ZTE, atlas o pseudo-CTs generados mediante inteligencia artificial. En mi TFG trabajé precisamente con una U-Net para generar pseudo-CTs a partir de MR y emplearlos como base de los mapas de atenuación.",
+      "lrn": "No existe una modalidad universalmente mejor: la elección depende de la pregunta clínica. PET/CT suele ser más accesible, rápido y sólido para anatomía ósea o pulmonar; PET/MR resulta especialmente valioso cuando importa el contraste de tejidos blandos, la adquisición simultánea o reducir radiación adicional, por ejemplo en neurología, pediatría, seguimientos repetidos y determinadas aplicaciones oncológicas. La clave es explicar siempre el equilibrio entre información metabólica, anatomía, dosis, tiempo, coste y fiabilidad de la corrección de atenuación."
+    },
+    {
+      "id": "quironsalud-tfg-petmr-ai",
+      "tag": "learning",
+      "tagLabel": "Aprendizaje técnico",
+      "title": "TFG de inteligencia artificial en PET/MR con Quirónsalud",
+      "q": "¿Cuéntame un proyecto técnicamente complejo en el que tuviste que aprender y resolver problemas nuevos?",
+      "questions": {
+        "es": [
+          "¿Cuéntame un proyecto técnicamente complejo en el que tuviste que aprender y resolver problemas nuevos?",
+          "Describe una ocasión en la que aplicaste inteligencia artificial a un problema real de salud.",
+          "Háblame de una vez en la que tuviste que aprender una herramienta nueva y superar problemas de compatibilidad.",
+          "Cuéntame una situación en la que trabajaste con datos limitados o incompletos.",
+          "Describe cómo equilibraste la precisión técnica con el impacto clínico."
+        ],
+        "en": [
+          "Tell me about a technically complex project where you had to learn and solve new problems.",
+          "Describe a time when you applied artificial intelligence to a real healthcare problem.",
+          "Tell me about a time you had to learn a new tool and overcome compatibility issues.",
+          "Describe a situation where you had to work with limited or incomplete data.",
+          "Tell me about a time you balanced technical accuracy with clinical impact."
+        ]
+      },
+      "sit": "En el contexto de mi experiencia con Quirónsalud, desarrollé mi TFG de Ingeniería Biomédica sobre la propagación de incertidumbre en la corrección de atenuación PET/MR mediante pseudo-CTs. El reto era estudiar si los errores introducidos al generar un pseudo-CT a partir de una resonancia se amplificaban al reconstruir la imagen PET final, un problema con impacto directo en la fiabilidad clínica.",
+      "tsk": "Tenía que diseñar un proceso completo que generara pseudo-CTs mediante inteligencia artificial, los integrara como mapas de atenuación en NiftyPET y cuantificara cómo se propagaba la incertidumbre hasta la reconstrucción PET, superando limitaciones de compatibilidad, capacidad computacional y disponibilidad de datos.",
+      "act": "Revisé el estado del arte y desarrollé en Python y TensorFlow una U-Net 2D con bloques residuales, una función de pérdida que daba más peso a las estructuras óseas y técnicas de data augmentation. Entrené el modelo con pares de imágenes MR y CT, generé distintas versiones de pseudo-CTs, las incorporé a NiftyPET y construí mapas de incertidumbre para comparar cada fase. Cuando la instalación de NiftyPET falló por incompatibilidades con CUDA y otras dependencias, documenté los errores, contacté con los creadores del software, ajusté el entorno y localicé una base compatible de 15 sujetos para completar el análisis.",
+      "res": "Conseguí completar el flujo de principio a fin. El modelo base alcanzó una correlación de Pearson de 0,938 y un SSIM de 0,934; las reconstrucciones PET mantuvieron un SSIM cercano a 0,989 y mostraron menos variabilidad que los pseudo-CTs. Los resultados respaldaron la hipótesis de que cierto nivel de incertidumbre intermedia es tolerable y no se amplifica hasta comprometer la calidad de la imagen PET final.",
+      "lrn": "Aprendí que en inteligencia artificial clínica no basta con optimizar un modelo: hay que entender cómo se propagan sus errores y si afectan realmente al resultado clínico. También reforcé mi capacidad para aprender herramientas complejas, resolver bloqueos técnicos y avanzar con datos limitados sin perder rigor."
+    },
+    {
       "id": "asisa-competitive-intelligence",
       "tag": "initiative",
       "tagLabel": "Iniciativa",
@@ -819,6 +941,10 @@ const COMPETENCIES = [
   {
     "k": "learning",
     "l": "Aprendizaje"
+  },
+  {
+    "k": "technical",
+    "l": "Conocimiento técnico"
   }
 ];
 
@@ -833,6 +959,40 @@ const INTERVIEW_LANGUAGE_MODES = [
    The English answers are linked by story id, so existing local profiles can be enriched too.
 */
 const STORY_EN_TRANSLATIONS = {
+  "pet-petct-petmr-technical-knowledge": {
+    title: "PET, CT, PET/CT and PET/MR fundamentals",
+    q: "Can you explain how PET works and the differences between PET/CT and PET/MR?",
+    questions: [
+      "Can you explain in simple terms how a PET scanner works?",
+      "What information does PET provide compared with CT or MRI?",
+      "What are the main differences between PET/CT and PET/MR?",
+      "Why is attenuation correction necessary in PET imaging?",
+      "Why are pseudo-CT images used in PET/MR?",
+      "What are the main advantages and limitations of PET/MR compared with PET/CT?",
+      "In which clinical situations would you choose PET/CT and when would you choose PET/MR?"
+    ],
+    sit: "PET is a functional and molecular imaging technique. A radiotracer such as 18F-FDG is administered and distributed according to tissue metabolic activity. During decay, it emits a positron that annihilates with an electron, producing two 511 keV photons travelling in approximately opposite directions. The detector ring records these coincidence events and reconstructs the radiotracer distribution in three dimensions. PET therefore shows metabolism and function, but on its own provides less anatomical detail.",
+    tsk: "CT uses X-rays and represents tissue attenuation and density in Hounsfield units. It is fast and provides strong anatomical information, particularly for bone and lung, although it adds ionising radiation. MRI uses magnetic fields and radiofrequency, provides excellent soft-tissue contrast and does not add ionising radiation of its own, but MR signal intensity does not directly represent tissue density or attenuation coefficients.",
+    act: "PET/CT combines PET metabolic information with CT anatomy. CT also provides a direct reference for generating the attenuation-correction map, making the process fast and robust. PET/MR combines PET with MRI's superior soft-tissue contrast, enables simultaneous acquisition and removes the radiation dose associated with the CT component, although the patient still receives the PET radiotracer. Its main challenges are cost, examination time, MRI-specific contraindications and more complex attenuation correction.",
+    res: "Attenuation correction is necessary because some photons are absorbed or scattered while travelling through the body; without correction, uptake is underestimated and bias or artefacts appear. In PET/CT, CT values can be converted into attenuation coefficients. MRI has no equivalent direct relationship, so PET/MR uses tissue segmentation, UTE/ZTE sequences, atlases or AI-generated pseudo-CT images. In my final degree project, I worked with a U-Net that generated pseudo-CTs from MR images for use as the basis of attenuation maps.",
+    lrn: "There is no universally superior modality: the choice depends on the clinical question. PET/CT is generally more available, faster and strong for bone or lung anatomy; PET/MR is particularly valuable when soft-tissue contrast, simultaneous acquisition or lower additional radiation matters, for example in neurology, paediatrics, repeated follow-up and selected oncology applications. The key is to explain the trade-off between metabolic information, anatomy, dose, time, cost and attenuation-correction reliability."
+  },
+  "quironsalud-tfg-petmr-ai": {
+    title: "AI applied to PET/MR imaging with Quirónsalud",
+    q: "Tell me about a technically complex project where you had to learn and solve new problems.",
+    questions: [
+      "Tell me about a technically complex project where you had to learn and solve new problems.",
+      "Describe a time when you applied artificial intelligence to a real healthcare problem.",
+      "Tell me about a time you had to learn a new tool and overcome compatibility issues.",
+      "Describe a situation where you had to work with limited or incomplete data.",
+      "Tell me about a time you balanced technical accuracy with clinical impact."
+    ],
+    sit: "In the context of my experience with Quirónsalud, I completed my Biomedical Engineering final degree project on uncertainty propagation in PET/MR attenuation correction using pseudo-CTs. The challenge was to determine whether errors introduced when generating a pseudo-CT from an MR image would be amplified in the final PET reconstruction, a problem with a direct impact on clinical reliability.",
+    tsk: "I had to design an end-to-end process that generated pseudo-CTs with artificial intelligence, integrated them as attenuation maps in NiftyPET and quantified how uncertainty propagated into the PET reconstruction, while overcoming limitations in software compatibility, computing capacity and data availability.",
+    act: "I reviewed the state of the art and developed a 2D U-Net in Python and TensorFlow with residual blocks, a loss function that placed greater weight on bone structures and data-augmentation techniques. I trained the model using paired MR and CT images, generated multiple pseudo-CT versions, integrated them into NiftyPET and built uncertainty maps to compare each stage. When NiftyPET installation failed because of CUDA and dependency incompatibilities, I documented the errors, contacted the software creators, adapted the environment and found a compatible 15-subject dataset to complete the analysis.",
+    res: "I completed the full pipeline successfully. The baseline model achieved a Pearson correlation of 0.938 and an SSIM of 0.934; the PET reconstructions maintained an SSIM of approximately 0.989 and showed less variability than the pseudo-CTs. The results supported the hypothesis that a certain level of intermediate uncertainty is tolerable and is not amplified enough to compromise the quality of the final PET image.",
+    lrn: "I learned that clinical AI is not only about optimising a model: it also requires understanding how its errors propagate and whether they materially affect the clinical outcome. I also strengthened my ability to learn complex tools, resolve technical blockers and work rigorously with limited data."
+  },
   "asisa-competitive-intelligence": {
     title: "Competitive intelligence platform at ASISA",
     q: "Tell me about a time you took initiative to create value from scratch.",
@@ -967,4 +1127,3 @@ if (typeof DEFAULT_STAR_STORIES !== 'undefined') {
 if (typeof DEFAULT_PROFILE !== 'undefined' && Array.isArray(DEFAULT_PROFILE.starStories)) {
   DEFAULT_PROFILE.starStories = applyStoryTranslations(DEFAULT_PROFILE.starStories);
 }
-
