@@ -337,6 +337,26 @@ function getProfiles(){
 function saveProfiles(p){
   localStorage.setItem(PROFILE_STORE_KEY, JSON.stringify(p));
 }
+function normalizeQuestionText(value){
+  return String(value || '')
+    .trim()
+    .toLocaleLowerCase('es')
+    .replace(/[¿?¡!.,;:]/g, '')
+    .replace(/\s+/g, ' ');
+}
+
+function mergeShippedCustomQuestions(storedQuestions){
+  const stored = Array.isArray(storedQuestions) ? storedQuestions : [];
+  const shipped = Array.isArray(DEFAULT_PROFILE.customQuestions) ? DEFAULT_PROFILE.customQuestions : [];
+  const shippedIds = new Set(shipped.map(question => String(question.id)));
+  const shippedTexts = new Set(shipped.map(question => normalizeQuestionText(question.question)));
+  const personal = stored.filter(question =>
+    !shippedIds.has(String(question.id)) &&
+    !shippedTexts.has(normalizeQuestionText(question.question))
+  );
+  return [...JSON.parse(JSON.stringify(shipped)), ...personal];
+}
+
 function ensureDefaultProfile(){
   const profiles = getProfiles();
   if (!profiles[DEFAULT_PROFILE.id]) {
@@ -345,6 +365,7 @@ function ensureDefaultProfile(){
     // Keep the principal pitch in sync with the version shipped in data.js,
     // while preserving the rest of the user's locally stored profile data.
     profiles[DEFAULT_PROFILE.id].pitch = JSON.parse(JSON.stringify(DEFAULT_PROFILE.pitch));
+    profiles[DEFAULT_PROFILE.id].customQuestions = mergeShippedCustomQuestions(profiles[DEFAULT_PROFILE.id].customQuestions);
   }
   profiles[DEFAULT_PROFILE.id].isDefaultProfile = true;
   saveProfiles(profiles);
@@ -711,7 +732,10 @@ async function syncSharedProfileFromKV(){
     return;
   }
 
-  profile.customQuestions = Array.isArray(remote.customQuestions) ? remote.customQuestions : [];
+  const remoteQuestions = Array.isArray(remote.customQuestions) ? remote.customQuestions : [];
+  profile.customQuestions = profile.isDefaultProfile
+    ? mergeShippedCustomQuestions(remoteQuestions)
+    : remoteQuestions;
   profile.companies = Array.isArray(remote.companies) ? remote.companies : [];
   saveCurrentProfile(profile);
   loadUserCompanies();

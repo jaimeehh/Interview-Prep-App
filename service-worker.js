@@ -1,9 +1,10 @@
-const CACHE_NAME = 'prepai-v9';
+const CACHE_NAME = 'prepai-v10';
 const APP_SHELL = [
   '/',
   '/index.html',
   '/styles.css',
   '/data.js',
+  '/custom-questions.js',
   '/app.js',
   '/manifest.webmanifest',
   '/icons/icon-192.png',
