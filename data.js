@@ -6,6 +6,34 @@
 */
 const DEFAULT_STAR_STORIES = [
   {
+    "id": "quironsalud-tfg-petmr-ai",
+    "tag": "learning",
+    "tagLabel": "Aprendizaje técnico",
+    "title": "TFG de inteligencia artificial en PET/MR con Quirónsalud",
+    "q": "¿Cuéntame un proyecto técnicamente complejo en el que tuviste que aprender y resolver problemas nuevos?",
+    "questions": {
+      "es": [
+        "¿Cuéntame un proyecto técnicamente complejo en el que tuviste que aprender y resolver problemas nuevos?",
+        "Describe una ocasión en la que aplicaste inteligencia artificial a un problema real de salud.",
+        "Háblame de una vez en la que tuviste que aprender una herramienta nueva y superar problemas de compatibilidad.",
+        "Cuéntame una situación en la que trabajaste con datos limitados o incompletos.",
+        "Describe cómo equilibraste la precisión técnica con el impacto clínico."
+      ],
+      "en": [
+        "Tell me about a technically complex project where you had to learn and solve new problems.",
+        "Describe a time when you applied artificial intelligence to a real healthcare problem.",
+        "Tell me about a time you had to learn a new tool and overcome compatibility issues.",
+        "Describe a situation where you had to work with limited or incomplete data.",
+        "Tell me about a time you balanced technical accuracy with clinical impact."
+      ]
+    },
+    "sit": "En el contexto de mi experiencia con Quirónsalud, desarrollé mi TFG de Ingeniería Biomédica sobre la propagación de incertidumbre en la corrección de atenuación PET/MR mediante pseudo-CTs. El reto era estudiar si los errores introducidos al generar un pseudo-CT a partir de una resonancia se amplificaban al reconstruir la imagen PET final, un problema con impacto directo en la fiabilidad clínica.",
+    "tsk": "Tenía que diseñar un proceso completo que generara pseudo-CTs mediante inteligencia artificial, los integrara como mapas de atenuación en NiftyPET y cuantificara cómo se propagaba la incertidumbre hasta la reconstrucción PET, superando limitaciones de compatibilidad, capacidad computacional y disponibilidad de datos.",
+    "act": "Revisé el estado del arte y desarrollé en Python y TensorFlow una U-Net 2D con bloques residuales, una función de pérdida que daba más peso a las estructuras óseas y técnicas de data augmentation. Entrené el modelo con pares de imágenes MR y CT, generé distintas versiones de pseudo-CTs, las incorporé a NiftyPET y construí mapas de incertidumbre para comparar cada fase. Cuando la instalación de NiftyPET falló por incompatibilidades con CUDA y otras dependencias, documenté los errores, contacté con los creadores del software, ajusté el entorno y localicé una base compatible de 15 sujetos para completar el análisis.",
+    "res": "Conseguí completar el flujo de principio a fin. El modelo base alcanzó una correlación de Pearson de 0,938 y un SSIM de 0,934; las reconstrucciones PET mantuvieron un SSIM cercano a 0,989 y mostraron menos variabilidad que los pseudo-CTs. Los resultados respaldaron la hipótesis de que cierto nivel de incertidumbre intermedia es tolerable y no se amplifica hasta comprometer la calidad de la imagen PET final.",
+    "lrn": "Aprendí que en inteligencia artificial clínica no basta con optimizar un modelo: hay que entender cómo se propagan sus errores y si afectan realmente al resultado clínico. También reforcé mi capacidad para aprender herramientas complejas, resolver bloqueos técnicos y avanzar con datos limitados sin perder rigor."
+  },
+  {
     "id": "asisa-competitive-intelligence",
     "tag": "initiative",
     "tagLabel": "Iniciativa",
@@ -618,6 +646,34 @@ const DEFAULT_PROFILE = {
   },
   "starStories": [
     {
+      "id": "quironsalud-tfg-petmr-ai",
+      "tag": "learning",
+      "tagLabel": "Aprendizaje técnico",
+      "title": "TFG de inteligencia artificial en PET/MR con Quirónsalud",
+      "q": "¿Cuéntame un proyecto técnicamente complejo en el que tuviste que aprender y resolver problemas nuevos?",
+      "questions": {
+        "es": [
+          "¿Cuéntame un proyecto técnicamente complejo en el que tuviste que aprender y resolver problemas nuevos?",
+          "Describe una ocasión en la que aplicaste inteligencia artificial a un problema real de salud.",
+          "Háblame de una vez en la que tuviste que aprender una herramienta nueva y superar problemas de compatibilidad.",
+          "Cuéntame una situación en la que trabajaste con datos limitados o incompletos.",
+          "Describe cómo equilibraste la precisión técnica con el impacto clínico."
+        ],
+        "en": [
+          "Tell me about a technically complex project where you had to learn and solve new problems.",
+          "Describe a time when you applied artificial intelligence to a real healthcare problem.",
+          "Tell me about a time you had to learn a new tool and overcome compatibility issues.",
+          "Describe a situation where you had to work with limited or incomplete data.",
+          "Tell me about a time you balanced technical accuracy with clinical impact."
+        ]
+      },
+      "sit": "En el contexto de mi experiencia con Quirónsalud, desarrollé mi TFG de Ingeniería Biomédica sobre la propagación de incertidumbre en la corrección de atenuación PET/MR mediante pseudo-CTs. El reto era estudiar si los errores introducidos al generar un pseudo-CT a partir de una resonancia se amplificaban al reconstruir la imagen PET final, un problema con impacto directo en la fiabilidad clínica.",
+      "tsk": "Tenía que diseñar un proceso completo que generara pseudo-CTs mediante inteligencia artificial, los integrara como mapas de atenuación en NiftyPET y cuantificara cómo se propagaba la incertidumbre hasta la reconstrucción PET, superando limitaciones de compatibilidad, capacidad computacional y disponibilidad de datos.",
+      "act": "Revisé el estado del arte y desarrollé en Python y TensorFlow una U-Net 2D con bloques residuales, una función de pérdida que daba más peso a las estructuras óseas y técnicas de data augmentation. Entrené el modelo con pares de imágenes MR y CT, generé distintas versiones de pseudo-CTs, las incorporé a NiftyPET y construí mapas de incertidumbre para comparar cada fase. Cuando la instalación de NiftyPET falló por incompatibilidades con CUDA y otras dependencias, documenté los errores, contacté con los creadores del software, ajusté el entorno y localicé una base compatible de 15 sujetos para completar el análisis.",
+      "res": "Conseguí completar el flujo de principio a fin. El modelo base alcanzó una correlación de Pearson de 0,938 y un SSIM de 0,934; las reconstrucciones PET mantuvieron un SSIM cercano a 0,989 y mostraron menos variabilidad que los pseudo-CTs. Los resultados respaldaron la hipótesis de que cierto nivel de incertidumbre intermedia es tolerable y no se amplifica hasta comprometer la calidad de la imagen PET final.",
+      "lrn": "Aprendí que en inteligencia artificial clínica no basta con optimizar un modelo: hay que entender cómo se propagan sus errores y si afectan realmente al resultado clínico. También reforcé mi capacidad para aprender herramientas complejas, resolver bloqueos técnicos y avanzar con datos limitados sin perder rigor."
+    },
+    {
       "id": "asisa-competitive-intelligence",
       "tag": "initiative",
       "tagLabel": "Iniciativa",
@@ -833,6 +889,22 @@ const INTERVIEW_LANGUAGE_MODES = [
    The English answers are linked by story id, so existing local profiles can be enriched too.
 */
 const STORY_EN_TRANSLATIONS = {
+  "quironsalud-tfg-petmr-ai": {
+    title: "AI applied to PET/MR imaging with Quirónsalud",
+    q: "Tell me about a technically complex project where you had to learn and solve new problems.",
+    questions: [
+      "Tell me about a technically complex project where you had to learn and solve new problems.",
+      "Describe a time when you applied artificial intelligence to a real healthcare problem.",
+      "Tell me about a time you had to learn a new tool and overcome compatibility issues.",
+      "Describe a situation where you had to work with limited or incomplete data.",
+      "Tell me about a time you balanced technical accuracy with clinical impact."
+    ],
+    sit: "In the context of my experience with Quirónsalud, I completed my Biomedical Engineering final degree project on uncertainty propagation in PET/MR attenuation correction using pseudo-CTs. The challenge was to determine whether errors introduced when generating a pseudo-CT from an MR image would be amplified in the final PET reconstruction, a problem with a direct impact on clinical reliability.",
+    tsk: "I had to design an end-to-end process that generated pseudo-CTs with artificial intelligence, integrated them as attenuation maps in NiftyPET and quantified how uncertainty propagated into the PET reconstruction, while overcoming limitations in software compatibility, computing capacity and data availability.",
+    act: "I reviewed the state of the art and developed a 2D U-Net in Python and TensorFlow with residual blocks, a loss function that placed greater weight on bone structures and data-augmentation techniques. I trained the model using paired MR and CT images, generated multiple pseudo-CT versions, integrated them into NiftyPET and built uncertainty maps to compare each stage. When NiftyPET installation failed because of CUDA and dependency incompatibilities, I documented the errors, contacted the software creators, adapted the environment and found a compatible 15-subject dataset to complete the analysis.",
+    res: "I completed the full pipeline successfully. The baseline model achieved a Pearson correlation of 0.938 and an SSIM of 0.934; the PET reconstructions maintained an SSIM of approximately 0.989 and showed less variability than the pseudo-CTs. The results supported the hypothesis that a certain level of intermediate uncertainty is tolerable and is not amplified enough to compromise the quality of the final PET image.",
+    lrn: "I learned that clinical AI is not only about optimising a model: it also requires understanding how its errors propagate and whether they materially affect the clinical outcome. I also strengthened my ability to learn complex tools, resolve technical blockers and work rigorously with limited data."
+  },
   "asisa-competitive-intelligence": {
     title: "Competitive intelligence platform at ASISA",
     q: "Tell me about a time you took initiative to create value from scratch.",
@@ -967,4 +1039,3 @@ if (typeof DEFAULT_STAR_STORIES !== 'undefined') {
 if (typeof DEFAULT_PROFILE !== 'undefined' && Array.isArray(DEFAULT_PROFILE.starStories)) {
   DEFAULT_PROFILE.starStories = applyStoryTranslations(DEFAULT_PROFILE.starStories);
 }
-

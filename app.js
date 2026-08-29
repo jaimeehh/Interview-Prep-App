@@ -482,12 +482,21 @@ function selectProfile(id){
   if (window.matchMedia && window.matchMedia('(max-width: 760px)').matches) goTab('cards', null);
 }
 
+function mergeShippedStarStories(storedStories){
+  const stored = Array.isArray(storedStories) ? storedStories : [];
+  const storedById = new Map(stored.map(story => [String(story.id), story]));
+  const shippedIds = new Set(DEFAULT_STAR_STORIES.map(story => String(story.id)));
+  const shippedWithLocalEdits = DEFAULT_STAR_STORIES.map(story => storedById.get(String(story.id)) || story);
+  const personalStories = stored.filter(story => !shippedIds.has(String(story.id)));
+  return [...shippedWithLocalEdits, ...personalStories];
+}
+
 function loadProfileIntoApp(){
   if(!CU) return;
   const profile = getProfile(CU.username);
   const isDefault = profile.id === DEFAULT_PROFILE_ID || profile.isDefaultProfile === true;
   SD = isDefault
-    ? ((profile.starStories && profile.starStories.length) ? profile.starStories : DEFAULT_STAR_STORIES)
+    ? mergeShippedStarStories(profile.starStories)
     : (profile.starStories || []);
   if (typeof applyStoryTranslations === 'function') SD = applyStoryTranslations(SD);
   if (isDefault && (!profile.starStories || !profile.starStories.length)) {
