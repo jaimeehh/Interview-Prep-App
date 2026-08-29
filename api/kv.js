@@ -14,9 +14,16 @@ function isAllowedKey(key) {
 }
 
 function getKV() {
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) {
+    const error = new Error('Shared storage is not configured');
+    error.code = 'KV_NOT_CONFIGURED';
+    throw error;
+  }
   return new Redis({
-    url: process.env.KV_REST_API_URL,
-    token: process.env.KV_REST_API_TOKEN,
+    url,
+    token,
   });
 }
 
@@ -27,9 +34,8 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const kv = getKV();
-
   try {
+    const kv = getKV();
     if (req.method === 'GET') {
       const { key } = req.query;
       if (!isAllowedKey(key)) return res.status(400).json({ error: 'Invalid key' });
@@ -58,6 +64,9 @@ module.exports = async function handler(req, res) {
 
   } catch (err) {
     console.error('[kv.js]', err);
-    return res.status(500).json({ error: err.message });
+    if (err.code === 'KV_NOT_CONFIGURED') {
+      return res.status(503).json({ error: 'Shared storage is not configured', code: err.code });
+    }
+    return res.status(500).json({ error: 'Shared storage request failed' });
   }
 };
