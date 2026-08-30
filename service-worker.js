@@ -1,4 +1,4 @@
-const CACHE_NAME = 'prepai-v11';
+const CACHE_NAME = 'prepai-v12';
 const APP_SHELL = [
   '/',
   '/index.html',
