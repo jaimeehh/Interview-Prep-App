@@ -350,7 +350,11 @@ function mergeShippedCustomQuestions(storedQuestions){
   const shipped = Array.isArray(DEFAULT_PROFILE.customQuestions) ? DEFAULT_PROFILE.customQuestions : [];
   const shippedIds = new Set(shipped.map(question => String(question.id)));
   const shippedTexts = new Set(shipped.map(question => normalizeQuestionText(question.question)));
+  const retiredIds = new Set((typeof RETIRED_CUSTOM_QUESTION_IDS !== 'undefined' ? RETIRED_CUSTOM_QUESTION_IDS : []).map(String));
+  const retiredTexts = new Set((typeof RETIRED_CUSTOM_QUESTION_TEXTS !== 'undefined' ? RETIRED_CUSTOM_QUESTION_TEXTS : []).map(normalizeQuestionText));
   const personal = stored.filter(question =>
+    !retiredIds.has(String(question.id)) &&
+    !retiredTexts.has(normalizeQuestionText(question.question)) &&
     !shippedIds.has(String(question.id)) &&
     !shippedTexts.has(normalizeQuestionText(question.question))
   );
@@ -620,7 +624,22 @@ function storyStepLabels(story,lang){
     ? {s:'📍 Situation',t:'🎯 Task',a:'⚡ Action',r:'📊 Result',l:'💡 Learning'}
     : {s:'📍 Situación',t:'🎯 Tarea',a:'⚡ Acción',r:'📊 Resultado',l:'💡 Aprendizaje'};
 }
+function renderDevelopmentAreas(story,lang,variant='star'){
+  const content=starContent(story,lang);
+  const areas=Array.isArray(content.areas) ? content.areas : [];
+  const labels=lang==='en'
+    ? {weakness:'Weakness',consequence:'Consequence',action:'How I am improving it'}
+    : {weakness:'Debilidad',consequence:'Consecuencia',action:'Cómo la estoy mejorando'};
+  return areas.map((area,index)=>{
+    const title=`${index+1}. ${escapeHtml(area.title || labels.weakness)}`;
+    if(variant==='flashcard'){
+      return `<div class="fc-back-step"><div class="fc-slbl ls">${title}</div><div class="fc-stxt"><strong>${labels.weakness}:</strong> ${escapeHtml(area.weakness)}<br><br><strong>${labels.consequence}:</strong> ${escapeHtml(area.consequence)}<br><br><strong>${labels.action}:</strong> ${escapeHtml(area.action)}</div></div>`;
+    }
+    return `<div class="step"><div class="slbl ls">${title}</div><div class="stxt"><strong>${labels.weakness}:</strong> ${escapeHtml(area.weakness)}<br><br><strong>${labels.consequence}:</strong> ${escapeHtml(area.consequence)}<br><br><strong>${labels.action}:</strong> ${escapeHtml(area.action)}</div></div>`;
+  }).join('');
+}
 function renderStarSteps(story, lang){
+  if(story?.format === 'development') return renderDevelopmentAreas(story,lang);
   const content=starContent(story,lang);
   const labels=storyStepLabels(story,lang);
   return `
@@ -660,7 +679,7 @@ function renderStar(){
       <div class="scard-body">
         <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
         ${body}
-        <button class="btn-t star-practice-btn" onclick="event.stopPropagation();practiceStarStory('${escapeHtml(s.id)}')">🎯 Practicar esta historia</button>
+        <button class="btn-t star-practice-btn" onclick="event.stopPropagation();practiceStarStory('${escapeHtml(s.id)}')">${s.format==='development'?'🧠 Practicar estas áreas':'🎯 Practicar esta historia'}</button>
       </div>
     </div>`;
   }).join('');
@@ -1133,7 +1152,11 @@ function renderFcCard(){
   document.getElementById('fcCompanyBadge').textContent=c.company || (fcMode==='questions'?'Mis preguntas':'STAR');
 
   const langEmoji=c.lang==='en'?'🇬🇧':'🇪🇸';
-  const modeLabel = c.type==='custom' ? 'Pregunta guardada' : c.type==='company-story' ? 'Story adaptada' : 'STAR';
+  const modeLabel = c.type==='custom'
+    ? 'Pregunta guardada'
+    : c.star?.format==='development'
+      ? (c.lang==='en'?'Development areas':'Áreas de mejora')
+      : c.type==='company-story' ? 'Story adaptada' : 'STAR';
   document.getElementById('fcFrontBadge').innerHTML=`<span class="badge ${c.lang==='en'?'b-sky':'b-amber'}">${langEmoji} ${escapeHtml(c.category)}</span><span class="badge b-warm">${modeLabel}</span>`;
   document.getElementById('fcQuestion').textContent=c.q;
 
@@ -1375,6 +1398,7 @@ function storyHtml(s, company, lang='es'){
   const why = company ? `<div class="fc-back-step"><div class="fc-slbl lc">${labels.why}</div><div class="fc-stxt fc-adapt">${lang==='en'
     ? `It shows real experience in healthcare, data, structured analysis and measurable impact. Use it to connect your profile with similar business problems at ${escapeHtml(company)}.`
     : `Demuestra experiencia real en healthcare, datos, análisis estructurado e impacto medible. Úsala para conectar tu perfil con problemas de negocio similares en ${escapeHtml(company)}.`}</div></div>` : '';
+  if(s?.format === 'development') return `${why}${renderDevelopmentAreas(s,lang,'flashcard')}`;
   return `
     ${why}
     <div class="fc-back-step"><div class="fc-slbl ls">${labels.s}</div><div class="fc-stxt">${escapeHtml(content.sit)}</div></div>
@@ -1398,7 +1422,10 @@ function renderFcCard(){
 
   let backHtml='';
   if((c.type==='star' || c.type==='company-story') && c.star){
-    backHtml=`<div class="fc-story-title">${c.lang==='en'?'Recommended story':'Historia recomendada'}: ${escapeHtml((c.lang==='en' && c.star.en?.title) ? c.star.en.title : (c.star.title || c.star.q))}</div>${storyHtml(c.star, c.company, c.lang)}`;
+    const backLabel=c.star.format==='development'
+      ? (c.lang==='en'?'Development areas':'Áreas de mejora')
+      : (c.lang==='en'?'Recommended story':'Historia recomendada');
+    backHtml=`<div class="fc-story-title">${backLabel}: ${escapeHtml((c.lang==='en' && c.star.en?.title) ? c.star.en.title : (c.star.title || c.star.q))}</div>${storyHtml(c.star, c.company, c.lang)}`;
   } else if(c.type==='custom' && c.custom){
     const linked = c.custom.answerType === 'story' ? getStoryById(c.custom.linkedStoryId) : null;
     if(linked){
@@ -1573,6 +1600,7 @@ function prevQ(){
 }
 
 function modelStoryHtml(story, lang='es'){
+  if(story?.format === 'development') return renderDevelopmentAreas(story,lang);
   const content = lang === 'en' ? { ...story, ...(story.en || {}) } : story;
   const labels = storyStepLabels(story,lang);
   return `
