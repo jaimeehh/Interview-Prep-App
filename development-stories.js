@@ -137,6 +137,9 @@ if (typeof DEFAULT_PROFILE !== 'undefined') {
   upsertDevelopmentStory(DEFAULT_PROFILE.starStories, DEVELOPMENT_AREA_STORY);
   upsertDevelopmentStory(DEFAULT_PROFILE.starStories, LEADERSHIP_STORY_UPDATE);
 }
+if (typeof STORY_EN_TRANSLATIONS !== 'undefined') {
+  STORY_EN_TRANSLATIONS['delegation-leadership'] = JSON.parse(JSON.stringify(LEADERSHIP_STORY_UPDATE.en));
+}
 if (typeof COMPETENCIES !== 'undefined' && !COMPETENCIES.some(item => item.k === 'selfawareness')) {
   COMPETENCIES.push({ k: 'selfawareness', l: 'Autoconocimiento' });
 }

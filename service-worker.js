@@ -1,10 +1,11 @@
-const CACHE_NAME = 'prepai-v13';
+const CACHE_NAME = 'prepai-v14';
 const APP_SHELL = [
   '/',
   '/index.html',
   '/styles.css',
   '/data.js',
   '/development-stories.js',
+  '/value-stories.js',
   '/ai-stories.js',
   '/custom-questions.js',
   '/app.js',

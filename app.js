@@ -638,8 +638,23 @@ function renderDevelopmentAreas(story,lang,variant='star'){
     return `<div class="step"><div class="slbl ls">${title}</div><div class="stxt"><strong>${labels.weakness}:</strong> ${escapeHtml(area.weakness)}<br><br><strong>${labels.consequence}:</strong> ${escapeHtml(area.consequence)}<br><br><strong>${labels.action}:</strong> ${escapeHtml(area.action)}</div></div>`;
   }).join('');
 }
+function renderRoleContributions(story,lang,variant='star'){
+  const content=starContent(story,lang);
+  const contributions=Array.isArray(content.contributions) ? content.contributions : [];
+  const labels=lang==='en'
+    ? {contribution:'Contribution',value:'Why it adds value',evidence:'Evidence'}
+    : {contribution:'Aportación',value:'Por qué aporta valor',evidence:'Evidencia'};
+  return contributions.map((item,index)=>{
+    const title=`${index+1}. ${escapeHtml(item.title || labels.contribution)}`;
+    if(variant==='flashcard'){
+      return `<div class="fc-back-step"><div class="fc-slbl ls">${title}</div><div class="fc-stxt"><strong>${labels.contribution}:</strong> ${escapeHtml(item.contribution)}<br><br><strong>${labels.value}:</strong> ${escapeHtml(item.value)}<br><br><strong>${labels.evidence}:</strong> ${escapeHtml(item.evidence)}</div></div>`;
+    }
+    return `<div class="step"><div class="slbl ls">${title}</div><div class="stxt"><strong>${labels.contribution}:</strong> ${escapeHtml(item.contribution)}<br><br><strong>${labels.value}:</strong> ${escapeHtml(item.value)}<br><br><strong>${labels.evidence}:</strong> ${escapeHtml(item.evidence)}</div></div>`;
+  }).join('');
+}
 function renderStarSteps(story, lang){
   if(story?.format === 'development') return renderDevelopmentAreas(story,lang);
+  if(story?.format === 'contributions') return renderRoleContributions(story,lang);
   const content=starContent(story,lang);
   const labels=storyStepLabels(story,lang);
   return `
@@ -679,7 +694,7 @@ function renderStar(){
       <div class="scard-body">
         <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
         ${body}
-        <button class="btn-t star-practice-btn" onclick="event.stopPropagation();practiceStarStory('${escapeHtml(s.id)}')">${s.format==='development'?'🧠 Practicar estas áreas':'🎯 Practicar esta historia'}</button>
+        <button class="btn-t star-practice-btn" onclick="event.stopPropagation();practiceStarStory('${escapeHtml(s.id)}')">${s.format==='development'?'🧠 Practicar estas áreas':s.format==='contributions'?'💼 Practicar estas aportaciones':'🎯 Practicar esta historia'}</button>
       </div>
     </div>`;
   }).join('');
@@ -1399,6 +1414,7 @@ function storyHtml(s, company, lang='es'){
     ? `It shows real experience in healthcare, data, structured analysis and measurable impact. Use it to connect your profile with similar business problems at ${escapeHtml(company)}.`
     : `Demuestra experiencia real en healthcare, datos, análisis estructurado e impacto medible. Úsala para conectar tu perfil con problemas de negocio similares en ${escapeHtml(company)}.`}</div></div>` : '';
   if(s?.format === 'development') return `${why}${renderDevelopmentAreas(s,lang,'flashcard')}`;
+  if(s?.format === 'contributions') return `${why}${renderRoleContributions(s,lang,'flashcard')}`;
   return `
     ${why}
     <div class="fc-back-step"><div class="fc-slbl ls">${labels.s}</div><div class="fc-stxt">${escapeHtml(content.sit)}</div></div>
@@ -1416,7 +1432,13 @@ function renderFcCard(){
   document.getElementById('fcCompanyBadge').textContent=c.company || (fcMode==='questions'?'Mis preguntas':'STAR');
 
   const langEmoji=c.lang==='en'?'🇬🇧':'🇪🇸';
-  const modeLabel = c.type==='custom' ? 'Pregunta guardada' : c.type==='company-story' ? 'Story adaptada' : 'STAR';
+  const modeLabel = c.type==='custom'
+    ? 'Pregunta guardada'
+    : c.star?.format==='development'
+      ? (c.lang==='en'?'Development areas':'Áreas de mejora')
+      : c.star?.format==='contributions'
+        ? (c.lang==='en'?'Role contributions':'Aportaciones al puesto')
+        : c.type==='company-story' ? 'Story adaptada' : 'STAR';
   document.getElementById('fcFrontBadge').innerHTML=`<span class="badge ${c.lang==='en'?'b-sky':'b-amber'}">${langEmoji} ${escapeHtml(c.category)}</span><span class="badge b-warm">${modeLabel}</span>`;
   document.getElementById('fcQuestion').textContent=c.q;
 
@@ -1424,7 +1446,9 @@ function renderFcCard(){
   if((c.type==='star' || c.type==='company-story') && c.star){
     const backLabel=c.star.format==='development'
       ? (c.lang==='en'?'Development areas':'Áreas de mejora')
-      : (c.lang==='en'?'Recommended story':'Historia recomendada');
+      : c.star.format==='contributions'
+        ? (c.lang==='en'?'Role contributions':'Aportaciones al puesto')
+        : (c.lang==='en'?'Recommended story':'Historia recomendada');
     backHtml=`<div class="fc-story-title">${backLabel}: ${escapeHtml((c.lang==='en' && c.star.en?.title) ? c.star.en.title : (c.star.title || c.star.q))}</div>${storyHtml(c.star, c.company, c.lang)}`;
   } else if(c.type==='custom' && c.custom){
     const linked = c.custom.answerType === 'story' ? getStoryById(c.custom.linkedStoryId) : null;
@@ -1601,6 +1625,7 @@ function prevQ(){
 
 function modelStoryHtml(story, lang='es'){
   if(story?.format === 'development') return renderDevelopmentAreas(story,lang);
+  if(story?.format === 'contributions') return renderRoleContributions(story,lang);
   const content = lang === 'en' ? { ...story, ...(story.en || {}) } : story;
   const labels = storyStepLabels(story,lang);
   return `
