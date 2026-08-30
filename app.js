@@ -529,6 +529,7 @@ function loadProfileIntoApp(){
     ? mergeShippedStarStories(profile.starStories)
     : (profile.starStories || []);
   if (typeof applyStoryTranslations === 'function') SD = applyStoryTranslations(SD);
+  if (typeof applyStoryProfileMetadata === 'function') SD = applyStoryProfileMetadata(SD);
   if (isDefault && (!profile.starStories || !profile.starStories.length)) {
     profile.starStories = SD;
     saveCurrentProfile(profile);
@@ -595,15 +596,29 @@ let SD = DEFAULT_STAR_STORIES;
 
 /* STAR render */
 let activeFilter='all';
+let activeStoryRole='all';
 let starLangMode='es'; // es | en | both
 function buildFilters(){
   const tags = (typeof COMPETENCIES !== 'undefined' ? COMPETENCIES : [{k:'all',l:'Todas'}]);
   document.getElementById('filterRow').innerHTML=tags.map(t=>`<button class="fpill${t.k===activeFilter?' active':''}" onclick="filterStar('${t.k}',this)">${t.l}</button>`).join('');
+  const roles = typeof ROLE_PROFILE_OPTIONS !== 'undefined'
+    ? ROLE_PROFILE_OPTIONS
+    : [{id:'all',label:'Todos los CVs'},{id:'consulting',label:'Consultoría'},{id:'data',label:'Data Science'},{id:'medtech',label:'MedTech'},{id:'ai',label:'AI'}];
+  const roleFilter=document.getElementById('storyRoleFilter');
+  if(roleFilter){
+    roleFilter.innerHTML=roles.map(role=>`<button class="story-role-btn${role.id===activeStoryRole?' active':''}" onclick="filterStoryRole('${role.id}',this)">${escapeHtml(role.label)}</button>`).join('');
+  }
 }
 function filterStar(f,el){
   activeFilter=f;
   document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');renderStar();
+}
+function filterStoryRole(role,el){
+  activeStoryRole=role;
+  document.querySelectorAll('.story-role-btn').forEach(button=>button.classList.remove('active'));
+  el?.classList.add('active');
+  renderStar();
 }
 function setStarLangMode(mode){
   starLangMode=mode;
@@ -672,8 +687,46 @@ function renderStarVersion(story,lang){
     ${renderStarSteps(story,lang)}
   </section>`;
 }
+function storyRoleOptions(){
+  return (typeof ROLE_PROFILE_OPTIONS !== 'undefined' ? ROLE_PROFILE_OPTIONS : [])
+    .filter(role=>role.id!=='all');
+}
+function storyFitLabel(fit){
+  return fit==='primary' ? 'Prioritaria' : 'Secundaria';
+}
+function renderStoryRoleGuide(story){
+  if(!story.roleFit || !story.roleAngles) return '';
+  const roles=storyRoleOptions().filter(role=>story.roleFit[role.id] && (activeStoryRole==='all' || role.id===activeStoryRole));
+  if(!roles.length) return '';
+  const roleRows=roles.map(role=>{
+    const fit=story.roleFit[role.id];
+    return `<div class="story-angle-row">
+      <div class="story-angle-role"><span>${escapeHtml(role.label)}</span><em class="fit-${escapeHtml(fit)}">${storyFitLabel(fit)}</em></div>
+      <p>${escapeHtml(story.roleAngles[role.id] || '')}</p>
+    </div>`;
+  }).join('');
+  const warning=story.verificationNote
+    ? `<div class="story-verification">⚠️ ${escapeHtml(story.verificationNote)}</div>`
+    : '';
+  return `<aside class="story-reuse-guide">
+    <div class="story-reuse-title">Cómo reutilizar esta misma experiencia</div>
+    ${story.anchors ? `<div class="story-anchors"><strong>5 anclas:</strong> ${escapeHtml(story.anchors)}</div>` : ''}
+    <div class="story-angle-list">${roleRows}</div>
+    ${warning}
+  </aside>`;
+}
+function storyRoleRank(story){
+  if(activeStoryRole==='all') return Number(story.memoryOrder || 99);
+  const fit=story.roleFit?.[activeStoryRole];
+  const fitRank=fit==='primary' ? 0 : fit==='secondary' ? 1 : 4;
+  const tierRank=story.studyTier==='core' ? 0 : story.studyTier==='module' ? 1 : story.studyTier==='optional' ? 2 : 3;
+  return fitRank*1000 + tierRank*100 + Number(story.memoryOrder || 99);
+}
 function renderStar(){
-  const list=SD.filter(s=>activeFilter==='all'||s.tag===activeFilter);
+  const list=SD
+    .filter(s=>activeFilter==='all'||s.tag===activeFilter)
+    .filter(s=>activeStoryRole==='all'||(Boolean(s.roleFit?.[activeStoryRole]) && s.studyTier!=='pending'))
+    .sort((a,b)=>storyRoleRank(a)-storyRoleRank(b));
   const starListEl = document.getElementById('starList');
   if(!list.length){
     starListEl.innerHTML = `<div class="hist-empty"><div class="hist-empty-ico">📚</div><p>Este perfil no tiene STAR stories todavía.<br>Añádelas desde data.js o crea preguntas vinculadas cuando importes historias.</p></div>`;
@@ -684,15 +737,27 @@ function renderStar(){
     const body=starLangMode==='both'
       ? `<div class="star-bilingual">${renderStarVersion(s,'es')}${renderStarVersion(s,'en')}</div>`
       : renderStarVersion(s,starLangMode);
+    const tierLabel=s.studyTier==='core'
+      ? 'Historia base'
+      : s.studyTier==='module'
+        ? 'Respuesta modular'
+        : s.studyTier==='pending'
+          ? 'Pendiente de validar'
+          : 'Complementaria';
     return `
-    <div class="scard" id="sc${escapeHtml(s.id)}">
+    <div class="scard tier-${escapeHtml(s.studyTier || 'standard')}" id="sc${escapeHtml(s.id)}">
       <div class="scard-hd" onclick="document.getElementById('sc${escapeHtml(s.id)}').classList.toggle('open')">
-        <span class="stag ${({initiative:'ti',leadership:'tl',pressure:'tp',conflict:'tc',teamwork:'tt',learning:'tn',communication:'tl',failure:'tc',adaptability:'tn'}[s.tag]||'ti')}">${escapeHtml(s.tagLabel)}</span>
+        <span class="star-card-labels">
+          <span class="memory-pill">${escapeHtml(s.memoryLabel || tierLabel)}</span>
+          <span class="variant-label">${escapeHtml(s.variantLabel || tierLabel)}</span>
+          <span class="stag ${({initiative:'ti',leadership:'tl',pressure:'tp',conflict:'tc',teamwork:'tt',learning:'tn',communication:'tl',failure:'tc',adaptability:'tn'}[s.tag]||'ti')}">${escapeHtml(s.tagLabel)}</span>
+        </span>
         <span class="scard-q">${escapeHtml(titleContent.q || s.q)}</span>
         <span class="scard-arr">›</span>
       </div>
       <div class="scard-body">
         <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
+        ${renderStoryRoleGuide(s)}
         ${body}
         <button class="btn-t star-practice-btn" onclick="event.stopPropagation();practiceStarStory('${escapeHtml(s.id)}')">${s.format==='development'?'🧠 Practicar estas áreas':s.format==='contributions'?'💼 Practicar estas aportaciones':'🎯 Practicar esta historia'}</button>
       </div>
@@ -1512,7 +1577,7 @@ async function genPitch(){
   btn.disabled=true;
   const docCtx=uploadedDocText?`\n\nOFERTA/DOCUMENTO:\n${uploadedDocText}`:'';
   const prompt=`Coach de entrevistas experto. Adapta el pitch de Jaime Hernández para "${co}", rol "${role||'no especificado'}"${docCtx}.
-Perfil: Cursando Executive Master Big Data Science (Universidad de Navarra). ASISA Dirección General Médica: plataforma inteligencia competitiva aseguradoras (SQL Power BI Qlik), optimización SQL -10% ineficiencias, dashboards KPI médicos, automatización catálogo protésico, gestión becaria. Antes: software quirúrgico Hospital del Sureste -30% listas espera. MindSafe 300+ descargas 70% engagement. IA médica Quirón Salud. Top 15/500+ concurso salud Madrid. Estancia 2 meses EEUU sector sanitario.
+Perfil: Cursando Executive Master Big Data Science (Universidad de Navarra). ASISA Dirección General Médica: plataforma inteligencia competitiva aseguradoras (SQL Power BI Qlik), optimización SQL -10% ineficiencias, dashboards KPI médicos, automatización catálogo protésico, gestión becaria. Antes: software quirúrgico Hospital del Sureste -22% listas espera. MindSafe top 15/500+ en concurso de salud de Madrid. IA médica Quirón Salud. Estancia 2 meses EEUU sector sanitario.
 ESTRUCTURA: Presente (master+ASISA) → Pasado (logros con métricas) → Futuro (por qué ${co}). Máximo 140 palabras. Natural, directo, primera persona.`;
   try{
     const d=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]});
@@ -1550,7 +1615,7 @@ async function startInterview(){
   document.getElementById('loadCo').textContent=co;
   const typeDesc={consulting:'consultoría estratégica MBB/Big4',data:'data analytics o tech en salud',health:'healthcare corporativo',general:'competencias generales'};
   const prompt=`Reclutador senior de "${co}" para "${role||'data consultant'}". Genera 8 preguntas comportamentales para Jaime Hernández.
-Perfil: Master Big Data Science (cursando). ASISA: inteligencia competitiva, SQL -10%, dashboards KPI, gestión becaria. Antes: software quirúrgico -30% listas espera, MindSafe 300+ descargas, IA médica.
+Perfil: Master Big Data Science (cursando). ASISA: inteligencia competitiva, SQL -10%, dashboards KPI, gestión becaria. Antes: software quirúrgico -22% listas espera, MindSafe top 15/500+, IA médica.
 Proceso: ${typeDesc[practiceType]}. REGLAS: 8 preguntas · 5 ES 3 EN intercaladas · cubre liderazgo, iniciativa, presión, equipo, aprendizaje, conflicto, impacto.
 SOLO JSON sin backticks: {"questions":[{"lang":"es","category":"Iniciativa","question":"texto"}]}`;
   try{
@@ -1563,7 +1628,7 @@ SOLO JSON sin backticks: {"questions":[{"lang":"es","category":"Iniciativa","que
     questions=[
       {lang:'es',category:'Iniciativa',question:`En tu trabajo en ASISA, ¿cuál fue la situación en la que más iniciativa tomaste? ¿Qué hiciste de principio a fin?`},
       {lang:'en',category:'Leadership',question:'Tell me about a time you led without formal authority. What was the outcome?'},
-      {lang:'es',category:'Impacto',question:'El software del hospital redujo las listas de espera un 30%. ¿Cómo identificaste el problema y cómo mediste el impacto?'},
+      {lang:'es',category:'Impacto',question:'El software del hospital redujo las listas de espera un 22%. ¿Cómo identificaste el problema y cómo mediste el impacto?'},
       {lang:'es',category:'Equipo',question:'En MindSafe trabajaste con perfiles muy distintos. ¿Cómo gestionaste los desacuerdos entre el equipo clínico y el técnico?'},
       {lang:'en',category:'Under pressure',question:'Describe a moment when you had to deliver something critical under tight time constraints.'},
       {lang:'es',category:'Aprendizaje',question:'¿Cuál es la herramienta técnica que más te costó aprender en un entorno profesional y cómo lo superaste?'},
@@ -1643,8 +1708,8 @@ async function getAIFb(){
   document.getElementById('fbSpin').style.display='block';
   const q=questions[currentQ];
   const prompt=q.lang==='en'
-    ?`Expert interview coach. Jaime: ASISA (competitive intelligence SQL Power BI Qlik, manages intern). Before: surgical software -30% waiting lists, MindSafe 300+ downloads. Q: "${q.question}" A: "${answer}" Analyse STAR+L. Max 5: ✓ GOOD / △ IMPROVE / ✗ MISSING. Max 90 words.`
-    :`Coach experto. Jaime: ASISA (inteligencia competitiva SQL Power BI Qlik, gestiona becaria). Antes: software quirúrgico -30% listas espera, MindSafe 300+ descargas. P: "${q.question}" R: "${answer}" Analiza STAR+L. Máx 5 puntos: ✓ BIEN / △ MEJORAR / ✗ FALTA. Máx 90 palabras.`;
+    ?`Expert interview coach. Jaime: ASISA (competitive intelligence SQL Power BI Qlik, manages intern). Before: surgical software -22% waiting lists, MindSafe top 15/500+ in a Madrid health contest. Q: "${q.question}" A: "${answer}" Analyse STAR+L. Max 5: ✓ GOOD / △ IMPROVE / ✗ MISSING. Max 90 words.`
+    :`Coach experto. Jaime: ASISA (inteligencia competitiva SQL Power BI Qlik, gestiona becaria). Antes: software quirúrgico -22% listas espera, MindSafe top 15/500+ en concurso de salud de Madrid. P: "${q.question}" R: "${answer}" Analiza STAR+L. Máx 5 puntos: ✓ BIEN / △ MEJORAR / ✗ FALTA. Máx 90 palabras.`;
   try{
     const d=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]});
     const text=d.content?.map(c=>c.text||'').join('')||'Error.';
