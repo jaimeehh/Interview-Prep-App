@@ -507,7 +507,12 @@ function mergeShippedStarStories(storedStories){
   const stored = Array.isArray(storedStories) ? storedStories : [];
   const storedById = new Map(stored.map(story => [String(story.id), story]));
   const shippedIds = new Set(DEFAULT_STAR_STORIES.map(story => String(story.id)));
-  const shippedWithLocalEdits = DEFAULT_STAR_STORIES.map(story => storedById.get(String(story.id)) || story);
+  const shippedWithLocalEdits = DEFAULT_STAR_STORIES.map(story => {
+    const storedStory = storedById.get(String(story.id));
+    if (!storedStory) return story;
+    if (story.contentVersion && story.contentVersion !== storedStory.contentVersion) return story;
+    return storedStory;
+  });
   const personalStories = stored.filter(story => !shippedIds.has(String(story.id)));
   return [...shippedWithLocalEdits, ...personalStories];
 }

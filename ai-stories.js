@@ -90,46 +90,47 @@ const AI_STAR_STORIES = [
   },
   {
     id: 'asisa-internal-data-assistant',
+    contentVersion: 2,
     tag: 'ai',
     tagLabel: 'Inteligencia artificial',
-    title: 'Asistente de datos internos para comparar redes de proveedores en ASISA',
-    q: 'Cuéntame una experiencia aplicando inteligencia artificial a un problema real de negocio.',
+    title: 'IA para agrupar incidencias y reutilizar soluciones en ASISA',
+    q: 'Cuéntame una experiencia en la que utilizaste inteligencia artificial para reducir incidencias y costes.',
     questions: {
       es: [
-        'Cuéntame una experiencia aplicando inteligencia artificial a un problema real de negocio.',
-        '¿Cómo diseñaste un asistente para responder sobre fuentes internas?',
-        '¿Qué importancia tuvo la calidad de los datos en tu proyecto de IA?',
-        '¿Cómo combinaste inteligencia artificial, SQL y automatización mediante APIs?',
-        '¿Qué diferencia un buen caso de uso de IA de una simple demostración técnica?'
+        'Cuéntame una experiencia en la que utilizaste inteligencia artificial para reducir incidencias y costes.',
+        '¿Cómo utilizaste NLP para agrupar incidencias similares?',
+        '¿Cómo convertiste el historial de incidencias en conocimiento reutilizable?',
+        '¿Cómo decidía la herramienta cuándo proponer una solución anterior y cuándo escalar el problema?',
+        '¿Qué valor aportó la IA frente a seguir contratando soporte externo para cada incidencia?'
       ],
       en: [
-        'Tell me about a time you applied artificial intelligence to a real business problem.',
-        'How did you design an assistant to answer questions over internal sources?',
-        'How important was data quality in your AI project?',
-        'How did you combine artificial intelligence, SQL and API-based automation?',
-        'What separates a strong AI use case from a simple technical demonstration?'
+        'Tell me about a time you used artificial intelligence to reduce incidents and costs.',
+        'How did you use NLP to group similar incidents?',
+        'How did you turn incident history into reusable knowledge?',
+        'How did the tool decide when to suggest a previous solution and when to escalate the problem?',
+        'What value did the AI provide compared with using external support for every incident?'
       ]
     },
-    sit: 'En el área de Estrategia Interna y Desarrollo de IA de ASISA existían consultas recurrentes relacionadas con la comparación de redes de proveedores y con información distribuida en fuentes internas.',
-    tsk: 'Mi objetivo era prototipar un asistente de datos que facilitara esas comparaciones y pudiera responder preguntas recurrentes apoyándose en la información interna disponible.',
-    act: 'Estructuré el caso de uso alrededor de las preguntas que realmente necesitaba resolver el equipo y de las fuentes que podían respaldar cada respuesta. En paralelo, mejoré pipelines SQL y reglas de validación para reforzar la calidad de los datos, y automaticé actualizaciones de catálogos mediante flujos conectados por APIs para evitar reconciliaciones manuales.',
-    res: 'El resultado fue un prototipo capaz de comparar redes de proveedores y responder consultas sobre fuentes internas. Además, las mejoras en SQL y validación redujeron las ineficiencias de procesamiento un 10%, mientras que la automatización eliminó la reconciliación manual de las actualizaciones del catálogo.',
-    lrn: 'Aprendí que un asistente de IA empresarial depende tanto de la calidad, actualización y estructura de los datos como del propio modelo. Si la fuente no es fiable, la respuesta tampoco puede serlo.',
+    sit: 'En ASISA se registraban muchas incidencias relacionadas con el departamento. Con frecuencia se contrataban equipos externos para investigarlas, pero no siempre se identificaba la causa o se documentaba una solución útil. Además, varias incidencias eran muy parecidas y se trataban como casos independientes, lo que generaba peticiones repetidas y costes evitables.',
+    tsk: 'Mi objetivo era aprovechar el historial de incidencias para detectar problemas comunes y ofrecer al equipo posibles soluciones ya utilizadas antes de recurrir de nuevo a un proveedor externo.',
+    act: 'Recopilé las descripciones de las incidencias y las soluciones registradas, normalicé el texto y utilicé técnicas de NLP y similitud semántica para agrupar casos relacionados. A partir de ello, implementé una herramienta en la que un miembro del equipo podía introducir un error y consultar incidencias similares, junto con las soluciones que se habían probado anteriormente. Si ninguna alternativa resolvía el problema, entonces se escalaba a soporte externo.',
+    res: 'La herramienta permitió reutilizar conocimiento que antes estaba disperso, tratar de forma conjunta incidencias recurrentes y resolver internamente parte de los problemas. Esto redujo la necesidad de contratar soporte externo para casos que ya tenían precedentes y generó un ahorro relevante para la empresa.',
+    lrn: 'Aprendí que la IA puede aportar mucho valor organizando el conocimiento interno. No siempre es necesario crear una respuesta nueva: muchas veces el mayor impacto consiste en reconocer que un problema ya ocurrió y recuperar rápidamente la solución adecuada.',
     en: {
-      title: 'Internal data assistant for comparing provider networks at ASISA',
-      q: 'Tell me about a time you applied artificial intelligence to a real business problem.',
+      title: 'AI tool for grouping incidents and reusing solutions at ASISA',
+      q: 'Tell me about a time you used artificial intelligence to reduce incidents and costs.',
       questions: [
-        'Tell me about a time you applied artificial intelligence to a real business problem.',
-        'How did you design an assistant to answer questions over internal sources?',
-        'How important was data quality in your AI project?',
-        'How did you combine artificial intelligence, SQL and API-based automation?',
-        'What separates a strong AI use case from a simple technical demonstration?'
+        'Tell me about a time you used artificial intelligence to reduce incidents and costs.',
+        'How did you use NLP to group similar incidents?',
+        'How did you turn incident history into reusable knowledge?',
+        'How did the tool decide when to suggest a previous solution and when to escalate the problem?',
+        'What value did the AI provide compared with using external support for every incident?'
       ],
-      sit: 'Within ASISA’s Internal Strategy and AI Development function, there were recurring questions related to comparing provider networks and information distributed across internal sources.',
-      tsk: 'My objective was to prototype a data assistant that made those comparisons easier and answered recurring questions using the internal information available.',
-      act: 'I structured the use case around the questions the team genuinely needed to answer and the sources that could support each response. In parallel, I improved SQL pipelines and validation rules to strengthen data quality, and automated catalogue updates through API-based workflows to remove manual reconciliation.',
-      res: 'The result was a prototype able to compare provider networks and answer questions over internal sources. The SQL and validation improvements also reduced processing inefficiencies by 10%, while the automation eliminated manual reconciliation for catalogue updates.',
-      lrn: 'I learned that an enterprise AI assistant depends as much on the quality, freshness and structure of its data as it does on the model itself. If the source is not reliable, the answer cannot be reliable either.'
+      sit: 'At ASISA, the department received a large number of incident reports. External teams were often hired to investigate them, but the root cause was not always identified and a useful solution was not always documented. Several incidents were also very similar but were treated as separate cases, creating repeated requests and avoidable costs.',
+      tsk: 'My objective was to use the incident history to identify common problems and provide the team with solutions that had already been used before relying on an external provider again.',
+      act: 'I collected the incident descriptions and recorded solutions, normalised the text and used NLP and semantic similarity techniques to group related cases. I then implemented a tool where a team member could enter an error and review similar incidents together with the solutions previously attempted. If none of those options solved the problem, the case could then be escalated to external support.',
+      res: 'The tool made previously scattered knowledge reusable, allowed recurring incidents to be handled together and enabled part of the problems to be solved internally. This reduced the need to hire external support for cases with an existing precedent and generated meaningful savings for the company.',
+      lrn: 'I learned that AI can create significant value by organising internal knowledge. It is not always necessary to generate a new answer; often the greatest impact comes from recognising that a problem has happened before and retrieving the right solution quickly.'
     }
   }
 ];
