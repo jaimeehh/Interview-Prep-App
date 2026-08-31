@@ -1,75 +1,75 @@
 const ROLE_CONTRIBUTIONS_STORY = {
   id: 'three-role-contributions',
-  contentVersion: 1,
+  contentVersion: 2,
   format: 'contributions',
   tag: 'value',
-  tagLabel: 'Propuesta de valor',
-  title: 'Tres aportaciones que puedo ofrecer al puesto',
-  q: '¿Qué tres cosas consideras que aportarías a este puesto y a la empresa?',
+  tagLabel: 'Fortalezas',
+  title: 'Tres fortalezas que puedo aportar al puesto',
+  q: '¿Cuáles son tus principales fortalezas?',
   questions: {
     es: [
-      '¿Qué tres cosas consideras que aportarías a este puesto y a la empresa?',
+      '¿Cuáles son tus principales fortalezas?',
+      '¿Qué fortalezas aportarías a este puesto?',
       '¿Qué te diferencia de otros candidatos?',
       '¿Por qué deberíamos contratarte?',
-      '¿Cómo combinarías tus conocimientos técnicos con las necesidades del negocio?',
-      '¿Qué valor aporta tu experiencia en healthcare a este puesto?'
+      '¿Cómo combinas tus conocimientos técnicos con las necesidades del negocio?'
     ],
     en: [
-      'What three things would you bring to this role and the company?',
+      'What are your main strengths?',
+      'What strengths would you bring to this role?',
       'What differentiates you from other candidates?',
       'Why should we hire you?',
-      'How would you combine your technical knowledge with business needs?',
-      'What value does your healthcare experience bring to this role?'
+      'How would you combine your technical knowledge with business needs?'
     ]
   },
   contributions: [
     {
-      title: 'Conectar inteligencia artificial, datos y negocio',
-      contribution: 'Aporto una combinación de conocimientos técnicos en Python, SQL, LLMs y LangGraph con la capacidad de entender qué decisión o problema de negocio debe resolver cada proyecto.',
-      value: 'Esto permite utilizar la tecnología con un objetivo concreto y convertir los resultados técnicos en información útil para perfiles no técnicos y para la toma de decisiones.',
-      evidence: 'En PHCA desarrollé un asistente documental con LangGraph y búsqueda vectorial, y en ASISA apliqué IA para organizar incidencias y recuperar soluciones internas.'
+      title: 'Capacidad analítica y estructurada',
+      contribution: 'Una de mis principales fortalezas es analizar los problemas de forma estructurada. Antes de proponer una solución, intento comprender bien el contexto, separar las variables relevantes y ordenar la información para decidir qué merece atención.',
+      value: 'Esto me ayuda a abordar problemas complejos con claridad y a convertir información dispersa en pasos concretos, sin precipitarme hacia una herramienta determinada.',
+      evidence: 'He aplicado esta forma de trabajar en entornos distintos —un hospital, una aseguradora y un grupo de atención primaria—, combinando información clínica, operativa y de negocio.'
     },
     {
-      title: 'Una visión amplia y especializada del sector sanitario',
-      contribution: 'Mi formación en Ingeniería Biomédica y mi experiencia en un hospital, una aseguradora y un grupo de atención primaria estadounidense me permiten comprender perspectivas clínicas, operativas y de negocio.',
-      value: 'Puedo entender con rapidez a distintos stakeholders, identificar las limitaciones de los datos sanitarios y traducir necesidades del sector en soluciones analíticas o tecnológicas.',
-      evidence: 'He trabajado en planificación quirúrgica, inteligencia competitiva sanitaria, analítica para centros de salud y un proyecto de IA aplicado a reconstrucción PET/MR con Quirónsalud.'
+      title: 'Capacidad para conectar contextos técnicos, clínicos y de negocio',
+      contribution: 'Mi formación en Ingeniería Biomédica y mi experiencia en un hospital, una aseguradora y un grupo de atención primaria estadounidense me permiten entender tanto la parte técnica como las necesidades de las personas que utilizarán una solución.',
+      value: 'Puedo traducir necesidades entre perfiles técnicos y no técnicos, adaptar la profundidad de la explicación y mantener el foco en la utilidad práctica.',
+      evidence: 'He trabajado en planificación quirúrgica, inteligencia competitiva sanitaria y analítica para centros de salud, además de participar en proyectos de datos y tecnología.'
     },
     {
-      title: 'Iniciativa y capacidad de ejecución con impacto medible',
-      contribution: 'Aporto autonomía para llevar proyectos de principio a fin, aprender herramientas nuevas y coordinarme con otras personas hasta convertir una idea en una solución utilizable.',
-      value: 'Esto me permite empezar a aportar desde las primeras fases, mantener el foco en la entrega y medir si el trabajo genera una mejora real.',
-      evidence: 'He contribuido a reducir un 22% las listas de espera quirúrgicas, mejoré un 10% las ineficiencias de procesamiento y mis dashboards apoyaron decisiones relacionadas con una reducción del 20% de costes operativos en siete centros.'
+      title: 'Iniciativa para mejorar y automatizar procesos',
+      contribution: 'Cuando trabajo en un proyecto y detecto una tarea repetitiva o una fuente de ineficiencia, procuro analizar si puede simplificarse, automatizarse o hacerse más útil para el equipo.',
+      value: 'No se trata de utilizar tecnología por sí misma, sino de mejorar la forma de trabajar, facilitar la actualización de la información y ayudar a detectar antes posibles incidencias.',
+      evidence: 'En ASISA automaticé una presentación de PowerPoint conectada directamente a SQL, de manera que los datos se actualizaban automáticamente. En PHCA Medical Group transformé archivos Excel estáticos en dashboards interactivos mediante Apps Script, con detección de anomalías y notificaciones por email.'
     }
   ],
   en: {
-    title: 'Three contributions I can bring to the role',
-    q: 'What three things would you bring to this role and the company?',
+    title: 'Three strengths I can bring to the role',
+    q: 'What are your main strengths?',
     questions: [
-      'What three things would you bring to this role and the company?',
+      'What are your main strengths?',
+      'What strengths would you bring to this role?',
       'What differentiates you from other candidates?',
       'Why should we hire you?',
-      'How would you combine your technical knowledge with business needs?',
-      'What value does your healthcare experience bring to this role?'
+      'How would you combine your technical knowledge with business needs?'
     ],
     contributions: [
       {
-        title: 'Connecting artificial intelligence, data and business',
-        contribution: 'I bring a combination of technical knowledge in Python, SQL, LLMs and LangGraph with the ability to understand the business decision or problem that each project needs to address.',
-        value: 'This allows me to use technology with a clear objective and translate technical results into useful information for non-technical stakeholders and decision-making.',
-        evidence: 'At PHCA, I developed a document assistant with LangGraph and vector search, and at ASISA I applied AI to organise incidents and retrieve internal solutions.'
+        title: 'Analytical and structured problem-solving',
+        contribution: 'One of my main strengths is approaching problems in a structured way. Before proposing a solution, I try to understand the context, separate the relevant variables and organise the information to determine what deserves attention.',
+        value: 'This helps me address complex problems clearly and turn scattered information into concrete steps, without rushing towards a particular tool.',
+        evidence: 'I have applied this way of working in different environments —a hospital, a health insurer and a primary care group— combining clinical, operational and business information.'
       },
       {
-        title: 'A broad and specialised view of healthcare',
-        contribution: 'My Biomedical Engineering background and my experience in a hospital, a health insurer and a US primary care group allow me to understand clinical, operational and business perspectives.',
-        value: 'I can quickly understand different stakeholders, identify the limitations of healthcare data and translate sector needs into analytical or technological solutions.',
-        evidence: 'I have worked on surgical planning, healthcare competitive intelligence, analytics for health centres and an AI project applied to PET/MR reconstruction with Quirónsalud.'
+        title: 'Ability to connect technical, clinical and business contexts',
+        contribution: 'My Biomedical Engineering background and my experience in a hospital, a health insurer and a US primary care group allow me to understand both the technical side and the needs of the people who will use a solution.',
+        value: 'I can translate needs between technical and non-technical stakeholders, adapt the level of detail and keep the focus on practical usefulness.',
+        evidence: 'I have worked on surgical planning, healthcare competitive intelligence and analytics for healthcare centres, as well as contributing to data and technology projects.'
       },
       {
-        title: 'Initiative and execution with measurable impact',
-        contribution: 'I bring the autonomy to take projects from start to finish, learn new tools and coordinate with others until an idea becomes a usable solution.',
-        value: 'This allows me to contribute from the early stages, remain focused on delivery and measure whether the work produces a real improvement.',
-        evidence: 'I contributed to reducing surgical waiting lists by 22%, improved processing inefficiencies by 10%, and my dashboards supported decisions associated with a 20% reduction in operational costs across seven centres.'
+        title: 'Initiative to improve and automate processes',
+        contribution: 'When I work on a project and identify a repetitive task or a source of inefficiency, I try to assess whether it can be simplified, automated or made more useful for the team.',
+        value: 'The aim is not to use technology for its own sake, but to improve the way people work, make information easier to update and help identify potential issues earlier.',
+        evidence: 'At ASISA, I automated a PowerPoint report connected directly to SQL, so that the data updated automatically. At PHCA Medical Group, I transformed static Excel files into interactive dashboards using Apps Script, with anomaly detection and email notifications.'
       }
     ]
   }
@@ -86,5 +86,5 @@ function addRoleContributions(target){
 if (typeof DEFAULT_STAR_STORIES !== 'undefined') addRoleContributions(DEFAULT_STAR_STORIES);
 if (typeof DEFAULT_PROFILE !== 'undefined') addRoleContributions(DEFAULT_PROFILE.starStories);
 if (typeof COMPETENCIES !== 'undefined' && !COMPETENCIES.some(item => item.k === 'value')) {
-  COMPETENCIES.push({ k: 'value', l: 'Propuesta de valor' });
+  COMPETENCIES.push({ k: 'value', l: 'Fortalezas' });
 }
