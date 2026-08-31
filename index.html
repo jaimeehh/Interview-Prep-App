@@ -315,6 +315,29 @@
       <div class="page-sub">Guarda preguntas reales y asócialas a una story o a una respuesta propia. Se compartirán con cualquier persona que abra este perfil.</div>
       <div class="sync-status syncing" id="cqSyncStatus" role="status" aria-live="polite">Cargando preguntas compartidas…</div>
 
+      <div class="card question-bank-card">
+        <div class="card-title">Banco profesional de entrevista · <span id="questionBankTotal">100</span> preguntas</div>
+        <p class="mini-copy">Preguntas previsibles para entrevistas orientadas a MedTech, IT/Data e inteligencia artificial. Filtra el área y practica con una selección aleatoria desde Simulación.</p>
+        <div class="question-bank-stats" id="questionBankStats"></div>
+        <div class="form-grid">
+          <div>
+            <label class="lbl">Área profesional</label>
+            <select class="inp" id="questionBankRole" onchange="renderQuestionBank()">
+              <option value="all">Todas las áreas</option>
+              <option value="medtech">MedTech</option>
+              <option value="it">IT / Data</option>
+              <option value="ai">Inteligencia artificial</option>
+              <option value="general">Transversales</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Buscar en el banco</label>
+            <input class="inp" id="questionBankSearch" placeholder="producto, SQL, RAG, ventas..." oninput="renderQuestionBank()" />
+          </div>
+        </div>
+        <div id="questionBankList"></div>
+      </div>
+
       <div class="card">
         <div class="card-title" id="cqFormTitle">+ Añadir pregunta</div>
         <input type="hidden" id="cqId" />
@@ -449,10 +472,10 @@
           <input class="inp" id="iRole" placeholder="Data Consultant, Business Analyst…" style="margin-bottom:12px;" />
           <label class="lbl">Tipo de proceso</label>
           <div class="tgrid" style="margin-bottom:12px;">
-            <div class="tcard sel" id="tc-consulting" onclick="selType('consulting')"><div class="tcard-ico">🏢</div><div class="tcard-lbl">Consultoría</div><div class="tcard-sub">MBB/Big4</div></div>
-            <div class="tcard" id="tc-data" onclick="selType('data')"><div class="tcard-ico">📊</div><div class="tcard-lbl">Data/Tech</div><div class="tcard-sub">IQVIA…</div></div>
-            <div class="tcard" id="tc-health" onclick="selType('health')"><div class="tcard-ico">🏥</div><div class="tcard-lbl">Healthcare</div><div class="tcard-sub">Corporativo</div></div>
-            <div class="tcard" id="tc-general" onclick="selType('general')"><div class="tcard-ico">⚡</div><div class="tcard-lbl">General</div><div class="tcard-sub">Competencias</div></div>
+            <div class="tcard sel" id="tc-medtech" onclick="selType('medtech')"><div class="tcard-ico">🩺</div><div class="tcard-lbl">MedTech</div><div class="tcard-sub">Healthcare & dispositivos</div></div>
+            <div class="tcard" id="tc-it" onclick="selType('it')"><div class="tcard-ico">💻</div><div class="tcard-lbl">IT / Data</div><div class="tcard-sub">Sistemas & negocio</div></div>
+            <div class="tcard" id="tc-ai" onclick="selType('ai')"><div class="tcard-ico">✦</div><div class="tcard-lbl">Inteligencia artificial</div><div class="tcard-sub">ML, LLMs & datos</div></div>
+            <div class="tcard" id="tc-general" onclick="selType('general')"><div class="tcard-ico">⚡</div><div class="tcard-lbl">Transversal</div><div class="tcard-sub">Competencias generales</div></div>
           </div>
           <label class="lbl">Modo de respuesta</label>
           <div style="display:flex;gap:8px;margin-bottom:4px;">
@@ -467,7 +490,7 @@
       </div>
       <div class="load-ov" id="loadOv">
         <div class="ldots"><span></span><span></span><span></span></div>
-        <p>Generando preguntas para <strong id="loadCo">tu entrevista</strong>…</p>
+        <p>Seleccionando preguntas del banco para <strong id="loadCo">tu entrevista</strong>…</p>
       </div>
       <div id="interviewWrap" style="display:none;">
         <div class="prog-meta">
@@ -575,6 +598,7 @@
 <script src="ai-stories.js"></script>
 <script src="story-profiles.js"></script>
 <script src="custom-questions.js"></script>
+<script src="question-bank.js"></script>
 <script src="app.js"></script>
 <script>
 if ('serviceWorker' in navigator) {
