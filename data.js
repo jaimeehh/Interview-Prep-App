@@ -658,9 +658,7 @@ const DEFAULT_PROFILE = {
     "IQVIA",
     "Roche",
     "Sanitas",
-    "ASISA",
-    "GE HealthCare",
-    "Movistar Prosegur Alarmas"
+    "ASISA"
   ],
   "languages": {
     "interface": "es",
