@@ -126,7 +126,7 @@ const DEFAULT_STAR_STORIES = [
     "sit": "El Hospital Universitario del Sureste estaba entre los últimos en posicionamiento de listas de espera quirúrgicas en la Comunidad de Madrid, afectando a reputación y satisfacción del paciente.",
     "tsk": "Me encargaron desarrollar un software de scheduling quirúrgico para optimizar la asignación de quirófanos y tiempos de cirugía con un deadline ajustado.",
     "act": "Trabajé en iteraciones rápidas: entendí el flujo actual de los médicos, desarrollé un prototipo funcional, lo probé con cirujanos, incorporé feedback y mantuve reuniones semanales para ajustar el software a necesidades reales.",
-    "res": "Se redujeron las listas de espera quirúrgicas en un 30% en los primeros meses y los médicos adoptaron el software porque habían participado desde el inicio.",
+    "res": "El modelo mejoró la asignación de citas quirúrgicas y contribuyó a reducir las listas de espera en un 22%.",
     "lrn": "Aprendí a priorizar utilidad real sobre perfección técnica cuando hay presión de tiempo."
   },
   {
@@ -799,7 +799,7 @@ const DEFAULT_PROFILE = {
       "sit": "El Hospital Universitario del Sureste estaba entre los últimos en posicionamiento de listas de espera quirúrgicas en la Comunidad de Madrid, afectando a reputación y satisfacción del paciente.",
       "tsk": "Me encargaron desarrollar un software de scheduling quirúrgico para optimizar la asignación de quirófanos y tiempos de cirugía con un deadline ajustado.",
       "act": "Trabajé en iteraciones rápidas: entendí el flujo actual de los médicos, desarrollé un prototipo funcional, lo probé con cirujanos, incorporé feedback y mantuve reuniones semanales para ajustar el software a necesidades reales.",
-      "res": "Se redujeron las listas de espera quirúrgicas en un 30% en los primeros meses y los médicos adoptaron el software porque habían participado desde el inicio.",
+      "res": "El modelo mejoró la asignación de citas quirúrgicas y contribuyó a reducir las listas de espera en un 22%.",
       "lrn": "Aprendí a priorizar utilidad real sobre perfección técnica cuando hay presión de tiempo."
     },
     {
@@ -1033,7 +1033,7 @@ const STORY_EN_TRANSLATIONS = {
     sit: "The Hospital Universitario del Sureste was among the lowest-ranked hospitals in the Community of Madrid in terms of surgical waiting lists. This was urgent because it affected both the hospital's reputation and patient satisfaction.",
     tsk: "I was asked to develop surgical scheduling software to optimise operating room allocation and surgery times. The project had a tight deadline and required constant collaboration with doctors who had very limited availability.",
     act: "I worked in fast iterations. First, I understood the doctors' current workflow without trying to change everything at once. Then I built a functional prototype, tested it with a small group of surgeons, incorporated their feedback quickly and scaled it. I held weekly meetings with the medical team to ensure the tool solved real needs rather than my assumptions.",
-    res: "We reduced surgical waiting lists by 30% in the first months. The hospital significantly improved its position in the Community of Madrid, and doctors adopted the software with little resistance because they had been involved from the beginning.",
+    res: "The model improved surgical appointment allocation and contributed to a 22% reduction in waiting lists.",
     lrn: "I learned that under pressure, the priority is not technical perfection but building something useful, validating it quickly with users and iterating fast."
   },
   "mindsafe-failure": {

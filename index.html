@@ -226,7 +226,17 @@
     <!-- ── STAR ── -->
     <div id="tab-star" class="tab-panel">
       <div class="page-title">Banco STAR</div>
-      <div class="page-sub">Estudia y practica cada historia en español, inglés o en paralelo</div>
+      <div class="page-sub">Aprende siete historias base y cambia el enfoque según el CV, sin memorizar respuestas nuevas</div>
+      <div class="express-plan" aria-label="Plan intensivo de tres días">
+        <div class="express-plan-title">⚡ Plan intensivo · 3 días</div>
+        <div class="express-plan-grid">
+          <div><strong>Día 1</strong><span>ASISA · Hospital · PHCA</span></div>
+          <div><strong>Día 2</strong><span>Quirón · Liderazgo · MindSafe · Florida</span></div>
+          <div><strong>Día 3</strong><span>Recuperación sin mirar · Mixto · Simulación</span></div>
+        </div>
+      </div>
+      <div class="setup-label story-role-label">CV que estás preparando</div>
+      <div class="story-role-filter" id="storyRoleFilter"></div>
       <div class="setup-label star-lang-label">Idioma de las historias</div>
       <div class="segmented star-lang-segment" id="starLangSegment">
         <button class="seg-btn sel" id="starLang-es" onclick="setStarLangMode('es')">🇪🇸 Español</button>
@@ -503,6 +513,7 @@
 <script src="development-stories.js"></script>
 <script src="value-stories.js"></script>
 <script src="ai-stories.js"></script>
+<script src="story-profiles.js"></script>
 <script src="custom-questions.js"></script>
 <script src="app.js"></script>
 <script>
