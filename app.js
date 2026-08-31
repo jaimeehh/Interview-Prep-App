@@ -2496,14 +2496,14 @@ function customQuestionFamily(item){
 }
 
 function chooseDiverseCustomQuestions(items, count){
-  const recent = new Set(getFlashcardRecentKeys());
+  const profile = getCurrentProfile();
+  const recent = new Set(Array.isArray(profile?.flashcardCustomRecentIds) ? profile.flashcardCustomRecentIds : []);
   const source = shuffleInterviewItems(items || []);
   const selected = [];
   const families = new Set();
   source.forEach(function(item){
     const family = customQuestionFamily(item);
-    const key = 'custom:' + item.id;
-    if(selected.length < count && !families.has(family) && !recent.has(key)){
+    if(selected.length < count && !families.has(family) && !recent.has(item.id)){
       selected.push(item);
       families.add(family);
     }
@@ -2516,6 +2516,13 @@ function chooseDiverseCustomQuestions(items, count){
         families.add(family);
       }
     });
+  }
+  if(CU){
+    const current = getUD(CU.username);
+    current.flashcardCustomRecentIds = [...selected.map(function(item){ return item.id; }), ...recent]
+      .filter(function(value,index,array){ return value && array.indexOf(value) === index; })
+      .slice(0, STORY_QUESTION_RECENT_LIMIT);
+    saveUD(CU.username, current);
   }
   return selected;
 }
