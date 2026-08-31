@@ -1594,7 +1594,7 @@ ESTRUCTURA: Presente (master+ASISA) → Pasado (logros con métricas) → Futuro
 /* ══════════════════════════════════
    PRACTICE
 ══════════════════════════════════ */
-let practiceType='consulting',practiceMode='text';
+let practiceType='medtech',practiceMode='text';
 let questions=[],currentQ=0,modelShown=false;
 let camStream=null,timerSec=90,timerRunning=false,timerInterval=null;
 let recognition=null,speechActive=false,speechActiveV=false;
@@ -2210,7 +2210,7 @@ function renderHistory(){
     </div>`+
     h.map(x=>`<div class="hist-card">
       <div class="hist-top">
-        <div><div class="hist-co">${x.company}</div><div style="font-size:12px;color:var(--text3);margin-top:2px;">${x.role} · ${{consulting:'Consultoría',data:'Data/Tech',health:'Healthcare',general:'General'}[x.type]||'—'}</div></div>
+        <div><div class="hist-co">${x.company}</div><div style="font-size:12px;color:var(--text3);margin-top:2px;">${x.role} · ${{consulting:'Consultoría',data:'Data/Tech',health:'Healthcare',medtech:'MedTech',it:'IT / Data',ai:'Inteligencia artificial',general:'Transversal'}[x.type]||'—'}</div></div>
         <div class="hist-date">${x.date}</div>
       </div>
       <div class="hist-stats">
@@ -2225,3 +2225,454 @@ function renderHistory(){
 /* INIT */
 buildFilters();
 renderStar();
+
+
+/* ══════════════════════════════════
+   PROFESSIONAL QUESTION BANK + DIVERSE ROTATION
+   The bank is the source for simulation questions. Stories are selected
+   by category/family and rotated across sessions.
+══════════════════════════════════ */
+const QUESTION_BANK_RECENT_LIMIT = 64;
+const STORY_ROTATION_RECENT_LIMIT = 10;
+const STORY_QUESTION_RECENT_LIMIT = 30;
+var storyRotationIds = new Set();
+var storyRotationQuestionKeys = new Set();
+var simulationModelStoryIds = new Set();
+
+function shuffleInterviewItems(items){
+  return [...(items || [])].sort(function(){ return Math.random() - 0.5; });
+}
+
+function bankRolesForPracticeType(type){
+  if(type === 'medtech' || type === 'health') return ['medtech'];
+  if(type === 'it' || type === 'data') return ['it'];
+  if(type === 'ai') return ['ai'];
+  return ['medtech','it','ai','general'];
+}
+
+function getBankPoolForPracticeType(type){
+  const roles = bankRolesForPracticeType(type);
+  const bank = typeof INTERVIEW_QUESTION_BANK !== 'undefined' ? INTERVIEW_QUESTION_BANK : [];
+  const primary = bank.filter(function(item){
+    return (item.roles || []).some(function(role){ return roles.includes(role); });
+  });
+  return primary.length ? primary : bank;
+}
+
+function getQuestionBankRecentIds(){
+  const profile = getCurrentProfile();
+  return Array.isArray(profile?.questionBankRecentIds) ? profile.questionBankRecentIds : [];
+}
+
+function saveQuestionBankRecentIds(ids){
+  if(!CU) return;
+  const profile = getUD(CU.username);
+  const old = Array.isArray(profile.questionBankRecentIds) ? profile.questionBankRecentIds : [];
+  profile.questionBankRecentIds = [...ids, ...old]
+    .filter(function(value,index,array){ return value && array.indexOf(value) === index; })
+    .slice(0, QUESTION_BANK_RECENT_LIMIT);
+  saveUD(CU.username, profile);
+}
+
+function selectDiverseInterviewBankQuestions(type, count){
+  const pool = getBankPoolForPracticeType(type);
+  const recent = new Set(getQuestionBankRecentIds());
+  const source = shuffleInterviewItems(pool.filter(function(item){ return !recent.has(item.id); }))
+    .concat(shuffleInterviewItems(pool.filter(function(item){ return recent.has(item.id); })));
+  const selected = [];
+  const usedFamilies = new Set();
+  const usedCategories = new Set();
+
+  function take(predicate){
+    const index = source.findIndex(function(item){
+      return !selected.includes(item) && predicate(item);
+    });
+    if(index < 0) return false;
+    const item = source[index];
+    selected.push(item);
+    usedFamilies.add(item.family);
+    usedCategories.add(item.category);
+    return true;
+  }
+
+  while(selected.length < count && take(function(item){
+    return !usedFamilies.has(item.family) && !usedCategories.has(item.category);
+  })){}
+  while(selected.length < count && take(function(item){
+    return !usedFamilies.has(item.family);
+  })){}
+  while(selected.length < count && take(function(){ return true; })){}
+  saveQuestionBankRecentIds(selected.map(function(item){ return item.id; }));
+  return selected.slice(0, count);
+}
+
+function bankLanguageForIndex(index){
+  return [ 'es', 'en', 'es', 'en', 'es', 'es', 'en', 'es' ][index] || 'es';
+}
+
+function buildSimulationQuestionsFromBank(type, company, count){
+  return selectDiverseInterviewBankQuestions(type, count).map(function(item,index){
+    const lang = bankLanguageForIndex(index);
+    return {
+      type: 'bank',
+      bankId: item.id,
+      bankFamily: item.family,
+      bankRole: item.roles[0],
+      company: company,
+      category: item.category,
+      lang: lang,
+      question: item[lang] || item.es
+    };
+  });
+}
+
+function renderQuestionBank(){
+  const list = document.getElementById('questionBankList');
+  if(!list || typeof INTERVIEW_QUESTION_BANK === 'undefined') return;
+  const role = document.getElementById('questionBankRole')?.value || 'all';
+  const search = (document.getElementById('questionBankSearch')?.value || '').trim().toLowerCase();
+  const filtered = INTERVIEW_QUESTION_BANK.filter(function(item){
+    const roleMatch = role === 'all' || (item.roles || []).includes(role);
+    const haystack = [item.category,item.family,item.es,item.en].join(' ').toLowerCase();
+    return roleMatch && (!search || haystack.includes(search));
+  });
+  const total = document.getElementById('questionBankTotal');
+  if(total) total.textContent = INTERVIEW_QUESTION_BANK.length;
+  const stats = document.getElementById('questionBankStats');
+  if(stats){
+    const roleCounts = {
+      medtech: INTERVIEW_QUESTION_BANK.filter(function(item){ return item.roles.includes('medtech'); }).length,
+      it: INTERVIEW_QUESTION_BANK.filter(function(item){ return item.roles.includes('it'); }).length,
+      ai: INTERVIEW_QUESTION_BANK.filter(function(item){ return item.roles.includes('ai'); }).length
+    };
+    stats.innerHTML =
+      '<div class="question-bank-stat"><strong>' + INTERVIEW_QUESTION_BANK.length + '</strong>Total</div>' +
+      '<div class="question-bank-stat"><strong>' + roleCounts.medtech + '</strong>MedTech</div>' +
+      '<div class="question-bank-stat"><strong>' + roleCounts.it + '</strong>IT / Data</div>' +
+      '<div class="question-bank-stat"><strong>' + roleCounts.ai + '</strong>IA</div>' +
+      '<div class="question-bank-stat"><strong>' + filtered.length + '</strong>Mostradas</div>';
+  }
+  if(!filtered.length){
+    list.innerHTML = '<div class="bank-empty">No hay preguntas que coincidan con el filtro.</div>';
+    return;
+  }
+  list.innerHTML = '<div class="question-bank-list">' + filtered.map(function(item,index){
+    const roles = (item.roles || []).map(function(itemRole){
+      return '<span class="bank-role-badge">' + escapeHtml((INTERVIEW_BANK_ROLE_LABELS || {})[itemRole] || itemRole) + '</span>';
+    }).join('');
+    return '<div class="bank-question">' +
+      '<div class="bank-question-top">' +
+        '<div class="bank-question-number">' + String(index + 1).padStart(2,'0') + '</div>' +
+        '<div class="bank-question-body">' +
+          '<div class="bank-question-meta">' + roles + '<span class="bank-category-badge">' + escapeHtml(item.category) + '</span></div>' +
+          '<div class="bank-question-text">' + escapeHtml(item.es) + '</div>' +
+          '<div class="bank-question-en">🇬🇧 ' + escapeHtml(item.en) + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+function getRecentStoryIds(){
+  const profile = getCurrentProfile();
+  return Array.isArray(profile?.flashcardStoryRecentIds) ? profile.flashcardStoryRecentIds : [];
+}
+
+function saveStoryRotation(storyIds, questionKeys){
+  if(!CU) return;
+  const profile = getUD(CU.username);
+  const oldStories = Array.isArray(profile.flashcardStoryRecentIds) ? profile.flashcardStoryRecentIds : [];
+  const oldQuestions = Array.isArray(profile.flashcardQuestionRecentKeys) ? profile.flashcardQuestionRecentKeys : [];
+  profile.flashcardStoryRecentIds = [...storyIds, ...oldStories]
+    .filter(function(value,index,array){ return value && array.indexOf(value) === index; })
+    .slice(0, STORY_ROTATION_RECENT_LIMIT);
+  profile.flashcardQuestionRecentKeys = [...questionKeys, ...oldQuestions]
+    .filter(function(value,index,array){ return value && array.indexOf(value) === index; })
+    .slice(0, STORY_QUESTION_RECENT_LIMIT);
+  saveUD(CU.username, profile);
+}
+
+function storyCategory(story){
+  return story?.tag || story?.tagLabel || story?.format || 'general';
+}
+
+function selectDiverseStories(count, company){
+  const unique = [];
+  const seen = new Set();
+  (SD || []).forEach(function(story){
+    if(story?.id && !seen.has(story.id)){
+      seen.add(story.id);
+      unique.push(story);
+    }
+  });
+  const recent = new Set(getRecentStoryIds());
+  const fresh = shuffleInterviewItems(unique.filter(function(story){ return !recent.has(story.id); }));
+  const fallback = shuffleInterviewItems(unique.filter(function(story){ return recent.has(story.id); }));
+  const source = fresh.concat(fallback);
+  const selected = [];
+  const usedCategories = new Set();
+
+  function takeFromSource(predicate){
+    const index = source.findIndex(function(story){
+      return !selected.includes(story) && predicate(story);
+    });
+    if(index < 0) return false;
+    selected.push(source[index]);
+    usedCategories.add(storyCategory(source[index]));
+    return true;
+  }
+
+  const categoryOrder = shuffleInterviewItems([...new Set(source.map(storyCategory))]);
+  categoryOrder.forEach(function(category){
+    if(selected.length >= count) return;
+    takeFromSource(function(story){
+      return storyCategory(story) === category && !usedCategories.has(storyCategory(story));
+    });
+  });
+  while(selected.length < count && takeFromSource(function(story){
+    return !selected.includes(story);
+  })){}
+
+  storyRotationIds = new Set(selected.map(function(story){ return story.id; }));
+  return selected.slice(0, count);
+}
+
+function storyQuestionCandidates(story, lang){
+  const direct = story?.questions?.[lang] || [];
+  if(lang === 'en'){
+    return [...direct, ...(story?.en?.questions || []), story?.en?.q, ...(FALLBACK_EN_QUESTIONS[story?.tag] || [])]
+      .filter(Boolean);
+  }
+  return [...direct, story?.q].filter(Boolean);
+}
+
+function chooseStoryQuestion(story, lang){
+  const candidates = shuffleInterviewItems(storyQuestionCandidates(story,lang));
+  const profile = getCurrentProfile();
+  const recent = new Set(profile?.flashcardQuestionRecentKeys || []);
+  const fresh = candidates.filter(function(question){
+    const key = hashText(story.id + ':' + lang + ':' + question);
+    return !recent.has(key) && !storyRotationQuestionKeys.has(key);
+  });
+  const chosen = fresh[0] || candidates.find(function(question){
+    const key = hashText(story.id + ':' + lang + ':' + question);
+    return !storyRotationQuestionKeys.has(key);
+  }) || candidates[0] || story.q || '';
+  storyRotationQuestionKeys.add(hashText(story.id + ':' + lang + ':' + chosen));
+  return chosen;
+}
+
+function storyLanguageForIndex(index){
+  if(fcLangMode === 'es') return 'es';
+  if(fcLangMode === 'en') return 'en';
+  return [ 'es', 'en', 'es', 'en', 'es' ][index] || 'es';
+}
+
+function buildCardsForStories(stories, company, type){
+  const cards = stories.map(function(story,index){
+    const lang = storyLanguageForIndex(index);
+    const question = chooseStoryQuestion(story, lang);
+    return {
+      type: type || 'star',
+      q: company ? companyQuestionText(question, company, lang) : question,
+      star: story,
+      lang: lang,
+      category: story.tagLabel || 'STAR',
+      company: company,
+      question: question,
+      key: 'story:' + story.id + ':' + lang + ':' + hashText(question) + ':' + (company || '')
+    };
+  });
+  saveStoryRotation(
+    stories.map(function(story){ return story.id; }),
+    cards.map(function(card){ return hashText(card.star.id + ':' + card.lang + ':' + card.question); })
+  );
+  return cards;
+}
+
+function customQuestionFamily(item){
+  const company = (item.companies || []).join('|').toLowerCase();
+  return company + ':' + (item.competency || 'general');
+}
+
+function chooseDiverseCustomQuestions(items, count){
+  const profile = getCurrentProfile();
+  const recent = new Set(Array.isArray(profile?.flashcardCustomRecentIds) ? profile.flashcardCustomRecentIds : []);
+  const source = shuffleInterviewItems(items || []);
+  const selected = [];
+  const families = new Set();
+  source.forEach(function(item){
+    const family = customQuestionFamily(item);
+    if(selected.length < count && !families.has(family) && !recent.has(item.id)){
+      selected.push(item);
+      families.add(family);
+    }
+  });
+  if(selected.length < count){
+    source.forEach(function(item){
+      const family = customQuestionFamily(item);
+      if(selected.length < count && !selected.includes(item) && !families.has(family)){
+        selected.push(item);
+        families.add(family);
+      }
+    });
+  }
+  if(CU){
+    const current = getUD(CU.username);
+    current.flashcardCustomRecentIds = [...selected.map(function(item){ return item.id; }), ...recent]
+      .filter(function(value,index,array){ return value && array.indexOf(value) === index; })
+      .slice(0, STORY_QUESTION_RECENT_LIMIT);
+    saveUD(CU.username, current);
+  }
+  return selected;
+}
+
+function pickStoryForQuestion(question, company){
+  const text = ((question || '') + ' ' + (company || '')).toLowerCase();
+  const recent = new Set(getRecentStoryIds());
+  const candidates = (SD || []).filter(function(story){
+    return !storyRotationIds.has(story.id);
+  });
+  const available = candidates.filter(function(story){ return !recent.has(story.id); });
+  const pool = (available.length ? available : candidates).length ? (available.length ? available : candidates) : (SD || []);
+  const scored = shuffleInterviewItems(pool).map(function(story){
+    let score = 0;
+    const hay = [story.title,story.q,story.tag,story.tagLabel,story.sit,story.act,story.res].join(' ').toLowerCase();
+    if(text.includes('senior') || text.includes('directiv') || text.includes('stakeholder') || text.includes('comunica')) score += storyCategory(story) === 'communication' ? 4 : 0;
+    if(text.includes('presión') || text.includes('pressure') || text.includes('deadline')) score += storyCategory(story) === 'pressure' ? 4 : 0;
+    if(text.includes('lider') || text.includes('lead') || text.includes('equipo') || text.includes('team')) score += ['leadership','teamwork'].includes(storyCategory(story)) ? 4 : 0;
+    if(text.includes('fracaso') || text.includes('failure') || text.includes('error')) score += storyCategory(story) === 'failure' ? 4 : 0;
+    if(text.includes('internacional') || text.includes('international') || text.includes('adapt')) score += storyCategory(story) === 'adaptability' ? 4 : 0;
+    if(text.includes('iniciativa') || text.includes('initiative') || text.includes('datos') || text.includes('data')) score += storyCategory(story) === 'initiative' ? 2 : 0;
+    score += Math.random();
+    return {story:story,score:score};
+  }).sort(function(a,b){ return b.score - a.score; });
+  const chosen = scored[0]?.story || pool[0];
+  if(chosen) storyRotationIds.add(chosen.id);
+  return chosen;
+}
+
+function pickSimulationStory(question, company){
+  const text = ((question || '') + ' ' + (company || '')).toLowerCase();
+  const candidates = (SD || []).filter(function(story){ return !simulationModelStoryIds.has(story.id); });
+  const pool = candidates.length ? candidates : (SD || []);
+  const scored = shuffleInterviewItems(pool).map(function(story){
+    const hay = [story.title,story.q,story.tag,story.tagLabel,story.sit,story.act,story.res].join(' ').toLowerCase();
+    let score = Math.random();
+    if(text.includes('motivat') && storyCategory(story) === 'initiative') score += 1;
+    if(text.includes('lider') && storyCategory(story) === 'leadership') score += 1;
+    if(text.includes('presión') || text.includes('pressure')) if(storyCategory(story) === 'pressure') score += 1;
+    if(text.includes('ia') || text.includes('ai') || text.includes('modelo') || text.includes('model')) if(hay.includes('ia') || hay.includes('ai')) score += 1;
+    return {story:story,score:score};
+  }).sort(function(a,b){ return b.score - a.score; });
+  const chosen = scored[0]?.story || pool[0];
+  if(chosen) simulationModelStoryIds.add(chosen.id);
+  return chosen;
+}
+
+function buildCompanyCards(company){
+  storyRotationQuestionKeys = new Set();
+  const profile = getCurrentProfile();
+  const customItems = chooseDiverseCustomQuestions(
+    (profile?.customQuestions || []).filter(function(item){
+      return !item.companies?.length || item.companies.some(function(c){ return c.toLowerCase() === company.toLowerCase(); });
+    }),
+    1
+  );
+  const stories = selectDiverseStories(Math.max(0, 5 - customItems.length), company);
+  const customCards = customItems.map(function(item){
+    return {
+      type:'custom',
+      q:item.question,
+      custom:item,
+      lang:item.lang === 'en' ? 'en' : 'es',
+      category:item.competency || 'Personalizada',
+      company:company,
+      key:'custom:' + item.id + ':' + company.toLowerCase()
+    };
+  });
+  return customCards.concat(buildCardsForStories(stories, company, 'company-story')).sort(function(){ return Math.random() - 0.5; });
+}
+
+function buildStarCards(){
+  storyRotationQuestionKeys = new Set();
+  const stories = selectDiverseStories(Math.min(5, (SD || []).length), '');
+  return buildCardsForStories(stories, '', 'star');
+}
+
+function buildQuestionCards(){
+  const profile = getCurrentProfile();
+  const custom = chooseDiverseCustomQuestions(profile?.customQuestions || [], 5).map(function(item){
+    return {
+      type:'custom',
+      q:item.question,
+      custom:item,
+      lang:item.lang === 'en' ? 'en' : 'es',
+      category:item.competency || 'Personalizada',
+      key:'custom:' + item.id
+    };
+  });
+  if(custom.length) return custom;
+  return buildStarCards();
+}
+
+function startInterview(){
+  const companyInput = document.getElementById('iCo');
+  const roleInput = document.getElementById('iRole');
+  const company = companyInput?.value.trim() || '';
+  const role = roleInput?.value.trim() || '';
+  if(!company){ alert('Introduce la empresa'); return; }
+
+  document.getElementById('startTxt').style.display='none';
+  document.getElementById('startSpin').style.display='block';
+  document.getElementById('startBtn').disabled=true;
+  document.getElementById('practiceSetup').style.display='none';
+  document.getElementById('loadOv').style.display='block';
+  document.getElementById('loadCo').textContent=company;
+
+  storyRotationIds = new Set();
+  storyRotationQuestionKeys = new Set();
+  simulationModelStoryIds = new Set();
+  questions = buildSimulationQuestionsFromBank(practiceType, company, 8).map(function(item){
+    return Object.assign(item, { role: role });
+  });
+
+  document.getElementById('loadOv').style.display='none';
+  document.getElementById('interviewWrap').style.display='block';
+  currentQ=0;
+  sessionAnswered=0;
+  sessionStart=new Date();
+  renderQ();
+  document.getElementById('startTxt').style.display='inline';
+  document.getElementById('startSpin').style.display='none';
+  document.getElementById('startBtn').disabled=false;
+}
+
+function toggleModel(){
+  const box=document.getElementById('modelBox');
+  if(modelShown){ box.style.display='none'; modelShown=false; return; }
+  const q=questions[currentQ];
+  const profile=getCurrentProfile();
+  const custom=q.customId ? profile?.customQuestions?.find(function(item){ return item.id===q.customId; }) : null;
+  if(custom){
+    box.style.display='block';
+    if(custom.answerType === 'custom'){
+      document.getElementById('modelContent').innerHTML='<div class="step"><div class="slbl lr">Respuesta guardada</div><div class="stxt hi">' + escapeHtml(custom.customAnswer) + '</div></div>';
+    }else{
+      const linked=getStoryById(custom.linkedStoryId);
+      if(linked) document.getElementById('modelContent').innerHTML=modelStoryHtml(linked, q.lang || 'es');
+    }
+    modelShown=true;
+    return;
+  }
+  const story=q.bankId
+    ? pickSimulationStory(q.question, q.company)
+    : pickStoryForQuestion(q.question, q.company);
+  box.style.display='block';
+  if(story) document.getElementById('modelContent').innerHTML=modelStoryHtml(story, q.lang || 'es');
+  modelShown=true;
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+  renderQuestionBank();
+});

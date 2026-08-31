@@ -565,3 +565,19 @@ body{
   .study-flow-step{display:grid;grid-template-columns:24px 1fr;column-gap:9px;align-items:start}
   .study-flow-step>span{grid-row:span 2;margin:0}
 }
+
+/* ══ PROFESSIONAL QUESTION BANK ══ */
+.question-bank-stats{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 12px;}
+.question-bank-stat{padding:7px 10px;border:1px solid var(--border);border-radius:var(--rsm);background:var(--warm0);font-size:11px;color:var(--text2);}
+.question-bank-stat strong{display:block;font-family:'Fraunces',sans-serif;font-size:18px;color:var(--warm5);line-height:1.1;margin-bottom:2px;}
+.question-bank-list{display:flex;flex-direction:column;gap:8px;}
+.bank-question{border:1px solid var(--border);border-radius:var(--rsm);padding:11px 12px;background:#fff;}
+.bank-question-top{display:flex;align-items:flex-start;gap:9px;}
+.bank-question-number{font-family:'Fraunces',sans-serif;font-size:17px;font-weight:700;color:var(--terra);min-width:28px;}
+.bank-question-body{flex:1;min-width:0;}
+.bank-question-meta{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;}
+.bank-question-text{font-size:13px;line-height:1.55;color:var(--text);font-weight:600;}
+.bank-question-en{font-size:12px;line-height:1.5;color:var(--text3);margin-top:5px;}
+.bank-role-badge{display:inline-flex;padding:3px 7px;border-radius:20px;background:var(--sky-l);color:var(--sky);font-size:10px;font-weight:700;}
+.bank-category-badge{display:inline-flex;padding:3px 7px;border-radius:20px;background:var(--warm1);color:var(--text2);font-size:10px;font-weight:700;}
+.bank-empty{padding:18px;text-align:center;color:var(--text3);font-size:13px;background:var(--warm0);border-radius:var(--rsm);}
