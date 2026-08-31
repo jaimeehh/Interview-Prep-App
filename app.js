@@ -2479,12 +2479,13 @@ function buildCardsForStories(stories, company, type){
       lang: lang,
       category: story.tagLabel || 'STAR',
       company: company,
+      question: question,
       key: 'story:' + story.id + ':' + lang + ':' + hashText(question) + ':' + (company || '')
     };
   });
   saveStoryRotation(
     stories.map(function(story){ return story.id; }),
-    cards.map(function(card){ return hashText(card.star.id + ':' + card.lang + ':' + card.q); })
+    cards.map(function(card){ return hashText(card.star.id + ':' + card.lang + ':' + card.question); })
   );
   return cards;
 }
@@ -2495,7 +2496,7 @@ function customQuestionFamily(item){
 }
 
 function chooseDiverseCustomQuestions(items, count){
-  const recent = new Set(getRecentStoryIds());
+  const recent = new Set(getFlashcardRecentKeys());
   const source = shuffleInterviewItems(items || []);
   const selected = [];
   const families = new Set();
