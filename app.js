@@ -722,6 +722,22 @@ function storyRoleRank(story){
   const tierRank=story.studyTier==='core' ? 0 : story.studyTier==='module' ? 1 : story.studyTier==='optional' ? 2 : 3;
   return fitRank*1000 + tierRank*100 + Number(story.memoryOrder || 99);
 }
+function renderStoryQuestionMap(story){
+  const es=[...(story.questions?.es || [])].filter(Boolean);
+  const en=[...(story.questions?.en || story.en?.questions || [])].filter(Boolean);
+  const unique=(items)=>[...new Set(items)].slice(0,5);
+  const list=(items)=>items.length
+    ? '<ul>' + unique(items).map(question => '<li>' + escapeHtml(question) + '</li>').join('') + '</ul>'
+    : '';
+  const sections=starLangMode==='both'
+    ? '<div><strong>🇪🇸 Español</strong>' + list(es) + '</div><div><strong>🇬🇧 English</strong>' + list(en) + '</div>'
+    : starLangMode==='en'
+      ? '<div><strong>🇬🇧 English</strong>' + list(en) + '</div>'
+      : '<div><strong>🇪🇸 Español</strong>' + list(es) + '</div>';
+  if(!es.length && !en.length) return '';
+  return '<div class="story-question-map"><div class="story-question-map-title">Preguntas que puede responder esta historia</div><p>Una misma experiencia puede servir para responder preguntas formuladas de distintas maneras:</p><div class="story-question-map-lists">' + sections + '</div></div>';
+}
+
 function renderStar(){
   const list=SD
     .filter(s=>activeFilter==='all'||s.tag===activeFilter)
@@ -758,6 +774,7 @@ function renderStar(){
       <div class="scard-body">
         <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
         ${renderStoryRoleGuide(s)}
+        ${renderStoryQuestionMap(s)}
         ${body}
         <button class="btn-t star-practice-btn" onclick="event.stopPropagation();practiceStarStory('${escapeHtml(s.id)}')">${s.format==='development'?'🧠 Practicar estas áreas':s.format==='contributions'?'💼 Practicar estas aportaciones':'🎯 Practicar esta historia'}</button>
       </div>
@@ -1248,12 +1265,18 @@ function renderFcCard(){
     : c.star?.format==='development'
       ? (c.lang==='en'?'Development areas':'Áreas de mejora')
       : c.type==='company-story' ? 'Story adaptada' : 'STAR';
-  document.getElementById('fcFrontBadge').innerHTML=`<span class="badge ${c.lang==='en'?'b-sky':'b-amber'}">${langEmoji} ${escapeHtml(c.category)}</span><span class="badge b-warm">${modeLabel}</span>`;
+  document.getElementById('fcFrontBadge').innerHTML=`<span class="badge ${c.lang==='en'?'b-sky':'b-amber'}">${langEmoji}</span><span class="badge b-warm">${modeLabel}</span>`;
   document.getElementById('fcQuestion').textContent=c.q;
   const associationHint = document.getElementById('fcAssociationHint');
+  const associationHintButton = document.getElementById('fcHintBtn');
   if(associationHint){
     associationHint.textContent = c.star ? storyAssociationHint(c.star,c.lang) : '';
-    associationHint.style.display = c.star ? 'block' : 'none';
+    associationHint.style.display = 'none';
+  }
+  if(associationHintButton){
+    associationHintButton.style.display = c.star ? 'inline-flex' : 'none';
+    associationHintButton.textContent = c.lang === 'en' ? '💡 Show hint' : '💡 Ver pista';
+    associationHintButton.setAttribute('aria-expanded','false');
   }
 
   let backHtml='';
@@ -1277,6 +1300,18 @@ function renderFcCard(){
   card.classList.remove('flipped');
   fcFlipped=false;fcRated=false;
   document.getElementById('fcRateArea').style.display='none';
+}
+
+function toggleAssociationHint(){
+  const hint=document.getElementById('fcAssociationHint');
+  const button=document.getElementById('fcHintBtn');
+  if(!hint || !button || button.style.display==='none') return;
+  const visible=hint.style.display==='block';
+  hint.style.display=visible ? 'none' : 'block';
+  button.textContent=visible
+    ? (fcCards[fcIdx]?.lang==='en' ? '💡 Show hint' : '💡 Ver pista')
+    : (fcCards[fcIdx]?.lang==='en' ? '🙈 Hide hint' : '🙈 Ocultar pista');
+  button.setAttribute('aria-expanded',String(!visible));
 }
 
 function flipCard(){
