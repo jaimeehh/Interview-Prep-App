@@ -1177,7 +1177,19 @@ function buildStarCards(){
 }
 
 function buildBankCards(){
-  const items = selectDiverseInterviewBankQuestions('all', 5);
+  const bank = typeof INTERVIEW_QUESTION_BANK !== 'undefined' ? INTERVIEW_QUESTION_BANK : [];
+  let items = selectDiverseInterviewBankQuestions('all', 5);
+  const prepared = bank.filter(function(item){
+    return typeof getConceptAnswer === 'function' && !!getConceptAnswer(item.id,'es');
+  });
+  const preparedItem = items.find(function(item){
+    return prepared.some(function(answerItem){ return answerItem.id === item.id; });
+  }) || prepared[0];
+  if(preparedItem && !items.some(function(item){ return item.id === preparedItem.id; })){
+    items = [preparedItem].concat(items).slice(0,5);
+  }else if(preparedItem){
+    items = [preparedItem].concat(items.filter(function(item){ return item.id !== preparedItem.id; })).slice(0,5);
+  }
   return items.map(function(item,index){
     const lang = bankLanguageForIndex(index);
     return { type:'bank', bankId:item.id, bankItem:item, q:item[lang] || item.es, lang:lang, category:item.category || 'Banco de preguntas' };
@@ -1189,6 +1201,7 @@ function practiceBankQuestion(id){
   fcMode='bank'; fcLangMode='es';
   fcCards=[{type:'bank',bankId:item.id,bankItem:item,q:item.es,lang:'es',category:item.category || 'Banco de preguntas'}];
   fcIdx=0; fcFlipped=false; fcRated=false; fcRatings={easy:0,medium:0,hard:0};
+  if(typeof goTab === 'function') goTab('cards',null);
   document.getElementById('fcSetupCard').style.display='none';
   document.getElementById('fcDone').style.display='none';
   document.getElementById('fcArea').style.display='block';
@@ -1278,6 +1291,13 @@ function toggleAssociationHint(){
 
 function renderFcCard(){
   const c=fcCards[fcIdx];
+  if(!c){
+    const question=document.getElementById('fcQuestion');
+    const back=document.getElementById('fcBackContent');
+    if(question) question.textContent='No se pudo cargar esta pregunta. Vuelve a empezar el reto.';
+    if(back) back.innerHTML='';
+    return;
+  }
   const pct=Math.round(((fcIdx+1)/fcCards.length)*100);
   document.getElementById('fcProgFill').style.width=pct+'%';
   document.getElementById('fcProgTxt').textContent=`${fcIdx+1} / ${fcCards.length}`;
@@ -1291,7 +1311,7 @@ function renderFcCard(){
       : c.type==='company-story' ? 'Story adaptada'
       : c.type==='bank' ? (c.lang==='en'?'Concept / technical':'Concepto / técnica') : 'STAR';
   document.getElementById('fcFrontBadge').innerHTML=`<span class="badge ${c.lang==='en'?'b-sky':'b-amber'}">${langEmoji}</span><span class="badge b-warm">${modeLabel}</span>`;
-  document.getElementById('fcQuestion').textContent=c.q;
+  document.getElementById('fcQuestion').textContent=c.q || 'Pregunta no disponible';
   const hintButton=document.getElementById('fcHintBtn');
   const hintBox=document.getElementById('fcAssociationHint');
   if(hintButton){
@@ -2719,6 +2739,15 @@ function startInterview(){
   document.getElementById('startBtn').disabled=false;
 }
 
+function conceptModelAnswerHtml(answer,lang){
+  const labels=lang==='en'
+    ? {definition:'Key definition',purpose:'Why it matters',example:'Example',application:'How I would apply it'}
+    : {definition:'Definición clave',purpose:'Para qué sirve',example:'Ejemplo',application:'Cómo lo aplicaría'};
+  return Object.keys(labels).map(function(key){
+    return '<div class="step"><div class="slbl lc">'+labels[key]+'</div><div class="stxt">'+escapeHtml(answer[key] || '')+'</div></div>';
+  }).join('');
+}
+
 function toggleModel(){
   const box=document.getElementById('modelBox');
   if(modelShown){ box.style.display='none'; modelShown=false; return; }
@@ -2736,10 +2765,17 @@ function toggleModel(){
     modelShown=true;
     return;
   }
-  const story=q.bankId
-    ? pickSimulationStory(q.question, q.company)
-    : pickStoryForQuestion(q.question, q.company);
   box.style.display='block';
+  if(q.bankId){
+    const lang=q.lang || 'es';
+    const answer=typeof getConceptAnswer === 'function' ? getConceptAnswer(q.bankId,lang) : null;
+    document.getElementById('modelContent').innerHTML = answer
+      ? '<div class="step"><div class="slbl lc">'+(lang==='en'?'Conceptual answer':'Respuesta conceptual')+'</div></div>' + conceptModelAnswerHtml(answer,lang)
+      : '<div class="step"><div class="slbl lc">'+(lang==='en'?'Reference answer pending':'Respuesta de referencia pendiente')+'</div><div class="stxt">'+(lang==='en'?'This question does not have a prepared reference answer yet. Try answering it in your own words first.':'Esta pregunta todavía no tiene una respuesta de referencia preparada. Intenta responderla primero con tus propias palabras.')+'</div></div>';
+    modelShown=true;
+    return;
+  }
+  const story=pickStoryForQuestion(q.question, q.company);
   if(story) document.getElementById('modelContent').innerHTML=modelStoryHtml(story, q.lang || 'es');
   modelShown=true;
 }
