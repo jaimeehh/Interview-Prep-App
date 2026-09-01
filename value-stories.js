@@ -1,6 +1,6 @@
 const ROLE_CONTRIBUTIONS_STORY = {
   id: 'three-role-contributions',
-  contentVersion: 2,
+  contentVersion: 3,
   format: 'contributions',
   tag: 'value',
   tagLabel: 'Fortalezas',
@@ -24,10 +24,10 @@ const ROLE_CONTRIBUTIONS_STORY = {
   },
   contributions: [
     {
-      title: 'Capacidad analítica y estructurada',
-      contribution: 'Una de mis principales fortalezas es analizar los problemas de forma estructurada. Antes de proponer una solución, intento comprender bien el contexto, separar las variables relevantes y ordenar la información para decidir qué merece atención.',
-      value: 'Esto me ayuda a abordar problemas complejos con claridad y a convertir información dispersa en pasos concretos, sin precipitarme hacia una herramienta determinada.',
-      evidence: 'He aplicado esta forma de trabajar en entornos distintos —un hospital, una aseguradora y un grupo de atención primaria—, combinando información clínica, operativa y de negocio.'
+      title: 'Curiosidad y aprendizaje continuo',
+      contribution: 'Una de mis fortalezas es mantener una actitud de curiosidad profesional y aprendizaje continuo. Me interesa conocer nuevas tecnologías, entender cómo otras personas resuelven problemas y valorar si esas ideas pueden mejorar mi forma de trabajar.',
+      value: 'Esto me ayuda a no quedarme con una única forma de hacer las cosas, identificar alternativas más eficientes y aplicar nuevas ideas de manera práctica y responsable.',
+      evidence: 'Por ejemplo, asisto a eventos de la comunidad Google Developers, donde conozco nuevas tecnologías y formas de optimizar el trabajo. También asistí en Estados Unidos a un evento de Disney sobre inteligencia artificial. Después procuro trasladar las ideas relevantes a los proyectos en los que trabajo, siempre que tengan una utilidad clara.'
     },
     {
       title: 'Capacidad para conectar contextos técnicos, clínicos y de negocio',
@@ -54,10 +54,10 @@ const ROLE_CONTRIBUTIONS_STORY = {
     ],
     contributions: [
       {
-        title: 'Analytical and structured problem-solving',
-        contribution: 'One of my main strengths is approaching problems in a structured way. Before proposing a solution, I try to understand the context, separate the relevant variables and organise the information to determine what deserves attention.',
-        value: 'This helps me address complex problems clearly and turn scattered information into concrete steps, without rushing towards a particular tool.',
-        evidence: 'I have applied this way of working in different environments —a hospital, a health insurer and a primary care group— combining clinical, operational and business information.'
+        title: 'Curiosity and continuous learning',
+        contribution: 'One of my strengths is maintaining a sense of professional curiosity and continuous learning. I am interested in understanding new technologies, learning how other people solve problems and assessing whether those ideas could improve the way I work.',
+        value: 'This helps me avoid relying on a single way of doing things, identify more efficient alternatives and apply new ideas in a practical and responsible way.',
+        evidence: 'For example, I attend Google Developers community events, where I learn about new technologies and ways of optimising work. I also attended a Disney event on artificial intelligence in the United States. I then try to bring relevant ideas into the projects I work on whenever they have clear practical value.'
       },
       {
         title: 'Ability to connect technical, clinical and business contexts',

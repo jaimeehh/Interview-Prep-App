@@ -48,6 +48,7 @@
       <button class="ttab active" onclick="goTab('pitch',this)"><span>🎙️</span> Pitch</button>
       <button class="ttab" onclick="goTab('cards',this)"><span>⚡</span> Reto</button>
       <button class="ttab" onclick="goTab('star',this)"><span>📚</span> STAR</button>
+      <button class="ttab" onclick="goTab('motivation',this);renderCompanyMotivations()"><span>🏢</span> Motivación</button>
       <button class="ttab" onclick="goTab('questions',this)"><span>❓</span> Preguntas</button>
       <button class="ttab" onclick="goTab('calendar',this)"><span>🗓️</span> Calendario</button>
       <button class="ttab" onclick="goTab('practice',this)"><span>🎯</span> Simulación</button>
@@ -62,6 +63,7 @@
     <button class="bnav" onclick="goTab('questions',this)" data-tab="questions"><span>❓</span><small>Preguntas</small></button>
     <button class="bnav" onclick="goTab('calendar',this)" data-tab="calendar"><span>🗓️</span><small>Jobs</small></button>
     <button class="bnav" onclick="goTab('practice',this)" data-tab="practice"><span>🎯</span><small>Sim</small></button>
+    <button class="bnav" onclick="goTab('motivation',this);renderCompanyMotivations()" data-tab="motivation"><span>🏢</span><small>Empresa</small></button>
     <button class="bnav" onclick="toggleMenu()"><span>👤</span><small>Perfil</small></button>
   </nav>
 
@@ -308,6 +310,56 @@
     </div>
 
 
+
+    <!-- ── WHY THIS COMPANY ── -->
+    <div id="tab-motivation" class="tab-panel">
+      <div class="hero-strip">
+        <div>
+          <div class="page-title">Por qué esta empresa</div>
+          <div class="page-sub">Prepara una respuesta específica para cada compañía y conéctala con tu perfil, sin convertirla en otra STAR story.</div>
+        </div>
+        <div class="hero-pill">🏢 motivación</div>
+      </div>
+
+      <div class="motivation-intro">
+        <div class="motivation-intro-icon">✦</div>
+        <div>
+          <strong>La estructura que tienes que seguir</strong>
+          <p>Empresa concreta → qué te atrae de su actividad → por qué encaja con tu experiencia → qué puedes aportar al puesto.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" id="motivationFormTitle">+ Añadir empresa</div>
+        <input type="hidden" id="motivationId" />
+        <label class="lbl">Empresa</label>
+        <input class="inp" id="motivationCompany" placeholder="Ej: GE HealthCare, Movistar Prosegur Alarmas…" />
+        <label class="lbl">Tipo de empresa / área</label>
+        <input class="inp" id="motivationCategory" placeholder="Ej: Healthcare / MedTech, Tecnología + seguridad…" />
+        <div class="motivation-form-grid">
+          <div>
+            <label class="lbl">Respuesta en español</label>
+            <textarea class="answer-ta motivation-textarea" id="motivationEs" placeholder="¿Por qué quieres trabajar en esta empresa?"></textarea>
+          </div>
+          <div>
+            <label class="lbl">Answer in English</label>
+            <textarea class="answer-ta motivation-textarea" id="motivationEn" placeholder="Why do you want to work for this company?"></textarea>
+          </div>
+        </div>
+        <div class="brow">
+          <button class="btn-t" id="motivationSaveBtn" onclick="saveCompanyMotivation()">Guardar motivación</button>
+          <button class="btn-o" onclick="clearCompanyMotivationForm()">Limpiar</button>
+        </div>
+      </div>
+
+      <div class="motivation-list-head">
+        <div>
+          <div class="card-title">Motivaciones preparadas</div>
+          <p>Estas respuestas quedan guardadas por perfil. Las bases preparadas no tienen botón de borrado.</p>
+        </div>
+      </div>
+      <div id="companyMotivationsList"></div>
+    </div>
 
     <!-- ── CUSTOM QUESTIONS ── -->
     <div id="tab-questions" class="tab-panel">
@@ -600,6 +652,7 @@
 <script src="custom-questions.js"></script>
 <script src="question-bank.js"></script>
 <script src="app.js"></script>
+<script src="company-motivations.js"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js').catch(() => {}));
