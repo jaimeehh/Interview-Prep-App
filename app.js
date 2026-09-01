@@ -1060,7 +1060,8 @@ function setFlashcardMode(mode){
     explain.textContent = {
       company:'Cada tarjeta tendrá una pregunta y, al voltearla, te dirá qué historia usar, la respuesta STAR y por qué encaja con la empresa.',
       star:'Repasarás historias STAR completas. Primero intentas contarla tú; después comparas con la estructura S/T/A/R/L.',
-      questions:'Practicarás tus preguntas guardadas. Si están vinculadas a una story, verás esa story completa; si tienen respuesta propia, verás tu respuesta.'
+      questions:'Practicarás tus preguntas guardadas. Si están vinculadas a una story, verás esa story completa; si tienen respuesta propia, verás tu respuesta.',
+      bank:'Practicarás preguntas del banco. Las preguntas conceptuales mostrarán una definición, su utilidad, un ejemplo y cómo aplicarlas.'
     }[mode];
   }
 }
@@ -1175,6 +1176,26 @@ function buildStarCards(){
   }));
 }
 
+function buildBankCards(){
+  const items = selectDiverseInterviewBankQuestions('all', 5);
+  return items.map(function(item,index){
+    const lang = bankLanguageForIndex(index);
+    return { type:'bank', bankId:item.id, bankItem:item, q:item[lang] || item.es, lang:lang, category:item.category || 'Banco de preguntas' };
+  });
+}
+function practiceBankQuestion(id){
+  const item = (typeof INTERVIEW_QUESTION_BANK !== 'undefined' ? INTERVIEW_QUESTION_BANK : []).find(function(entry){ return entry.id === id; });
+  if(!item) return;
+  fcMode='bank'; fcLangMode='es';
+  fcCards=[{type:'bank',bankId:item.id,bankItem:item,q:item.es,lang:'es',category:item.category || 'Banco de preguntas'}];
+  fcIdx=0; fcFlipped=false; fcRated=false; fcRatings={easy:0,medium:0,hard:0};
+  document.getElementById('fcSetupCard').style.display='none';
+  document.getElementById('fcDone').style.display='none';
+  document.getElementById('fcArea').style.display='block';
+  renderFcCard();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
 function buildQuestionCards(){
   const profile = getCurrentProfile();
   const custom = [...(profile?.customQuestions || [])].sort(()=>Math.random()-.5).slice(0,5);
@@ -1192,6 +1213,7 @@ function startFlashcards(){
 
   if(fcMode==='company') fcCards = buildCompanyCards(fcSelectedCo);
   else if(fcMode==='questions') fcCards = buildQuestionCards();
+  else if(fcMode==='bank') fcCards = buildBankCards();
   else fcCards = buildStarCards();
 
   if(!fcCards.length){
@@ -1224,6 +1246,15 @@ function storyHtml(s, company){
     <div class="fc-back-step"><div class="fc-slbl ll">💡 Aprendizaje</div><div class="fc-stxt">${escapeHtml(s.lrn)}</div></div>`;
 }
 
+function conceptAnswerHtml(answer,lang){
+  const labels=lang==='en'
+    ? {definition:'Key definition',purpose:'Why it matters',example:'Example',application:'How I would apply it'}
+    : {definition:'Definición clave',purpose:'Para qué sirve',example:'Ejemplo',application:'Cómo lo aplicaría'};
+  return Object.keys(labels).map(function(key){
+    return '<div class="fc-back-step"><div class="fc-slbl lc">'+labels[key]+'</div><div class="fc-stxt">'+escapeHtml(answer[key] || '')+'</div></div>';
+  }).join('');
+}
+
 function storyAssociationHint(story,lang){
   if(!story) return '';
   const labels = lang === 'en'
@@ -1233,6 +1264,23 @@ function storyAssociationHint(story,lang){
   const hint = story.associationHint?.[lang]
     || (lang === 'en' ? `Think of an experience related to ${label.toLowerCase()}.` : `Piensa en una experiencia relacionada con ${label.toLowerCase()}.`);
   return (lang === 'en' ? '💡 Association hint: ' : '💡 Pista de asociación: ') + label + '. ' + hint;
+}
+
+function storyAssociationHint(story,lang){
+  const labels=lang==='en'
+    ? {leadership:'Leadership',initiative:'Initiative',pressure:'Pressure',communication:'Communication',failure:'Error management',adaptability:'Adaptability',learning:'Learning',technical:'Technical knowledge',ai:'Artificial intelligence'}
+    : {leadership:'Liderazgo',initiative:'Iniciativa',pressure:'Presión',communication:'Comunicación',failure:'Gestión de errores',adaptability:'Adaptación',learning:'Aprendizaje',technical:'Conocimiento técnico',ai:'Inteligencia artificial'};
+  const label=story.associationLabel?.[lang] || labels[story.tag] || story.tagLabel || 'STAR';
+  return (lang==='en'?'💡 Association hint: ':'💡 Pista de asociación: ')+label+'.';
+}
+function toggleAssociationHint(){
+  const hint=document.getElementById('fcAssociationHint');
+  const button=document.getElementById('fcHintBtn');
+  if(!hint || !button) return;
+  const visible=hint.style.display==='block';
+  hint.style.display=visible?'none':'block';
+  button.textContent=visible ? (fcCards[fcIdx]?.lang==='en'?'💡 Show hint':'💡 Ver pista') : (fcCards[fcIdx]?.lang==='en'?'🙈 Hide hint':'🙈 Ocultar pista');
+  button.setAttribute('aria-expanded',String(!visible));
 }
 
 function renderFcCard(){
@@ -1247,9 +1295,23 @@ function renderFcCard(){
     ? 'Pregunta guardada'
     : c.star?.format==='development'
       ? (c.lang==='en'?'Development areas':'Áreas de mejora')
-      : c.type==='company-story' ? 'Story adaptada' : 'STAR';
-  document.getElementById('fcFrontBadge').innerHTML=`<span class="badge ${c.lang==='en'?'b-sky':'b-amber'}">${langEmoji} ${escapeHtml(c.category)}</span><span class="badge b-warm">${modeLabel}</span>`;
+      : c.type==='company-story' ? 'Story adaptada'
+      : c.type==='bank' ? (c.lang==='en'?'Concept / technical':'Concepto / técnica') : 'STAR';
+  document.getElementById('fcFrontBadge').innerHTML=`<span class="badge ${c.lang==='en'?'b-sky':'b-amber'}">${langEmoji}</span><span class="badge b-warm">${modeLabel}</span>`;
   document.getElementById('fcQuestion').textContent=c.q;
+  const hintButton=document.getElementById('fcHintBtn');
+  const hintBox=document.getElementById('fcAssociationHint');
+  if(hintButton){
+    hintButton.style.display = (c.star || c.type==='bank') ? 'inline-flex' : 'none';
+    hintButton.textContent = c.lang==='en' ? '💡 Show hint' : '💡 Ver pista';
+    hintButton.setAttribute('aria-expanded','false');
+  }
+  if(hintBox){
+    hintBox.textContent = c.star ? storyAssociationHint(c.star,c.lang)
+      : c.type==='bank' ? ((c.lang==='en'?'💡 Association hint: ':'💡 Pista de asociación: ') + (c.bankItem.category || 'Concepto') + '.')
+      : '';
+    hintBox.style.display='none';
+  }
   const associationHint = document.getElementById('fcAssociationHint');
   if(associationHint){
     associationHint.textContent = c.star ? storyAssociationHint(c.star,c.lang) : '';
@@ -1259,6 +1321,11 @@ function renderFcCard(){
   let backHtml='';
   if((c.type==='star' || c.type==='company-story') && c.star){
     backHtml=`<div class="fc-story-title">Historia recomendada: ${escapeHtml(c.star.title || c.star.q)}</div>${storyHtml(c.star, c.company)}`;
+  } else if(c.type==='bank'){
+    const concept=typeof getConceptAnswer==='function' ? getConceptAnswer(c.bankId,c.lang) : null;
+    backHtml=concept
+      ? '<div class="fc-story-title">Respuesta conceptual</div>' + conceptAnswerHtml(concept,c.lang)
+      : '<div class="fc-story-title">Respuesta pendiente de preparar</div><div class="fc-back-step"><div class="fc-slbl lc">📝 Tu respuesta</div><div class="fc-stxt">Intenta responder con tus propias palabras y prepara después una versión definitiva.</div></div>';
   } else if(c.type==='custom' && c.custom){
     const linked = c.custom.answerType === 'story' ? getStoryById(c.custom.linkedStoryId) : null;
     if(linked){
@@ -2385,6 +2452,7 @@ function renderQuestionBank(){
           '<div class="bank-question-en">🇬🇧 ' + escapeHtml(item.en) + '</div>' +
         '</div>' +
       '</div>' +
+      '<div class="bank-question-actions"><button class="bank-practice-btn" onclick="event.stopPropagation();practiceBankQuestion(\\'' + escapeHtml(item.id) + '\\')">Practicar</button>' +
     '</div>';
   }).join('') + '</div>';
 }
