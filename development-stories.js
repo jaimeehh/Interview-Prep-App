@@ -164,6 +164,34 @@ const STAKEHOLDER_STORY = {
   }
 };
 
+const HEALTHCARE_COMPLIANCE_STORY = {
+  id: 'healthcare-compliance-tfg',
+  contentVersion: 1,
+  tag: 'technical',
+  tagLabel: 'Healthcare / Compliance',
+  title: 'Gestionar requisitos de un hospital durante el TFG',
+  q: 'Have you ever been involved in ensuring compliance with healthcare regulations in a project? What approach did you take and what challenges did you face?',
+  questions: {
+    es: ['¿Has participado en el cumplimiento de requisitos o procedimientos sanitarios en un proyecto? ¿Qué enfoque seguiste y qué dificultades encontraste?'],
+    en: ['Have you ever been involved in ensuring compliance with healthcare regulations in a project? What approach did you take and what challenges did you face?']
+  },
+  sit: 'Durante mi TFG necesitaba imágenes de un hospital para poder desarrollar el proyecto.',
+  tsk: 'Mi objetivo era obtenerlas siguiendo los procedimientos del hospital y coordinándome correctamente con los médicos.',
+  act: 'Expliqué el objetivo del proyecto, respondí a las dudas de los médicos y seguí los pasos administrativos y las autorizaciones necesarias, aunque el proceso fue burocrático.',
+  res: 'Finalmente obtuve las imágenes y pude completar el proyecto. El trabajo aportó valor al hospital y quedó preparado para publicarse en una revista científica.',
+  lrn: 'Aprendí que en healthcare el cumplimiento y la coordinación deben integrarse desde el principio del proyecto.',
+  en: {
+    title: 'Managing hospital requirements during my final-year project',
+    q: 'Have you ever been involved in ensuring compliance with healthcare regulations in a project? What approach did you take and what challenges did you face?',
+    questions: ['Have you ever been involved in ensuring compliance with healthcare regulations in a project? What approach did you take and what challenges did you face?'],
+    sit: 'During my final-year project, I needed images from a hospital in order to develop my work.',
+    tsk: 'My objective was to obtain them by following the hospital procedures and coordinating properly with the doctors.',
+    act: 'I explained the purpose of the project, answered the doctors’ questions and followed the necessary administrative steps and approvals, even though the process was bureaucratic.',
+    res: 'I eventually obtained the images and completed the project. The work created value for the hospital and was prepared for publication in a scientific journal.',
+    lrn: 'I learned that in healthcare, compliance and coordination need to be integrated from the beginning of a project.'
+  }
+};
+
 function upsertDevelopmentStory(target, story){
   if (!Array.isArray(target)) return;
   const index = target.findIndex(item => String(item.id) === String(story.id));
@@ -176,11 +204,13 @@ if (typeof DEFAULT_STAR_STORIES !== 'undefined') {
   upsertDevelopmentStory(DEFAULT_STAR_STORIES, DEVELOPMENT_AREA_STORY);
   upsertDevelopmentStory(DEFAULT_STAR_STORIES, LEADERSHIP_STORY_UPDATE);
   upsertDevelopmentStory(DEFAULT_STAR_STORIES, STAKEHOLDER_STORY);
+  upsertDevelopmentStory(DEFAULT_STAR_STORIES, HEALTHCARE_COMPLIANCE_STORY);
 }
 if (typeof DEFAULT_PROFILE !== 'undefined') {
   upsertDevelopmentStory(DEFAULT_PROFILE.starStories, DEVELOPMENT_AREA_STORY);
   upsertDevelopmentStory(DEFAULT_PROFILE.starStories, LEADERSHIP_STORY_UPDATE);
   upsertDevelopmentStory(DEFAULT_PROFILE.starStories, STAKEHOLDER_STORY);
+  upsertDevelopmentStory(DEFAULT_PROFILE.starStories, HEALTHCARE_COMPLIANCE_STORY);
 }
 if (typeof STORY_EN_TRANSLATIONS !== 'undefined') {
   STORY_EN_TRANSLATIONS['delegation-leadership'] = JSON.parse(JSON.stringify(LEADERSHIP_STORY_UPDATE.en));
