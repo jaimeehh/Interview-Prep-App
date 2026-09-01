@@ -148,6 +148,11 @@
             <span class="mode-title">Historias STAR</span>
             <span class="mode-sub">Repasa tus experiencias base</span>
           </button>
+          <button class="mode-card" id="fcMode-bank" onclick="setFlashcardMode('bank')">
+            <span class="mode-ico">🧠</span>
+            <span class="mode-title">Banco de conceptos</span>
+            <span class="mode-sub">Practica preguntas técnicas con definición y ejemplo</span>
+          </button>
           <button class="mode-card" id="fcMode-questions" onclick="setFlashcardMode('questions')">
             <span class="mode-ico">❓</span>
             <span class="mode-title">Mis preguntas</span>
@@ -197,6 +202,8 @@
               <div class="fc-tap-hint">👆 Toca para ver la respuesta</div>
               <div class="fc-company" id="fcFrontBadge"></div>
               <div class="fc-question" id="fcQuestion">—</div>
+              <button class="fc-hint-btn" id="fcHintBtn" type="button" onclick="event.stopPropagation();toggleAssociationHint()" aria-expanded="false">💡 Ver pista</button>
+              <div class="fc-association-hint" id="fcAssociationHint" aria-live="polite"></div>
               <div class="fc-association-hint" id="fcAssociationHint" aria-live="polite"></div>
             </div>
             <!-- BACK -->
@@ -652,6 +659,7 @@
 <script src="story-profiles.js"></script>
 <script src="custom-questions.js"></script>
 <script src="question-bank.js"></script>
+<script src="concept-answers.js"></script>
 <script src="app.js"></script>
 <script src="company-motivations.js"></script>
 <script>
