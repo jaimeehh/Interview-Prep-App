@@ -179,7 +179,7 @@ input,textarea,button,select{font-family:'DM Sans',sans-serif;}
 .fc-back{background:var(--warm0);border:1px solid var(--border2);transform:rotateY(180deg);overflow:auto;}
 .fc-tap-hint{font-size:11px;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:4px;}
 .fc-company{margin-bottom:10px;}
-.fc-question{font-family:'Fraunces',sans-serif;font-size:17px;font-weight:700;color:var(--warm5);line-height:1.4;}
+.fc-association-hint{margin:16px auto 0;max-width:520px;padding:10px 14px;border:1px solid rgba(13,43,83,.12);border-radius:14px;background:rgba(255,255,255,.72);color:var(--text2);font-size:12px;line-height:1.45;text-align:left}.fc-association-hint::first-letter{font-size:14px}.fc-question{font-family:'Fraunces',sans-serif;font-size:17px;font-weight:700;color:var(--warm5);line-height:1.4;}
 .fc-back-step{margin-bottom:10px;}
 .fc-back-step:last-child{margin-bottom:0;}
 .fc-slbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin-bottom:3px;}

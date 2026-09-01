@@ -1224,6 +1224,17 @@ function storyHtml(s, company){
     <div class="fc-back-step"><div class="fc-slbl ll">💡 Aprendizaje</div><div class="fc-stxt">${escapeHtml(s.lrn)}</div></div>`;
 }
 
+function storyAssociationHint(story,lang){
+  if(!story) return '';
+  const labels = lang === 'en'
+    ? {leadership:'Leadership',initiative:'Initiative',pressure:'Pressure',communication:'Communication',failure:'Error management',adaptability:'Adaptability',learning:'Learning',technical:'Technical knowledge',selfawareness:'Self-awareness',ai:'Artificial intelligence'}
+    : {leadership:'Liderazgo',initiative:'Iniciativa',pressure:'Presión',communication:'Comunicación',failure:'Gestión de errores',adaptability:'Adaptación',learning:'Aprendizaje',technical:'Conocimiento técnico',selfawareness:'Autoconocimiento',ai:'Inteligencia artificial'};
+  const label = story.associationLabel?.[lang] || labels[story.tag] || story.tagLabel || (lang === 'en' ? 'STAR' : 'STAR');
+  const hint = story.associationHint?.[lang]
+    || (lang === 'en' ? `Think of an experience related to ${label.toLowerCase()}.` : `Piensa en una experiencia relacionada con ${label.toLowerCase()}.`);
+  return (lang === 'en' ? '💡 Association hint: ' : '💡 Pista de asociación: ') + label + '. ' + hint;
+}
+
 function renderFcCard(){
   const c=fcCards[fcIdx];
   const pct=Math.round(((fcIdx+1)/fcCards.length)*100);
@@ -1239,6 +1250,11 @@ function renderFcCard(){
       : c.type==='company-story' ? 'Story adaptada' : 'STAR';
   document.getElementById('fcFrontBadge').innerHTML=`<span class="badge ${c.lang==='en'?'b-sky':'b-amber'}">${langEmoji} ${escapeHtml(c.category)}</span><span class="badge b-warm">${modeLabel}</span>`;
   document.getElementById('fcQuestion').textContent=c.q;
+  const associationHint = document.getElementById('fcAssociationHint');
+  if(associationHint){
+    associationHint.textContent = c.star ? storyAssociationHint(c.star,c.lang) : '';
+    associationHint.style.display = c.star ? 'block' : 'none';
+  }
 
   let backHtml='';
   if((c.type==='star' || c.type==='company-story') && c.star){
