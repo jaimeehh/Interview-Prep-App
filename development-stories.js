@@ -167,8 +167,10 @@ const STAKEHOLDER_STORY = {
 const HEALTHCARE_COMPLIANCE_STORY = {
   id: 'healthcare-compliance-tfg',
   contentVersion: 1,
-  tag: 'technical',
-  tagLabel: 'Healthcare / Compliance',
+  tag: 'adaptability',
+  tagLabel: 'Adaptación',
+  associationLabel: { es: 'Adaptación', en: 'Adaptability' },
+  associationHint: { es: 'piensa en una experiencia en la que tuviste que adaptarte a requisitos y procedimientos sanitarios', en: 'think of an experience where you had to adapt to healthcare requirements and procedures' },
   title: 'Gestionar requisitos de un hospital durante el TFG',
   q: 'Have you ever been involved in ensuring compliance with healthcare regulations in a project? What approach did you take and what challenges did you face?',
   questions: {
