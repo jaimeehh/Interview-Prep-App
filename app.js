@@ -1266,13 +1266,6 @@ function storyAssociationHint(story,lang){
   return (lang === 'en' ? '💡 Association hint: ' : '💡 Pista de asociación: ') + label + '. ' + hint;
 }
 
-function storyAssociationHint(story,lang){
-  const labels=lang==='en'
-    ? {leadership:'Leadership',initiative:'Initiative',pressure:'Pressure',communication:'Communication',failure:'Error management',adaptability:'Adaptability',learning:'Learning',technical:'Technical knowledge',ai:'Artificial intelligence'}
-    : {leadership:'Liderazgo',initiative:'Iniciativa',pressure:'Presión',communication:'Comunicación',failure:'Gestión de errores',adaptability:'Adaptación',learning:'Aprendizaje',technical:'Conocimiento técnico',ai:'Inteligencia artificial'};
-  const label=story.associationLabel?.[lang] || labels[story.tag] || story.tagLabel || 'STAR';
-  return (lang==='en'?'💡 Association hint: ':'💡 Pista de asociación: ')+label+'.';
-}
 function toggleAssociationHint(){
   const hint=document.getElementById('fcAssociationHint');
   const button=document.getElementById('fcHintBtn');
@@ -1312,12 +1305,6 @@ function renderFcCard(){
       : '';
     hintBox.style.display='none';
   }
-  const associationHint = document.getElementById('fcAssociationHint');
-  if(associationHint){
-    associationHint.textContent = c.star ? storyAssociationHint(c.star,c.lang) : '';
-    associationHint.style.display = c.star ? 'block' : 'none';
-  }
-
   let backHtml='';
   if((c.type==='star' || c.type==='company-story') && c.star){
     backHtml=`<div class="fc-story-title">Historia recomendada: ${escapeHtml(c.star.title || c.star.q)}</div>${storyHtml(c.star, c.company)}`;
@@ -2452,7 +2439,7 @@ function renderQuestionBank(){
           '<div class="bank-question-en">🇬🇧 ' + escapeHtml(item.en) + '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="bank-question-actions"><button class="bank-practice-btn" onclick="event.stopPropagation();practiceBankQuestion(\\'' + escapeHtml(item.id) + '\\')">Practicar</button>' +
+      '<div class="bank-question-actions"><button class="bank-practice-btn" onclick="event.stopPropagation();practiceBankQuestion(' + String.fromCharCode(39) + escapeHtml(item.id) + String.fromCharCode(39) + ')">Practicar</button></div>' +
     '</div>';
   }).join('') + '</div>';
 }
