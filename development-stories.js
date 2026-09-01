@@ -121,6 +121,49 @@ const LEADERSHIP_STORY_UPDATE = {
   }
 };
 
+const STAKEHOLDER_STORY = {
+  "id": "difficult-stakeholder-asisa",
+  "contentVersion": 1,
+  "tag": "communication",
+  "tagLabel": "Comunicación",
+  "title": "Gestionar a un stakeholder senior en un proyecto nuevo",
+  "q": "Cuéntame una situación en la que tuviste que gestionar a un miembro difícil del equipo o a un stakeholder. ¿Cómo lo gestionaste y cuál fue el resultado?",
+  "questions": {
+    "es": [
+      "Cuéntame una situación en la que tuviste que gestionar a un miembro difícil del equipo o a un stakeholder. ¿Cómo lo gestionaste y cuál fue el resultado?",
+      "¿Cómo gestionaste a un stakeholder con una opinión diferente a la tuya?",
+      "¿Cómo conseguiste alinear a perfiles senior durante un proyecto nuevo?",
+      "Cuéntame una ocasión en la que tuviste que gestionar resistencia a una nueva forma de trabajar."
+    ],
+    "en": [
+      "Tell us about a situation where you had to deal with a difficult team member or stakeholder. How did you handle it and what was the outcome?",
+      "How did you manage a stakeholder who had a different perspective from yours?",
+      "How did you align senior stakeholders during a new project?",
+      "Tell me about a time when you had to manage resistance to a new way of working."
+    ]
+  },
+  "sit": "En ASISA participé en el desarrollo desde cero de una plataforma de inteligencia competitiva para comparar aseguradoras y proveedores. Uno de los stakeholders senior prefería mantener un proceso manual y cuestionaba la nueva solución, lo que dificultaba avanzar con una visión común.",
+  "tsk": "Mi objetivo era entender sus preocupaciones, mantener el proyecto avanzando y llegar a una solución que respondiera a las necesidades del equipo.",
+  "act": "Primero hablé con él para identificar la preocupación concreta. Después separé los requisitos imprescindibles de las preferencias, preparé una propuesta y validé la información paso a paso. Fui incorporando su feedback y expliqué las decisiones con ejemplos claros.",
+  "res": "Conseguimos alinear expectativas y avanzar con una solución común. El stakeholder se involucró en las validaciones y el producto se desarrolló con el apoyo de los perfiles senior.",
+  "lrn": "Aprendí que gestionar a un stakeholder exigente no consiste en imponer la solución, sino en entender sus prioridades, convertirlas en requisitos concretos y generar confianza con avances visibles.",
+  "en": {
+    "title": "Managing a senior stakeholder in a new project",
+    "q": "Tell us about a situation where you had to deal with a difficult team member or stakeholder. How did you handle it and what was the outcome?",
+    "questions": [
+      "Tell us about a situation where you had to deal with a difficult team member or stakeholder. How did you handle it and what was the outcome?",
+      "How did you manage a stakeholder who had a different perspective from yours?",
+      "How did you align senior stakeholders during a new project?",
+      "Tell me about a time when you had to manage resistance to a new way of working."
+    ],
+    "sit": "At ASISA, I participated in developing a competitive-intelligence platform from scratch to compare insurers and healthcare providers. One senior stakeholder preferred to keep a manual process and questioned the new solution, which made it difficult to move forward with a shared view.",
+    "tsk": "My objective was to understand his concerns, keep the project moving and reach a solution that addressed the team’s needs.",
+    "act": "I first spoke with him to identify the specific concern. I then separated essential requirements from personal preferences, prepared a proposal and validated the information step by step. I incorporated his feedback and explained the decisions with clear examples.",
+    "res": "We aligned expectations and moved forward with a shared solution. The stakeholder became involved in the validation process, and the product was developed with the support of the senior stakeholders.",
+    "lrn": "I learned that managing a demanding stakeholder is not about imposing a solution. It is about understanding their priorities, turning them into concrete requirements and building trust through visible progress."
+  }
+};
+
 function upsertDevelopmentStory(target, story){
   if (!Array.isArray(target)) return;
   const index = target.findIndex(item => String(item.id) === String(story.id));
@@ -132,10 +175,12 @@ function upsertDevelopmentStory(target, story){
 if (typeof DEFAULT_STAR_STORIES !== 'undefined') {
   upsertDevelopmentStory(DEFAULT_STAR_STORIES, DEVELOPMENT_AREA_STORY);
   upsertDevelopmentStory(DEFAULT_STAR_STORIES, LEADERSHIP_STORY_UPDATE);
+  upsertDevelopmentStory(DEFAULT_STAR_STORIES, STAKEHOLDER_STORY);
 }
 if (typeof DEFAULT_PROFILE !== 'undefined') {
   upsertDevelopmentStory(DEFAULT_PROFILE.starStories, DEVELOPMENT_AREA_STORY);
   upsertDevelopmentStory(DEFAULT_PROFILE.starStories, LEADERSHIP_STORY_UPDATE);
+  upsertDevelopmentStory(DEFAULT_PROFILE.starStories, STAKEHOLDER_STORY);
 }
 if (typeof STORY_EN_TRANSLATIONS !== 'undefined') {
   STORY_EN_TRANSLATIONS['delegation-leadership'] = JSON.parse(JSON.stringify(LEADERSHIP_STORY_UPDATE.en));
