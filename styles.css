@@ -593,3 +593,10 @@ body{
 .story-question-map ul{margin:7px 0 0;padding-left:18px;color:var(--text2);font-size:12px;line-height:1.5}
 .story-question-map li+li{margin-top:5px}
 @media(max-width:700px){.story-question-map-lists{grid-template-columns:1fr}}
+
+.fc-hint-btn{display:inline-flex;align-items:center;justify-content:center;margin:18px auto 0;padding:9px 15px;border:1px solid rgba(13,43,83,.16);border-radius:999px;background:rgba(255,255,255,.8);color:var(--text2);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.fc-hint-btn:hover{background:#fff;color:var(--text)}
+.fc-association-hint{margin:12px auto 0;max-width:520px;padding:10px 14px;border:1px solid rgba(13,43,83,.12);border-radius:14px;background:rgba(255,255,255,.72);color:var(--text2);font-size:12px;line-height:1.45;text-align:left}
+.bank-question-actions{margin-top:10px}
+.bank-practice-btn{padding:6px 11px;border:1px solid var(--border);border-radius:999px;background:var(--warm0);color:var(--text2);font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.bank-practice-btn:hover{background:#fff;color:var(--text)}
