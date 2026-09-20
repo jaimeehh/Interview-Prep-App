@@ -116,6 +116,30 @@ const INTERVIEW_PACKS = [
         answerEn: 'I find the industry especially interesting because it combines consumer behaviour, technology and markets in a very tangible way. You are not analysing an isolated metric: behind it, there are people deciding what to discover, what to buy and which experience to attend. That creates very rich Growth problems, from acquisition and conversion to pricing, geographic expansion and repeat behaviour. I like the idea of working on a product where data can improve both the business and the final customer experience.'
       },
       {
+        id: 'fever-case-market-entry',
+        category: 'Case · Market entry',
+        priority: 'high',
+        ideaEs: 'Mercado atractivo → podemos ganar → economics → cómo entramos → riesgos/piloto.',
+        ideaEn: 'Attractive market → right to win → economics → entry mode → risks/pilot.',
+        keywords: ['market attractiveness', 'right to win', 'economics', 'build-partner-buy', 'pilot'],
+        questionEs: 'Fever quiere lanzar un nuevo producto o experiencia en una ciudad. ¿Cómo estructurarías el análisis?',
+        questionEn: 'Fever wants to launch a new product or experience in a city. How would you structure the analysis?',
+        answerEs: 'Lo estructuraría en cinco bloques. Primero, atractivo del mercado: tamaño, crecimiento, segmentos de clientes, demanda, competencia y posibles barreras. Segundo, derecho a ganar: si Fever tiene una propuesta diferenciada, marca, datos, canales, partners y capacidades para ejecutar mejor que otros. Tercero, economics: ingresos potenciales, precio, costes variables y fijos, margen, inversión inicial y punto de equilibrio. Cuarto, modo de entrada: construir de forma orgánica, entrar con un partner o joint venture, o adquirir una empresa si necesitamos velocidad o capacidades que no tenemos. Quinto, riesgos y ejecución: empezaría con un piloto, definiría KPIs de éxito y escalaría sólo si se validan las hipótesis clave.',
+        answerEn: 'I would structure it in five blocks. First, market attractiveness: size, growth, customer segments, demand, competition and potential barriers. Second, right to win: whether Fever has a differentiated proposition, brand, data, channels, partners and capabilities to execute better than competitors. Third, economics: potential revenue, pricing, variable and fixed costs, margin, initial investment and break-even. Fourth, entry mode: build organically, enter through a partner or joint venture, or acquire a company if we need speed or capabilities we do not have. Fifth, risks and execution: I would start with a pilot, define clear success KPIs and scale only if the key assumptions are validated.'
+      },
+      {
+        id: 'fever-case-growth-tree',
+        category: 'Case · Growth strategy',
+        priority: 'high',
+        ideaEs: 'Organic: clientes × frecuencia × ticket + nuevos productos/mercados. Inorganic: partner o buy.',
+        ideaEn: 'Organic: customers × frequency × ticket + new products/markets. Inorganic: partner or buy.',
+        keywords: ['customers', 'frequency', 'ticket', 'products', 'markets', 'M&A'],
+        questionEs: 'Si Fever quisiera crecer un 30% en una ciudad, ¿qué palancas de crecimiento analizarías?',
+        questionEn: 'If Fever wanted to grow by 30% in a city, which growth levers would you analyse?',
+        answerEs: 'Primero separaría crecimiento orgánico e inorgánico. En orgánico descompondría ingresos como clientes por frecuencia de compra por ticket medio. Así puedo crecer captando más clientes, aumentando repetición o cross-selling, mejorando precio o mix, lanzando nuevos productos y experiencias, o entrando en nuevos segmentos, canales o zonas. Después evaluaría crecimiento inorgánico: alianzas estratégicas, joint ventures o adquisiciones para acceder más rápido a audiencia, contenido, distribución o capacidades. Compararía cada palanca por tamaño de oportunidad, velocidad, inversión, riesgo y control antes de priorizar.',
+        answerEn: 'First, I would separate organic and inorganic growth. For organic growth, I would break revenue down into customers multiplied by purchase frequency multiplied by average ticket value. That means growth can come from acquiring more customers, increasing repeat usage or cross-selling, improving price or mix, launching new products and experiences, or entering new segments, channels or areas. Then I would evaluate inorganic growth through strategic partnerships, joint ventures or acquisitions to access audiences, content, distribution or capabilities faster. I would compare each lever by opportunity size, speed, investment, risk and control before prioritising.'
+      },
+      {
         id: 'fever-tech-funnel',
         category: 'Technical · Growth analytics',
         priority: 'high',
