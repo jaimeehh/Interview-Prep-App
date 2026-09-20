@@ -10,7 +10,7 @@ const APP_SHELL = [
   '/story-profiles.js',
   '/custom-questions.js',
   '/app.js',
-  '/company-motivations.js',
+  '/company-motivations.js',\n  '/interview-packs.js',
   '/manifest.webmanifest',
   '/icons/icon-192.png',
   '/icons/icon-512.png'
