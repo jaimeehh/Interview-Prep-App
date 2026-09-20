@@ -11,6 +11,7 @@ const APP_SHELL = [
   '/custom-questions.js',
   '/app.js',
   '/company-motivations.js',
+  '/interview-packs.js',
   '/manifest.webmanifest',
   '/icons/icon-192.png',
   '/icons/icon-512.png'

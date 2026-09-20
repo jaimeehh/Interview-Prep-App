@@ -374,6 +374,12 @@
       <div class="page-sub">Guarda preguntas reales y asócialas a una story o a una respuesta propia. Se compartirán con cualquier persona que abra este perfil.</div>
       <div class="sync-status syncing" id="cqSyncStatus" role="status" aria-live="polite">Cargando preguntas compartidas…</div>
 
+      <div class="card interview-packs-card">
+        <div class="card-title">Interview Packs</div>
+        <p class="mini-copy">Prepara preguntas específicas por empresa y puesto en español, modo puente ES→EN o directamente en inglés.</p>
+        <div id="interviewPacksMount"></div>
+      </div>
+
       <div class="card question-bank-card">
         <div class="card-title">Banco profesional de entrevista · <span id="questionBankTotal">100</span> preguntas</div>
         <p class="mini-copy">Preguntas previsibles para entrevistas orientadas a MedTech, IT/Data e inteligencia artificial. Filtra el área y practica con una selección aleatoria desde Simulación.</p>
@@ -661,6 +667,7 @@
 <script src="concept-answers.js"></script>
 <script src="app.js"></script>
 <script src="company-motivations.js"></script>
+<script src="interview-packs.js"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js').catch(() => {}));
