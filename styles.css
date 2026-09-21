@@ -644,3 +644,7 @@ body{
   .pack-meta{flex-direction:column}
   .pack-question{font-size:18px}
 }
+
+.pack-variants{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:-4px 0 12px;padding:9px 10px;border:1px dashed var(--border2);border-radius:10px;background:var(--cream)}
+.pack-variants strong{width:100%;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)}
+.pack-variants span{font-size:10px;line-height:1.3;padding:4px 7px;border-radius:999px;background:#fff;border:1px solid var(--border);color:var(--text2)}
