@@ -18,8 +18,22 @@ const INTERVIEW_PACKS = [
         questionEn: 'Why do you want to work at Fever, and why this role in particular?',
         variantsEs: ['¿Por qué Fever?', '¿Por qué el Growth Graduate Program?', '¿Qué te atrae de esta oportunidad?', '¿Por qué Growth en Fever?'],
         variantsEn: ['Why Fever?', 'Why the Growth Graduate Program?', 'What attracts you to this opportunity?', 'Why Growth at Fever?'],
-        answerEs: '1. Por qué Fever\nMe atrae Fever por la combinación de entretenimiento, tecnología y datos. El producto es muy tangible: ayuda a las personas a descubrir experiencias y, al mismo tiempo, utiliza tecnología y datos para entender qué funciona en cada mercado y ayudar a crecer a partners y experiencias. También me gusta el componente internacional y que las decisiones de Growth sean claramente data-driven.\n\n2. Por qué este Growth Graduate Program\nMe interesa especialmente porque Growth está justo entre análisis, estrategia y ejecución. No se trata sólo de entender una métrica, sino de utilizarla para decidir qué mercado priorizar, qué palancas mover, cómo mejorar el rendimiento y después medir el resultado. El Graduate Program me parece una muy buena forma de aprender ese ciclo completo trabajando sobre problemas reales desde el principio.\n\n3. Por qué encaja conmigo\nEs una dirección que conecta mucho con lo que ya he ido descubriendo en mis experiencias. En ASISA disfruté especialmente cuando el análisis terminaba apoyando una decisión real de negocio, y en PHCA vi cómo analytics, automatización e IA podían mejorar procesos y acercar mucho más negocio y tecnología. Por eso veo Fever como una oportunidad muy natural para seguir desarrollándome en esa intersección entre datos, negocio y crecimiento.',
-        answerEn: '1. Why Fever\nWhat attracts me to Fever is the combination of entertainment, technology and data. The product is very tangible: it helps people discover experiences while using technology and data to understand what works in each market and help partners and experiences grow. I also like the international dimension and the fact that Growth decisions are clearly data-driven.\n\n2. Why this Growth Graduate Program\nI am especially interested in the role because Growth sits right between analysis, strategy and execution. It is not only about understanding a metric, but using it to decide which market to prioritise, which levers to move, how to improve performance and then measuring the result. The Graduate Program seems like a very strong way to learn that full cycle while working on real problems from the beginning.\n\n3. Why it fits me\nThis direction connects strongly with what I have already discovered through my experience. At ASISA, I especially enjoyed seeing analysis support a real business decision, and at PHCA I saw how analytics, automation and AI could improve processes and bring business and technology much closer together. That is why I see Fever as a very natural opportunity to keep developing at the intersection of data, business and growth.'
+        answerEs: '1. Por qué Fever
+Me gusta la combinación de entretenimiento, tecnología y datos. Es un producto muy cercano al usuario, internacional y donde el análisis tiene un impacto muy visible en mercados, experiencias y partners.
+
+2. Por qué este programa
+Me atrae porque mezcla análisis, negocio y ejecución. Quiero aprender a detectar oportunidades, priorizarlas y ver qué pasa después cuando una decisión se lleva a la práctica.
+
+3. Por qué encaja conmigo
+En ASISA vi que me gustaba usar datos para apoyar decisiones de negocio, y en PHCA trabajé con analytics, automatización e IA aplicada a procesos. Por eso este rol encaja bastante bien con la dirección en la que quiero seguir creciendo.',
+        answerEn: '1. Why Fever
+I like the combination of entertainment, technology and data. It is a product that is very close to the customer, international, and where analysis can have a very visible impact on markets, experiences and partners.
+
+2. Why this programme
+I like that it combines analysis, business and execution. I want to learn how to identify opportunities, prioritise them and then see what happens when a decision is actually put into practice.
+
+3. Why it fits me
+At ASISA, I realised that I enjoyed using data to support business decisions, and at PHCA I worked with analytics, automation and AI applied to processes. That is why this role fits well with the direction in which I want to keep growing.'
       },
       {
         id: 'fever-narrative-career',
@@ -130,8 +144,22 @@ const INTERVIEW_PACKS = [
         questionEn: 'Why do you want to work at IBM, and why this programme/area in particular?',
         variantsEs: ['¿Por qué IBM?', '¿Por qué Early Associates?', '¿Por qué Hybrid Cloud & Data?', '¿Por qué Strategy & Transformation como segunda opción?'],
         variantsEn: ['Why IBM?', 'Why Early Associates?', 'Why Hybrid Cloud & Data?', 'Why Strategy & Transformation as your second choice?'],
-        answerEs: '1. Por qué IBM\nMe atrae IBM porque combina una base tecnológica muy fuerte con proyectos de transformación real. Me interesa especialmente poder trabajar con Data, AI, Analytics y Cloud, pero no como tecnologías aisladas, sino aplicadas a problemas empresariales y a decisiones de negocio.\n\n2. Por qué Early Associates y estas áreas\nMi primera opción es Hybrid Cloud & Data porque es donde más directamente encaja mi interés por analítica, ciencia de datos, automatización e inteligencia artificial aplicada. Además, quiero entender mejor cómo cloud permite desplegar y escalar esas soluciones. Como segunda opción elegiría Strategy & Transformation porque también me interesa la parte de convertir el análisis en cambios de proceso, decisiones y adopción dentro de una organización.\n\n3. Por qué encaja conmigo\nEn ASISA ya trabajé utilizando datos para apoyar decisiones de dirección, y en PHCA trabajé con analytics, automatización e IA aplicada a procesos internos. Esas experiencias me han hecho ver que quiero seguir desarrollando un perfil que combine profundidad técnica con comprensión del negocio. Por eso el Early Associates Program me parece una muy buena oportunidad para construir esa base en proyectos reales y con exposición a equipos distintos.',
-        answerEn: '1. Why IBM\nWhat attracts me to IBM is the combination of a very strong technology foundation with real transformation projects. I am especially interested in working with Data, AI, Analytics and Cloud, but not as isolated technologies; I want to see how they are applied to business problems and decision-making.\n\n2. Why Early Associates and these areas\nMy first choice is Hybrid Cloud & Data because it is the area that most directly matches my interest in analytics, data science, automation and applied AI. I also want to understand better how cloud enables those solutions to be deployed and scaled. My second choice would be Strategy & Transformation because I am also interested in turning analysis into process change, decisions and adoption within an organisation.\n\n3. Why it fits me\nAt ASISA, I already worked with data to support management decisions, and at PHCA I worked with analytics, automation and AI applied to internal processes. Those experiences have shown me that I want to develop a profile that combines technical depth with business understanding. That is why the Early Associates Program feels like a very strong opportunity to build that foundation through real projects and exposure to different teams.'
+        answerEs: '1. Por qué IBM
+Me atrae porque combina tecnología fuerte con proyectos reales de transformación. Me interesa especialmente trabajar con Data, AI, Analytics y Cloud aplicados a problemas de negocio.
+
+2. Por qué este programa y estas áreas
+Mi primera opción es Hybrid Cloud & Data porque conecta directamente con lo que quiero seguir aprendiendo: analítica, data science, automatización e IA. Strategy & Transformation sería mi segunda opción porque también me interesa convertir el análisis en cambios y decisiones reales.
+
+3. Por qué encaja conmigo
+En ASISA trabajé con datos para apoyar decisiones y en PHCA con analytics, automatización e IA aplicada. Por eso IBM encaja bien con el perfil que quiero desarrollar: técnico, pero siempre conectado al negocio.',
+        answerEn: '1. Why IBM
+I like the fact that IBM combines strong technology with real transformation projects. I am especially interested in working with Data, AI, Analytics and Cloud applied to business problems.
+
+2. Why this programme and these areas
+My first choice is Hybrid Cloud & Data because it directly matches what I want to keep learning: analytics, data science, automation and AI. Strategy & Transformation would be my second choice because I am also interested in turning analysis into real change and decisions.
+
+3. Why it fits me
+At ASISA, I worked with data to support decisions, and at PHCA I worked with analytics, automation and applied AI. That is why IBM fits the profile I want to develop: technical, but always connected to the business.'
       },
       {
         id: 'ibm-narrative-career',
