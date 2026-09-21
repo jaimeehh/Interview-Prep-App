@@ -636,7 +636,7 @@ body{
 .pack-keywords span{font-size:10px;font-weight:700;padding:5px 8px;border-radius:20px;background:var(--sage-l);color:var(--sage)}
 .pack-answer{border-top:1px solid var(--border);padding-top:12px}
 .pack-answer strong{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:6px}
-.pack-answer p{font-size:13px;line-height:1.65;color:var(--text2)}
+.pack-answer p{font-size:13px;line-height:1.65;color:var(--text2);white-space:pre-line}
 .pack-reveal{margin-top:8px}
 .pack-nav{display:flex;justify-content:space-between;gap:8px;margin-top:14px}
 @media(max-width:520px){
