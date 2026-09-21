@@ -32,8 +32,8 @@ const INTERVIEW_PACKS = [
         questionEn: 'What kind of role are you looking for, and where do you see yourself in five years?',
         variantsEs: ['¿Cuál es tu rol objetivo?', '¿Hacia dónde quieres orientar tu carrera?', '¿Dónde te ves a medio plazo?', '¿Qué buscas en tu siguiente experiencia?'],
         variantsEn: ['What is your target role?', 'Where do you want to take your career?', 'Where do you see yourself in the medium term?', 'What are you looking for in your next experience?'],
-        answerEs: 'Lo resumiría en tres etapas.\\n\\n1. Corto plazo: quiero un rol analítico muy conectado al negocio, donde pueda seguir usando datos y tecnología para apoyar decisiones reales.\\n\\n2. Medio plazo: me gustaría evolucionar hacia Growth, Strategy o Business Analytics, con más ownership sobre proyectos, mercados y resultados.\\n\\n3. Largo plazo: quiero ser un perfil capaz de moverse con comodidad entre negocio y tecnología y liderar iniciativas donde datos e IA tengan impacto claro.\\n\\nNo me obsesiona un título concreto; me importa más construir una base sólida y asumir cada vez más responsabilidad.',
-        answerEn: 'I would summarise it in three stages.\\n\\n1. Short term: I want an analytical role that is very close to the business, where I can keep using data and technology to support real decisions.\\n\\n2. Medium term: I would like to grow into Growth, Strategy or Business Analytics roles, with more ownership of projects, markets and outcomes.\\n\\n3. Long term: I want to become someone who can move comfortably between business and technology and lead initiatives where data and AI have a clear impact.\\n\\nI am not focused on a specific title; what matters more to me is building a strong foundation and gradually taking on more responsibility.'
+        answerEs: 'Lo resumiría en tres etapas.\n\n1. Corto plazo: quiero un rol analítico muy conectado al negocio, donde pueda seguir usando datos y tecnología para apoyar decisiones reales.\n\n2. Medio plazo: me gustaría evolucionar hacia Growth, Strategy o Business Analytics, con más ownership sobre proyectos, mercados y resultados.\n\n3. Largo plazo: quiero ser un perfil capaz de moverse con comodidad entre negocio y tecnología y liderar iniciativas donde datos e IA tengan impacto claro.\n\nNo me obsesiona un título concreto; me importa más construir una base sólida y asumir cada vez más responsabilidad.',
+        answerEn: 'I would summarise it in three stages.\n\n1. Short term: I want an analytical role that is very close to the business, where I can keep using data and technology to support real decisions.\n\n2. Medium term: I would like to grow into Growth, Strategy or Business Analytics roles, with more ownership of projects, markets and outcomes.\n\n3. Long term: I want to become someone who can move comfortably between business and technology and lead initiatives where data and AI have a clear impact.\n\nI am not focused on a specific title; what matters more to me is building a strong foundation and gradually taking on more responsibility.'
       },
       {
         id: 'fever-narrative-fit',
@@ -46,8 +46,8 @@ const INTERVIEW_PACKS = [
         questionEn: 'Why do you think your profile fits Fever and this role?',
         variantsEs: ['¿Por qué deberíamos elegirte?', '¿Qué puedes aportar?', '¿Qué te diferencia?', '¿Cómo encaja tu experiencia con Growth?'],
         variantsEn: ['Why should we choose you?', 'What can you bring to the role?', 'What differentiates you?', 'How does your experience fit Growth?'],
-        answerEs: 'Creo que encajo por tres razones.\\n\\n1. Datos + negocio: en ASISA utilicé datos e inteligencia competitiva para apoyar decisiones de dirección.\\n\\n2. Tecnología aplicada: en PHCA trabajé con analytics, automatización e IA para mejorar procesos internos.\\n\\n3. Forma de trabajar: soy curioso, aprendo rápido y me gusta entender primero el problema antes de elegir la herramienta.\\n\\nCreo que ese perfil encaja bien con Growth: entender el negocio, detectar oportunidades, apoyarse en datos y convertir el análisis en acción.',
-        answerEn: 'I think I fit for three reasons.\\n\\n1. Data + business: at ASISA, I used data and competitive intelligence to support management decisions.\\n\\n2. Applied technology: at PHCA, I worked with analytics, automation and AI to improve internal processes.\\n\\n3. How I work: I am curious, I learn quickly and I like to understand the problem before choosing the tool.\\n\\nI think that profile fits Growth well: understand the business, identify opportunities, use data and turn analysis into action.'
+        answerEs: 'Creo que encajo por tres razones.\n\n1. Datos + negocio: en ASISA utilicé datos e inteligencia competitiva para apoyar decisiones de dirección.\n\n2. Tecnología aplicada: en PHCA trabajé con analytics, automatización e IA para mejorar procesos internos.\n\n3. Forma de trabajar: soy curioso, aprendo rápido y me gusta entender primero el problema antes de elegir la herramienta.\n\nCreo que ese perfil encaja bien con Growth: entender el negocio, detectar oportunidades, apoyarse en datos y convertir el análisis en acción.',
+        answerEn: 'I think I fit for three reasons.\n\n1. Data + business: at ASISA, I used data and competitive intelligence to support management decisions.\n\n2. Applied technology: at PHCA, I worked with analytics, automation and AI to improve internal processes.\n\n3. How I work: I am curious, I learn quickly and I like to understand the problem before choosing the tool.\n\nI think that profile fits Growth well: understand the business, identify opportunities, use data and turn analysis into action.'
       },
       {
         id: 'fever-case-market-entry',
@@ -58,8 +58,8 @@ const INTERVIEW_PACKS = [
         keywords: ['market attractiveness', 'right to win', 'economics', 'build-partner-buy', 'pilot'],
         questionEs: 'Fever quiere lanzar un nuevo producto o experiencia en una ciudad. ¿Cómo estructurarías el análisis?',
         questionEn: 'Fever wants to launch a new product or experience in a city. How would you structure the analysis?',
-        answerEs: 'Lo estructuraría en cinco bloques.\\n\\n1. Mercado: tamaño, crecimiento, demanda, cliente y competencia.\\n\\n2. Right to win: qué ventaja tendría Fever en esa ciudad: marca, datos, partners, canales o producto.\\n\\n3. Economics: ingresos, precio, costes, margen, inversión inicial y break-even.\\n\\n4. Entrada: build, partner / JV o acquire, según velocidad, control, inversión y capacidades.\\n\\n5. Piloto: probaría primero en pequeño, con KPIs claros, y escalaría sólo si se validan las hipótesis.',
-        answerEn: 'I would structure it in five blocks.\\n\\n1. Market: size, growth, demand, customers and competition.\\n\\n2. Right to win: what advantage Fever would have in that city: brand, data, partners, channels or product.\\n\\n3. Economics: revenue, pricing, costs, margin, initial investment and break-even.\\n\\n4. Entry mode: build, partner / JV or acquire, depending on speed, control, investment and capabilities.\\n\\n5. Pilot: I would test on a small scale first, with clear KPIs, and scale only if the key assumptions are validated.'
+        answerEs: 'Lo estructuraría en cinco bloques.\n\n1. Mercado: tamaño, crecimiento, demanda, cliente y competencia.\n\n2. Right to win: qué ventaja tendría Fever en esa ciudad: marca, datos, partners, canales o producto.\n\n3. Economics: ingresos, precio, costes, margen, inversión inicial y break-even.\n\n4. Entrada: build, partner / JV o acquire, según velocidad, control, inversión y capacidades.\n\n5. Piloto: probaría primero en pequeño, con KPIs claros, y escalaría sólo si se validan las hipótesis.',
+        answerEn: 'I would structure it in five blocks.\n\n1. Market: size, growth, demand, customers and competition.\n\n2. Right to win: what advantage Fever would have in that city: brand, data, partners, channels or product.\n\n3. Economics: revenue, pricing, costs, margin, initial investment and break-even.\n\n4. Entry mode: build, partner / JV or acquire, depending on speed, control, investment and capabilities.\n\n5. Pilot: I would test on a small scale first, with clear KPIs, and scale only if the key assumptions are validated.'
       },
       {
         id: 'fever-case-growth-tree',
@@ -70,8 +70,8 @@ const INTERVIEW_PACKS = [
         keywords: ['customers', 'frequency', 'ticket', 'products', 'markets', 'M&A'],
         questionEs: 'Si Fever quisiera crecer un 30% en una ciudad, ¿qué palancas de crecimiento analizarías?',
         questionEn: 'If Fever wanted to grow by 30% in a city, which growth levers would you analyse?',
-        answerEs: 'Primero separaría crecimiento orgánico e inorgánico.\\n\\n1. Más clientes: adquisición, nuevos segmentos, canales o geografías.\\n\\n2. Más valor por cliente: más frecuencia, cross-selling, ticket medio o mejor mix.\\n\\n3. Más oferta: nuevos productos, experiencias o categorías.\\n\\n4. Inorgánico: partnerships, joint ventures o adquisiciones.\\n\\nDespués compararía cada palanca por impacto potencial, velocidad, inversión, riesgo y control.',
-        answerEn: 'First, I would separate organic and inorganic growth.\\n\\n1. More customers: acquisition, new segments, channels or geographies.\\n\\n2. More value per customer: higher frequency, cross-selling, average ticket value or better mix.\\n\\n3. More offering: new products, experiences or categories.\\n\\n4. Inorganic growth: partnerships, joint ventures or acquisitions.\\n\\nThen I would compare each lever by potential impact, speed, investment, risk and control.'
+        answerEs: 'Primero separaría crecimiento orgánico e inorgánico.\n\n1. Más clientes: adquisición, nuevos segmentos, canales o geografías.\n\n2. Más valor por cliente: más frecuencia, cross-selling, ticket medio o mejor mix.\n\n3. Más oferta: nuevos productos, experiencias o categorías.\n\n4. Inorgánico: partnerships, joint ventures o adquisiciones.\n\nDespués compararía cada palanca por impacto potencial, velocidad, inversión, riesgo y control.',
+        answerEn: 'First, I would separate organic and inorganic growth.\n\n1. More customers: acquisition, new segments, channels or geographies.\n\n2. More value per customer: higher frequency, cross-selling, average ticket value or better mix.\n\n3. More offering: new products, experiences or categories.\n\n4. Inorganic growth: partnerships, joint ventures or acquisitions.\n\nThen I would compare each lever by potential impact, speed, investment, risk and control.'
       },
       {
         id: 'fever-tech-funnel',
@@ -82,8 +82,8 @@ const INTERVIEW_PACKS = [
         keywords: ['traffic', 'conversion', 'ticket', 'retention', 'segments'],
         questionEs: 'Si las ventas de una experiencia caen un 20%, ¿cómo analizarías el problema?',
         questionEn: 'If sales for an experience dropped by 20%, how would you analyse the problem?',
-        answerEs: 'Lo haría en cuatro pasos.\\n\\n1. Descomponer: tráfico × conversión × ticket medio.\\n\\n2. Segmentar: canal, mercado, dispositivo, tipo de experiencia o cliente.\\n\\n3. Buscar causas: pricing, campañas, disponibilidad, competencia o cambios de producto.\\n\\n4. Actuar: priorizar hipótesis con datos, probar una acción y medir el resultado.\\n\\nLa clave es no saltar directamente a una solución sin localizar antes dónde está la caída.',
-        answerEn: 'I would do it in four steps.\\n\\n1. Break it down: traffic × conversion × average ticket value.\\n\\n2. Segment: channel, market, device, type of experience or customer.\\n\\n3. Look for causes: pricing, campaigns, availability, competition or product changes.\\n\\n4. Act: prioritise hypotheses with data, test an action and measure the result.\\n\\nThe key is not to jump straight to a solution before locating where the decline comes from.'
+        answerEs: 'Lo haría en cuatro pasos.\n\n1. Descomponer: tráfico × conversión × ticket medio.\n\n2. Segmentar: canal, mercado, dispositivo, tipo de experiencia o cliente.\n\n3. Buscar causas: pricing, campañas, disponibilidad, competencia o cambios de producto.\n\n4. Actuar: priorizar hipótesis con datos, probar una acción y medir el resultado.\n\nLa clave es no saltar directamente a una solución sin localizar antes dónde está la caída.',
+        answerEn: 'I would do it in four steps.\n\n1. Break it down: traffic × conversion × average ticket value.\n\n2. Segment: channel, market, device, type of experience or customer.\n\n3. Look for causes: pricing, campaigns, availability, competition or product changes.\n\n4. Act: prioritise hypotheses with data, test an action and measure the result.\n\nThe key is not to jump straight to a solution before locating where the decline comes from.'
       },
       {
         id: 'fever-tech-abtest',
@@ -94,8 +94,8 @@ const INTERVIEW_PACKS = [
         keywords: ['hypothesis', 'control', 'treatment', 'metric', 'significance'],
         questionEs: '¿Cómo evaluarías si un experimento A/B de Growth ha funcionado?',
         questionEn: 'How would you evaluate whether a Growth A/B test worked?',
-        answerEs: 'Lo evaluaría en cuatro puntos.\\n\\n1. Hipótesis: definir qué cambio espero y por qué.\\n\\n2. Métrica principal: por ejemplo conversión, definida antes de ver los resultados.\\n\\n3. Diseño: control vs tratamiento, muestra suficiente y periodo comparable.\\n\\n4. Resultado: mirar tamaño del efecto, significancia y posibles efectos secundarios.\\n\\nCon eso decidiría si escalar, iterar o descartar.',
-        answerEn: 'I would evaluate it in four points.\\n\\n1. Hypothesis: define what change I expect and why.\\n\\n2. Primary metric: for example conversion, defined before seeing the results.\\n\\n3. Design: control vs treatment, enough sample size and a comparable period.\\n\\n4. Result: look at effect size, significance and possible side effects.\\n\\nBased on that, I would decide whether to scale, iterate or stop.'
+        answerEs: 'Lo evaluaría en cuatro puntos.\n\n1. Hipótesis: definir qué cambio espero y por qué.\n\n2. Métrica principal: por ejemplo conversión, definida antes de ver los resultados.\n\n3. Diseño: control vs tratamiento, muestra suficiente y periodo comparable.\n\n4. Resultado: mirar tamaño del efecto, significancia y posibles efectos secundarios.\n\nCon eso decidiría si escalar, iterar o descartar.',
+        answerEn: 'I would evaluate it in four points.\n\n1. Hypothesis: define what change I expect and why.\n\n2. Primary metric: for example conversion, defined before seeing the results.\n\n3. Design: control vs treatment, enough sample size and a comparable period.\n\n4. Result: look at effect size, significance and possible side effects.\n\nBased on that, I would decide whether to scale, iterate or stop.'
       },
       {
         id: 'fever-tech-kpis',
@@ -106,8 +106,8 @@ const INTERVIEW_PACKS = [
         keywords: ['conversion', 'CAC', 'retention', 'revenue', 'market'],
         questionEs: '¿Qué métricas seguirías para evaluar el crecimiento de un mercado de Fever?',
         questionEn: 'Which metrics would you track to evaluate growth in a Fever market?',
-        answerEs: 'Lo agruparía en cuatro bloques.\\n\\n1. Adquisición: tráfico, usuarios y CAC si aplica.\\n\\n2. Conversión: porcentaje que acaba comprando.\\n\\n3. Monetización: ticket medio, ingresos y margen.\\n\\n4. Retención: repetición, frecuencia y clientes recurrentes.\\n\\nDespués segmentaría por canal, mercado y tipo de experiencia para entender qué está impulsando realmente el crecimiento.',
-        answerEn: 'I would group them into four blocks.\\n\\n1. Acquisition: traffic, users and CAC where relevant.\\n\\n2. Conversion: the percentage that ends up purchasing.\\n\\n3. Monetisation: average ticket value, revenue and margin.\\n\\n4. Retention: repeat behaviour, frequency and returning customers.\\n\\nThen I would segment by channel, market and type of experience to understand what is really driving growth.'
+        answerEs: 'Lo agruparía en cuatro bloques.\n\n1. Adquisición: tráfico, usuarios y CAC si aplica.\n\n2. Conversión: porcentaje que acaba comprando.\n\n3. Monetización: ticket medio, ingresos y margen.\n\n4. Retención: repetición, frecuencia y clientes recurrentes.\n\nDespués segmentaría por canal, mercado y tipo de experiencia para entender qué está impulsando realmente el crecimiento.',
+        answerEn: 'I would group them into four blocks.\n\n1. Acquisition: traffic, users and CAC where relevant.\n\n2. Conversion: the percentage that ends up purchasing.\n\n3. Monetisation: average ticket value, revenue and margin.\n\n4. Retention: repeat behaviour, frequency and returning customers.\n\nThen I would segment by channel, market and type of experience to understand what is really driving growth.'
       }
     ]
   },
@@ -170,8 +170,8 @@ const INTERVIEW_PACKS = [
         keywords: ['ETL', 'ELT', 'warehouse', 'cloud', 'pipeline'],
         questionEs: '¿Cuál es la diferencia entre ETL y ELT y cuándo usarías cada uno?',
         questionEn: 'What is the difference between ETL and ELT, and when would you use each one?',
-        answerEs: 'La diferencia clave es el orden.\\n\\n1. ETL: Extract → Transform → Load. Transformas antes de cargar.\\n\\n2. ELT: Extract → Load → Transform. Cargas primero y transformas dentro del warehouse o cloud.\\n\\n3. Cuándo usar cada uno: ETL si necesitas mucho control previo; ELT si quieres aprovechar el cómputo de plataformas cloud y mantener datos más cercanos al original.',
-        answerEn: 'The key difference is the order.\\n\\n1. ETL: Extract → Transform → Load. You transform before loading.\\n\\n2. ELT: Extract → Load → Transform. You load first and transform inside the warehouse or cloud platform.\\n\\n3. When to use each: ETL when you need strong control before storage; ELT when you want to use cloud compute and keep data closer to its original form.'
+        answerEs: 'La diferencia clave es el orden.\n\n1. ETL: Extract → Transform → Load. Transformas antes de cargar.\n\n2. ELT: Extract → Load → Transform. Cargas primero y transformas dentro del warehouse o cloud.\n\n3. Cuándo usar cada uno: ETL si necesitas mucho control previo; ELT si quieres aprovechar el cómputo de plataformas cloud y mantener datos más cercanos al original.',
+        answerEn: 'The key difference is the order.\n\n1. ETL: Extract → Transform → Load. You transform before loading.\n\n2. ELT: Extract → Load → Transform. You load first and transform inside the warehouse or cloud platform.\n\n3. When to use each: ETL when you need strong control before storage; ELT when you want to use cloud compute and keep data closer to its original form.'
       },
       {
         id: 'ibm-tech-lake-warehouse',
@@ -182,8 +182,8 @@ const INTERVIEW_PACKS = [
         keywords: ['data warehouse', 'data lake', 'structured', 'analytics', 'governance'],
         questionEs: '¿Qué diferencia hay entre un data warehouse y un data lake?',
         questionEn: 'What is the difference between a data warehouse and a data lake?',
-        answerEs: 'Lo resumiría así.\\n\\n1. Data warehouse: datos estructurados y modelados para BI, reporting y análisis consistente.\\n\\n2. Data lake: datos estructurados y no estructurados, más cercanos al formato original y con más flexibilidad para data science.\\n\\n3. Elección: depende de consumo, gobierno, coste y velocidad. En arquitecturas modernas pueden coexistir.',
-        answerEn: 'I would summarise it like this.\\n\\n1. Data warehouse: structured and modelled data for BI, reporting and consistent analytics.\\n\\n2. Data lake: structured and unstructured data, closer to the original format and more flexible for data science.\\n\\n3. Choice: it depends on consumption, governance, cost and speed. In modern architectures, both can coexist.'
+        answerEs: 'Lo resumiría así.\n\n1. Data warehouse: datos estructurados y modelados para BI, reporting y análisis consistente.\n\n2. Data lake: datos estructurados y no estructurados, más cercanos al formato original y con más flexibilidad para data science.\n\n3. Elección: depende de consumo, gobierno, coste y velocidad. En arquitecturas modernas pueden coexistir.',
+        answerEn: 'I would summarise it like this.\n\n1. Data warehouse: structured and modelled data for BI, reporting and consistent analytics.\n\n2. Data lake: structured and unstructured data, closer to the original format and more flexible for data science.\n\n3. Choice: it depends on consumption, governance, cost and speed. In modern architectures, both can coexist.'
       },
       {
         id: 'ibm-tech-batch-stream',
@@ -194,8 +194,8 @@ const INTERVIEW_PACKS = [
         keywords: ['batch', 'streaming', 'latency', 'events', 'cost'],
         questionEs: '¿Cuál es la diferencia entre procesamiento batch y streaming?',
         questionEn: 'What is the difference between batch and streaming processing?',
-        answerEs: 'La diferencia principal es la latencia.\\n\\n1. Batch: procesa bloques de datos cada cierto tiempo.\\n\\n2. Streaming: procesa eventos de forma continua o casi en tiempo real.\\n\\n3. Cuándo usar cada uno: batch si no necesitas reacción inmediata; streaming si el valor depende de responder rápido, como fraude o monitorización.',
-        answerEn: 'The main difference is latency.\\n\\n1. Batch: processes groups of data periodically.\\n\\n2. Streaming: processes events continuously or near real time.\\n\\n3. When to use each: batch when you do not need an immediate response; streaming when value depends on reacting quickly, such as fraud detection or monitoring.'
+        answerEs: 'La diferencia principal es la latencia.\n\n1. Batch: procesa bloques de datos cada cierto tiempo.\n\n2. Streaming: procesa eventos de forma continua o casi en tiempo real.\n\n3. Cuándo usar cada uno: batch si no necesitas reacción inmediata; streaming si el valor depende de responder rápido, como fraude o monitorización.',
+        answerEn: 'The main difference is latency.\n\n1. Batch: processes groups of data periodically.\n\n2. Streaming: processes events continuously or near real time.\n\n3. When to use each: batch when you do not need an immediate response; streaming when value depends on reacting quickly, such as fraud detection or monitoring.'
       },
       {
         id: 'ibm-tech-window',
@@ -206,8 +206,8 @@ const INTERVIEW_PACKS = [
         keywords: ['SQL', 'window function', 'GROUP BY', 'OVER', 'PARTITION BY'],
         questionEs: '¿Qué diferencia hay entre GROUP BY y una window function en SQL?',
         questionEn: 'What is the difference between GROUP BY and a window function in SQL?',
-        answerEs: 'La diferencia clave es si mantienes o no las filas originales.\\n\\n1. GROUP BY: agrupa y devuelve una fila por grupo.\\n\\n2. Window function: calcula sobre un grupo, pero mantiene cada fila.\\n\\n3. Ejemplo: AVG(sales) OVER(PARTITION BY region) muestra cada venta junto con la media de su región.\\n\\nPARTITION BY define el grupo; OVER indica que es una window function.',
-        answerEn: 'The key difference is whether you keep the original rows.\\n\\n1. GROUP BY: groups rows and returns one row per group.\\n\\n2. Window function: calculates across a group while keeping each row.\\n\\n3. Example: AVG(sales) OVER(PARTITION BY region) shows each sale together with the average for its region.\\n\\nPARTITION BY defines the group; OVER indicates that it is a window function.'
+        answerEs: 'La diferencia clave es si mantienes o no las filas originales.\n\n1. GROUP BY: agrupa y devuelve una fila por grupo.\n\n2. Window function: calcula sobre un grupo, pero mantiene cada fila.\n\n3. Ejemplo: AVG(sales) OVER(PARTITION BY region) muestra cada venta junto con la media de su región.\n\nPARTITION BY define el grupo; OVER indica que es una window function.',
+        answerEn: 'The key difference is whether you keep the original rows.\n\n1. GROUP BY: groups rows and returns one row per group.\n\n2. Window function: calculates across a group while keeping each row.\n\n3. Example: AVG(sales) OVER(PARTITION BY region) shows each sale together with the average for its region.\n\nPARTITION BY defines the group; OVER indicates that it is a window function.'
       },
       {
         id: 'ibm-tech-hybrid',
@@ -218,8 +218,8 @@ const INTERVIEW_PACKS = [
         keywords: ['public cloud', 'private cloud', 'on-prem', 'workloads', 'trade-offs'],
         questionEs: '¿Qué entiendes por hybrid cloud?',
         questionEn: 'What do you understand by hybrid cloud?',
-        answerEs: 'Lo resumiría en tres ideas.\\n\\n1. Qué es: combinar cloud pública, privada y sistemas on-premise.\\n\\n2. Por qué: cada workload puede necesitar algo distinto por seguridad, regulación, coste, rendimiento o latencia.\\n\\n3. Idea clave: hybrid cloud no significa mover todo a cloud, sino elegir el entorno adecuado para cada necesidad.',
-        answerEn: 'I would summarise it in three ideas.\\n\\n1. What it is: combining public cloud, private cloud and on-premise systems.\\n\\n2. Why: each workload may have different needs around security, regulation, cost, performance or latency.\\n\\n3. Key idea: hybrid cloud does not mean moving everything to the cloud; it means choosing the right environment for each need.'
+        answerEs: 'Lo resumiría en tres ideas.\n\n1. Qué es: combinar cloud pública, privada y sistemas on-premise.\n\n2. Por qué: cada workload puede necesitar algo distinto por seguridad, regulación, coste, rendimiento o latencia.\n\n3. Idea clave: hybrid cloud no significa mover todo a cloud, sino elegir el entorno adecuado para cada necesidad.',
+        answerEn: 'I would summarise it in three ideas.\n\n1. What it is: combining public cloud, private cloud and on-premise systems.\n\n2. Why: each workload may have different needs around security, regulation, cost, performance or latency.\n\n3. Key idea: hybrid cloud does not mean moving everything to the cloud; it means choosing the right environment for each need.'
       }
     ]
   }
@@ -270,6 +270,20 @@ function stepInterviewPack(delta){
 function toggleInterviewPackAnswer(){
   interviewPackState.revealed = !interviewPackState.revealed;
   renderInterviewPacks();
+}
+
+function formatPackAnswer(answer){
+  const blocks = String(answer ?? '').split(/\n\s*\n/).filter(Boolean);
+  return blocks.map(block => {
+    const numbered = block.match(/^(\d+)\.\s*([^:\n]+)(?::\s*|\n)([\s\S]*)$/);
+    if(numbered){
+      return '<div class="pack-answer-step">' +
+        '<div class="pack-answer-step-title"><span>' + packEscape(numbered[1]) + '</span>' + packEscape(numbered[2].trim()) + '</div>' +
+        '<div class="pack-answer-step-body">' + packEscape(numbered[3].trim()) + '</div>' +
+      '</div>';
+    }
+    return '<p class="pack-answer-paragraph">' + packEscape(block) + '</p>';
+  }).join('');
 }
 
 function getPackQuestionView(question){
@@ -328,7 +342,7 @@ function renderInterviewPacks(){
           : '') +
         (ideaVisible ? '<div class="pack-memory"><strong>🧠 Idea clave</strong><span>' + packEscape(view.idea) + '</span></div>' : '') +
         (ideaVisible ? '<div class="pack-keywords">' + q.keywords.map(k => '<span>' + packEscape(k) + '</span>').join('') + '</div>' : '') +
-        (answerVisible ? '<div class="pack-answer"><strong>Respuesta modelo</strong><p>' + packEscape(view.answer) + '</p></div>' : '<button type="button" class="btn-t full pack-reveal" onclick="toggleInterviewPackAnswer()">Mostrar respuesta</button>') +
+        (answerVisible ? '<div class="pack-answer"><strong>Respuesta modelo</strong>' + formatPackAnswer(view.answer) + '</div>' : '<button type="button" class="btn-t full pack-reveal" onclick="toggleInterviewPackAnswer()">Mostrar respuesta</button>') +
         '<div class="pack-nav"><button type="button" class="btn-o" onclick="stepInterviewPack(-1)">← Anterior</button><button type="button" class="btn-o" onclick="stepInterviewPack(1)">Siguiente →</button></div>' +
       '</article>' +
     '</div>';
