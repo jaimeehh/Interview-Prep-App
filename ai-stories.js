@@ -45,47 +45,48 @@ const AI_STAR_STORIES = [
     }
   },
   {
-    id: 'phca-ai-regression-reliability',
+    id: 'personal-job-market-automation',
+    contentVersion: 1,
     tag: 'ai',
     tagLabel: 'Inteligencia artificial',
-    title: 'Evaluación y fiabilidad de un flujo de IA en PHCA',
-    q: 'Cuéntame una ocasión en la que tuviste que mejorar la fiabilidad de un sistema de inteligencia artificial.',
+    title: 'Automatización de búsqueda de empleo y análisis del mercado',
+    q: 'Cuéntame un proyecto reciente en el que hayas utilizado datos y automatización para resolver un problema real.',
     questions: {
       es: [
-        'Cuéntame una ocasión en la que tuviste que mejorar la fiabilidad de un sistema de inteligencia artificial.',
-        '¿Cómo probarías un sistema basado en LLMs que no siempre responde de forma determinista?',
-        'Háblame de un fallo recurrente que convertiste en una prueba útil.',
-        '¿Cómo pasarías de un prototipo de IA a un flujo más robusto?',
-        '¿Qué aprendiste al integrar un flujo de IA con APIs y AWS?'
+        'Cuéntame un proyecto reciente en el que hayas utilizado datos y automatización para resolver un problema real.',
+        '¿Cómo automatizaste la búsqueda de ofertas de trabajo?',
+        '¿Cómo utilizas distintos CVs para priorizar las oportunidades?',
+        '¿Cómo registras y analizas tendencias del mercado laboral?',
+        '¿Qué problema querías evitar con este proyecto?'
       ],
       en: [
-        'Tell me about a time you had to improve the reliability of an AI system.',
-        'How would you test an LLM-based system that does not always respond deterministically?',
-        'Tell me about a recurring failure that you turned into a useful test.',
-        'How would you move an AI prototype towards a more robust workflow?',
-        'What did you learn from integrating an AI workflow with APIs and AWS?'
+        'Tell me about a recent project where you used data and automation to solve a real problem.',
+        'How did you automate your job search?',
+        'How do you use different CVs to prioritise opportunities?',
+        'How do you track and analyse job-market trends?',
+        'What problem were you trying to avoid with this project?'
       ]
     },
-    sit: 'Mientras desarrollaba el asistente documental de PHCA, la conexión entre el modelo, la búsqueda vectorial, las APIs REST y los servicios de AWS generaba fallos que podían reaparecer después de introducir cambios.',
-    tsk: 'Necesitaba una forma repetible de comprobar el comportamiento del flujo y evitar que un problema ya identificado volviera a pasar desapercibido.',
-    act: 'Registré los fallos recurrentes y los convertí en casos de regresión con una entrada concreta y un comportamiento esperado. Utilicé esos casos para volver a comprobar el flujo después de los cambios y para separar los problemas de integración de los problemas propios de la respuesta generada.',
-    res: 'Los errores dejaron de tratarse como incidentes aislados y pasaron a formar parte de un conjunto reutilizable de comprobaciones. Esto hizo que el prototipo fuera más fácil de validar y que cada fallo aportara conocimiento para mejorar la siguiente versión.',
-    lrn: 'Aprendí que desarrollar con LLMs también exige disciplina de ingeniería: casos de prueba, trazabilidad y criterios de aceptación. Una demostración convincente no es suficiente si el comportamiento no puede comprobarse de forma repetible.',
+    sit: 'En mi búsqueda de empleo vi que revisar manualmente muchas páginas de empresas, comparar cada oferta con mi perfil y registrar las posiciones relevantes consumía demasiado tiempo y hacía difícil tener una visión global del mercado.',
+    tsk: 'Decidí crear un sistema propio para automatizar gran parte del proceso, revisar aproximadamente 150 empresas y comparar las ofertas con los cuatro CVs o perfiles que mantengo según el tipo de posición.',
+    act: 'Desarrollé en Python un sistema que revisa periódicamente las páginas de empleo, recoge nuevas ofertas y organiza la información en una estructura común. Después registro los resultados en Excel y SQL y los comparo con mis distintos perfiles para priorizar qué vacantes merece la pena revisar. También mantengo histórico para observar tendencias en roles, tecnologías y demanda.',
+    res: 'El proyecto reduce mucho el tiempo dedicado a búsquedas repetitivas, me ayuda a concentrarme en las ofertas con más encaje y me da una visión más estructurada de cómo evoluciona el mercado. Además, es un proyecto vivo con el que sigo practicando automatización, Python, SQL y análisis de datos.',
+    lrn: 'Aprendí que una buena automatización no tiene que sustituir la decisión humana: debe quitar trabajo repetitivo y ordenar mejor la información para dedicar el tiempo a las decisiones que realmente importan.',
     en: {
-      title: 'Evaluating and improving the reliability of an AI workflow at PHCA',
-      q: 'Tell me about a time you had to improve the reliability of an AI system.',
+      title: 'Automating job search and analysing the job market',
+      q: 'Tell me about a recent project where you used data and automation to solve a real problem.',
       questions: [
-        'Tell me about a time you had to improve the reliability of an AI system.',
-        'How would you test an LLM-based system that does not always respond deterministically?',
-        'Tell me about a recurring failure that you turned into a useful test.',
-        'How would you move an AI prototype towards a more robust workflow?',
-        'What did you learn from integrating an AI workflow with APIs and AWS?'
+        'Tell me about a recent project where you used data and automation to solve a real problem.',
+        'How did you automate your job search?',
+        'How do you use different CVs to prioritise opportunities?',
+        'How do you track and analyse job-market trends?',
+        'What problem were you trying to avoid with this project?'
       ],
-      sit: 'While developing the PHCA document assistant, the connections between the model, vector search, REST APIs and AWS services created failures that could reappear after changes were introduced.',
-      tsk: 'I needed a repeatable way to check the workflow behaviour and prevent an already identified problem from going unnoticed again.',
-      act: 'I documented recurring failures and converted them into regression cases with a specific input and expected behaviour. I used those cases to check the workflow again after changes and to distinguish integration problems from issues in the generated response itself.',
-      res: 'Errors stopped being treated as isolated incidents and became a reusable set of checks. This made the prototype easier to validate and ensured that every failure contributed knowledge to the next version.',
-      lrn: 'I learned that LLM development also requires engineering discipline: test cases, traceability and acceptance criteria. A convincing demonstration is not enough if the behaviour cannot be checked repeatedly.'
+      sit: 'During my job search, I realised that manually checking many company career pages, comparing each role with my profile and tracking relevant positions was taking too much time and made it difficult to keep a clear view of the market.',
+      tsk: 'I decided to build my own system to automate much of the process, review around 150 companies and compare opportunities with the four CVs or profiles I maintain for different types of roles.',
+      act: 'I developed a Python system that periodically checks company career pages, collects new job postings and organises the information into a common structure. I then store the results in Excel and SQL and compare them with my different profiles to prioritise which vacancies are worth reviewing. I also keep historical data to observe trends in roles, technologies and demand.',
+      res: 'The project significantly reduces the time I spend on repetitive searches, helps me focus on the opportunities with the strongest fit and gives me a more structured view of how the market is evolving. It is also a live project that lets me keep practising automation, Python, SQL and data analysis.',
+      lrn: 'I learned that good automation does not need to replace human judgement. It should remove repetitive work and organise information better so more time can be spent on the decisions that actually matter.'
     }
   },
   {
