@@ -102,7 +102,7 @@ const LEADERSHIP_STORY_UPDATE = {
   tsk: 'Mi objetivo era introducirlos progresivamente en el desarrollo de una nueva plataforma para que pudieran aportar valor a la empresa mientras aprendían a trabajar dentro del equipo y ganaban autonomía.',
   act: 'Empecé asignándoles tareas concretas y asumibles, explicando el contexto y realizando un seguimiento frecuente. Establecí deadlines claros y puntos de revisión para medir el avance y dar feedback. A medida que dominaban los conceptos y cumplían los objetivos, fui aumentando la dificultad de las tareas y reduciendo el seguimiento para dejarles más libertad y ayudarles a ser autosuficientes.',
   res: 'La plataforma se terminó antes de lo previsto y los estudiantes se integraron en la dinámica de trabajo y de grupo. Ganaron autonomía durante su estancia y algunos de ellos fueron contratados posteriormente por la empresa.',
-  lrn: 'Aprendí que liderar a personas con poca experiencia exige adaptar el nivel de acompañamiento: al principio necesitan contexto, objetivos y seguimiento; después, confianza y espacio para tomar decisiones. La combinación de deadlines claros, feedback y autonomía progresiva puede mejorar tanto su desarrollo como el resultado del proyecto.',
+  lrn: 'Aprendí que invertir tiempo en otras personas merece la pena, aunque al principio pueda parecer que te ralentiza. También entendí que no puedes liderar a todo el mundo igual: hay que adaptar el apoyo, dar más seguimiento al principio y más autonomía cuando la persona está preparada.',
   en: {
     title: 'Progressively leading students on placement',
     q: 'Tell me about a time you led and developed other people.',
@@ -117,7 +117,7 @@ const LEADERSHIP_STORY_UPDATE = {
     tsk: 'My objective was to introduce them progressively to the development of a new platform so they could create value for the company while learning how the team worked and becoming more autonomous.',
     act: 'I started by assigning clear and manageable tasks, explaining the context and following up frequently. I set clear deadlines and review points to measure progress and provide feedback. As they became more familiar with the concepts and met their objectives, I increased the difficulty of their tasks and reduced the level of supervision, giving them more freedom and helping them become self-sufficient.',
     res: 'The platform was completed ahead of schedule, and the students became integrated into both the work and the team dynamic. They gained autonomy during their placement, and some of them were subsequently hired by the company.',
-    lrn: 'I learned that leading people with limited experience requires adapting the level of support. At first, they need context, objectives and close follow-up; later, they need trust and room to make decisions. Combining clear deadlines, feedback and progressive autonomy can improve both their development and the project outcome.'
+    lrn: 'I learned that investing time in other people is worth it, even if at first it can feel like it slows you down. I also learned that you cannot lead everyone in the same way: you need to adapt your support, give more guidance at the beginning and more autonomy when the person is ready.'
   }
 };
 
