@@ -123,46 +123,46 @@ const LEADERSHIP_STORY_UPDATE = {
 
 const STAKEHOLDER_STORY = {
   "id": "difficult-stakeholder-asisa",
-  "contentVersion": 1,
+  "contentVersion": 2,
   "tag": "communication",
   "tagLabel": "Comunicación",
-  "title": "Gestionar a un stakeholder senior en un proyecto nuevo",
+  "title": "Automatizar un informe involucrando al stakeholder",
   "q": "Cuéntame una situación en la que tuviste que gestionar a un miembro difícil del equipo o a un stakeholder. ¿Cómo lo gestionaste y cuál fue el resultado?",
   "questions": {
     "es": [
       "Cuéntame una situación en la que tuviste que gestionar a un miembro difícil del equipo o a un stakeholder. ¿Cómo lo gestionaste y cuál fue el resultado?",
-      "¿Cómo gestionaste a un stakeholder con una opinión diferente a la tuya?",
-      "¿Cómo conseguiste alinear a perfiles senior durante un proyecto nuevo?",
-      "Cuéntame una ocasión en la que tuviste que gestionar resistencia a una nueva forma de trabajar."
+      "¿Cómo gestionaste resistencia a una nueva forma de trabajar?",
+      "¿Cómo involucraste a un stakeholder en un proceso de automatización?",
+      "Cuéntame una ocasión en la que tuviste que cambiar un proceso sin imponer la solución."
     ],
     "en": [
       "Tell us about a situation where you had to deal with a difficult team member or stakeholder. How did you handle it and what was the outcome?",
-      "How did you manage a stakeholder who had a different perspective from yours?",
-      "How did you align senior stakeholders during a new project?",
-      "Tell me about a time when you had to manage resistance to a new way of working."
+      "How did you manage resistance to a new way of working?",
+      "How did you involve a stakeholder in an automation project?",
+      "Tell me about a time when you changed a process without imposing the solution."
     ]
   },
-  "sit": "En ASISA participé en el desarrollo desde cero de una plataforma de inteligencia competitiva para comparar aseguradoras y proveedores. Uno de los stakeholders senior prefería mantener un proceso manual y cuestionaba la nueva solución, lo que dificultaba avanzar con una visión común.",
-  "tsk": "Mi objetivo era entender sus preocupaciones, mantener el proyecto avanzando y llegar a una solución que respondiera a las necesidades del equipo.",
-  "act": "Primero hablé con él para identificar la preocupación concreta. Después separé los requisitos imprescindibles de las preferencias, preparé una propuesta y validé la información paso a paso. Fui incorporando su feedback y expliqué las decisiones con ejemplos claros.",
-  "res": "Conseguimos alinear expectativas y avanzar con una solución común. El stakeholder se involucró en las validaciones y el producto se desarrolló con el apoyo de los perfiles senior.",
-  "lrn": "Aprendí que gestionar a un stakeholder exigente no consiste en imponer la solución, sino en entender sus prioridades, convertirlas en requisitos concretos y generar confianza con avances visibles.",
+  "sit": "En ASISA había un informe mensual que se preparaba de forma bastante manual y consumía mucho tiempo. La persona que lo realizaba llevaba tiempo trabajando con ese proceso y era importante que cualquier cambio no se percibiera como algo impuesto.",
+  "tsk": "Mi objetivo era automatizar el informe para reducir trabajo repetitivo, pero también conseguir que la persona responsable se sintiera parte del cambio y confiara en la nueva forma de trabajar.",
+  "act": "En lugar de diseñar la solución por mi cuenta, hablé con ella desde el principio, le pedí que me explicara el proceso y fui validando cada cambio con su feedback. A partir de eso, construí una automatización conectada a SQL y desarrollada en Python. Utilicé Playwright para generar las capturas necesarias a partir de un HTML y automatizar su incorporación al PowerPoint final.",
+  "res": "El informe pasó a generarse de una forma mucho más automatizada, reduciendo tiempo manual y manteniendo la estructura que el equipo ya utilizaba. Además, al haber involucrado a la persona responsable durante todo el proceso, la adopción fue mucho más sencilla.",
+  "lrn": "Aprendí que cuando cambias un proceso no basta con tener una mejor solución técnica. Involucrar a la persona que lo utiliza, escuchar cómo trabaja y construir el cambio con ella puede ser tan importante como la automatización en sí.",
   "en": {
-    "title": "Managing a senior stakeholder in a new project",
+    "title": "Automating a report while involving the stakeholder",
     "q": "Tell us about a situation where you had to deal with a difficult team member or stakeholder. How did you handle it and what was the outcome?",
     "questions": [
       "Tell us about a situation where you had to deal with a difficult team member or stakeholder. How did you handle it and what was the outcome?",
-      "How did you manage a stakeholder who had a different perspective from yours?",
-      "How did you align senior stakeholders during a new project?",
-      "Tell me about a time when you had to manage resistance to a new way of working."
+      "How did you manage resistance to a new way of working?",
+      "How did you involve a stakeholder in an automation project?",
+      "Tell me about a time when you changed a process without imposing the solution."
     ],
-    "sit": "At ASISA, I participated in developing a competitive-intelligence platform from scratch to compare insurers and healthcare providers. One senior stakeholder preferred to keep a manual process and questioned the new solution, which made it difficult to move forward with a shared view.",
-    "tsk": "My objective was to understand his concerns, keep the project moving and reach a solution that addressed the team’s needs.",
-    "act": "I first spoke with him to identify the specific concern. I then separated essential requirements from personal preferences, prepared a proposal and validated the information step by step. I incorporated his feedback and explained the decisions with clear examples.",
-    "res": "We aligned expectations and moved forward with a shared solution. The stakeholder became involved in the validation process, and the product was developed with the support of the senior stakeholders.",
-    "lrn": "I learned that managing a demanding stakeholder is not about imposing a solution. It is about understanding their priorities, turning them into concrete requirements and building trust through visible progress."
+    "sit": "At ASISA, there was a monthly report that was prepared in a very manual way and took a significant amount of time. The person responsible had been working with that process for a long time, so it was important that any change did not feel imposed.",
+    "tsk": "My objective was to automate the report and reduce repetitive work, while also making sure the person responsible felt involved in the change and trusted the new way of working.",
+    "act": "Instead of designing the solution on my own, I spoke with her from the beginning, asked her to walk me through the process and validated each change with her feedback. Based on that, I built an automation connected to SQL and developed in Python. I used Playwright to generate the required screenshots from an HTML output and automate their inclusion in the final PowerPoint.",
+    "res": "The report became much more automated, reducing manual work while preserving the structure the team was already used to. Because the person responsible had been involved throughout the process, adoption was also much smoother.",
+    "lrn": "I learned that when you change a process, having a better technical solution is not enough. Involving the person who uses it, understanding how they work and building the change with them can be just as important as the automation itself."
   }
-};
+}
 
 const HEALTHCARE_COMPLIANCE_STORY = {
   id: 'healthcare-compliance-tfg',
