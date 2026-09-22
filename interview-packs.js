@@ -210,6 +210,42 @@ const INTERVIEW_PACKS = [
         answerEn: 'The key difference is whether you keep the original rows.\n\n1. GROUP BY\nIt groups rows and returns one row per group. For example, average sales by region.\n\n2. Window function\nIt performs a calculation across a group while keeping every row. That lets me compare each record with information from its group without losing detail.\n\n3. Example\nAVG(sales) OVER(PARTITION BY region) shows each sale together with the average for its region.\n\nThe easiest way to remember it is: GROUP BY summarises; a window function calculates without collapsing the rows.'
       },
       {
+        id: 'ibm-tech-iaas-paas-saas',
+        category: 'Technical · Cloud',
+        priority: 'high',
+        ideaEs: 'IaaS = infraestructura; PaaS = plataforma; SaaS = software listo para usar.',
+        ideaEn: 'IaaS = infrastructure; PaaS = platform; SaaS = ready-to-use software.',
+        keywords: ['IaaS', 'PaaS', 'SaaS', 'cloud', 'responsibility'],
+        questionEs: '¿Cuál es la diferencia entre IaaS, PaaS y SaaS?',
+        questionEn: 'What is the difference between IaaS, PaaS and SaaS?',
+        answerEs: 'La diferencia principal es cuánto gestiona el proveedor y cuánto gestionas tú.\n\n1. IaaS\nTe dan la infraestructura: máquinas virtuales, red y almacenamiento. Tú sigues gestionando sistema operativo, aplicaciones y datos. Un ejemplo sería alquilar capacidad de cómputo en cloud.\n\n2. PaaS\nEl proveedor gestiona también gran parte de la plataforma y tú te centras más en desarrollar y desplegar la aplicación. Es útil cuando quieres avanzar rápido sin administrar tanta infraestructura.\n\n3. SaaS\nEs el software ya terminado y listo para usar. Tú simplemente utilizas la aplicación, como un CRM o una herramienta de correo.\n\nPara recordarlo: IaaS te da infraestructura, PaaS te da un entorno para construir y SaaS te da directamente el producto.',
+        answerEn: 'The main difference is how much the provider manages and how much you manage yourself.\n\n1. IaaS\nYou get the infrastructure: virtual machines, networking and storage. You still manage the operating system, applications and data. A simple example is renting compute capacity in the cloud.\n\n2. PaaS\nThe provider also manages most of the platform, so you can focus more on developing and deploying the application. It is useful when you want to move quickly without managing as much infrastructure.\n\n3. SaaS\nThis is finished software that is ready to use. You simply use the application, such as a CRM or an email tool.\n\nThe easiest way to remember it is: IaaS gives you infrastructure, PaaS gives you an environment to build on, and SaaS gives you the finished product.'
+      },
+      {
+        id: 'ibm-case-ai-client',
+        category: 'Case · AI / Consulting',
+        priority: 'high',
+        ideaEs: 'Problema → datos → caso de uso → piloto → impacto y riesgos.',
+        ideaEn: 'Problem → data → use case → pilot → impact and risks.',
+        keywords: ['AI', 'client', 'use case', 'pilot', 'ROI'],
+        questionEs: 'Un cliente quiere usar IA pero no sabe por dónde empezar. ¿Cómo lo abordarías?',
+        questionEn: 'A client wants to use AI but does not know where to start. How would you approach it?',
+        answerEs: 'Lo estructuraría en cinco pasos.\n\n1. Entender el problema\nPrimero preguntaría qué proceso quieren mejorar y qué objetivo persiguen. No empezaría proponiendo IA sin saber qué problema estamos resolviendo.\n\n2. Revisar los datos\nMiraría qué datos existen, su calidad y si realmente permiten construir una solución útil.\n\n3. Elegir un caso de uso\nPriorizaría uno o dos casos con impacto claro y dificultad razonable, por ejemplo automatizar una tarea repetitiva o mejorar una predicción.\n\n4. Piloto\nHaría un pequeño proof of concept con una métrica clara de éxito.\n\n5. Escalar con control\nSi funciona, pensaría en despliegue, adopción, seguridad y monitorización.\n\nLa idea es no usar IA porque esté de moda, sino empezar por un problema concreto y demostrar valor antes de escalar.',
+        answerEn: 'I would structure it in five steps.\n\n1. Understand the problem\nFirst, I would ask which process they want to improve and what objective they are trying to achieve. I would not start by proposing AI without knowing the problem we are solving.\n\n2. Review the data\nI would look at what data exists, its quality and whether it can actually support a useful solution.\n\n3. Choose a use case\nI would prioritise one or two cases with clear impact and reasonable difficulty, for example automating a repetitive task or improving a prediction.\n\n4. Pilot\nI would build a small proof of concept with a clear success metric.\n\n5. Scale with control\nIf it works, I would then think about deployment, adoption, security and monitoring.\n\nThe idea is not to use AI just because it is fashionable, but to start from a concrete problem and prove value before scaling.'
+      },
+      {
+        id: 'ibm-behavioral-explain-technical',
+        category: 'Behavioral · Communication',
+        priority: 'high',
+        ideaEs: 'Simplificar sin perder la idea: contexto → analogía → impacto.',
+        ideaEn: 'Simplify without losing the idea: context → analogy → impact.',
+        keywords: ['communication', 'stakeholders', 'technical', 'client', 'clarity'],
+        questionEs: '¿Cómo explicarías un concepto técnico a una persona no técnica?',
+        questionEn: 'How would you explain a technical concept to a non-technical person?',
+        answerEs: 'Lo haría en tres pasos.\n\n1. Empezar por el problema\nPrimero explicaría para qué sirve y por qué debería importarle a esa persona.\n\n2. Simplificar\nEvitaría jerga y usaría un ejemplo o una analogía sencilla. Si estuviera explicando un modelo predictivo, hablaría de cómo utiliza patrones del pasado para estimar qué puede pasar después.\n\n3. Volver al impacto\nTerminaría explicando qué decisión permite tomar o qué proceso mejora.\n\nEn ASISA y PHCA ya he tenido que moverme entre perfiles técnicos y no técnicos, así que intento adaptar siempre el nivel de detalle a la persona que tengo delante.',
+        answerEn: 'I would do it in three steps.\n\n1. Start with the problem\nFirst, I would explain what it is useful for and why that person should care.\n\n2. Simplify\nI would avoid jargon and use a simple example or analogy. If I were explaining a predictive model, I might say that it uses patterns from the past to estimate what could happen next.\n\n3. Return to the impact\nI would finish by explaining what decision it helps make or what process it improves.\n\nAt ASISA and PHCA, I already had to move between technical and non-technical profiles, so I always try to adapt the level of detail to the person in front of me.'
+      },
+      {
         id: 'ibm-tech-hybrid',
         category: 'Technical · Cloud',
         priority: 'medium',
