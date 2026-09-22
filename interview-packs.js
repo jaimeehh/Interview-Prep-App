@@ -22,6 +22,20 @@ const INTERVIEW_PACKS = [
         answerEn: '1. Why Fever\nFever represents exactly the kind of environment I am looking for: technology, data and entertainment in a product that is very close to the customer. Its international presence and the nature of the business also seem like a very strong opportunity to apply my technical background in a dynamic environment with visible impact.\n\n2. Why this programme\nThe Growth Graduate Program attracts me because it combines analysis, strategy and execution. I do not want to stay only on the side of analysing a metric or building a model; I also want to understand the opportunity behind it, the decision that is made and the impact afterwards.\n\n3. Why it connects with me\nFrom my experience at ASISA and PHCA, I know that I especially enjoy using data and technology to solve real problems and support decisions, so I see this role as a very natural fit for me.'
       },
       {
+        id: 'fever-why-master',
+        category: 'Narrativa · Why the Master',
+        priority: 'high',
+        ideaEs: '1. Profundizar en Data/AI → 2. Abrir el perfil más allá de healthcare.',
+        ideaEn: '1. Deepen Data/AI skills → 2. Broaden the profile beyond healthcare.',
+        keywords: ['master', 'data science', 'AI', 'career', 'healthcare'],
+        questionEs: '¿Por qué decidiste hacer este máster?',
+        questionEn: 'Why did you decide to do this Master\'s degree?',
+        variantsEs: ['¿Qué buscabas con el máster?', '¿Por qué ahora?', '¿Qué quieres conseguir con él?'],
+        variantsEn: ['What were you looking for from the Master\'s?', 'Why now?', 'What do you want to get from it?'],
+        answerEs: 'Lo decidí por dos razones principales.\n\n1. Profundizar en Data e IA\nMe gusta mucho este campo y quería actualizar y reforzar conocimientos, practicar más y rodearme de personas que también trabajan o quieren trabajar en datos e inteligencia artificial. Para mí era una forma de seguir creciendo de manera más estructurada y recuperar profundidad técnica.\n\n2. Abrir mi perfil a más industrias\nPor mi formación y experiencia, muchas veces se me percibe como un perfil muy ligado a healthcare. El máster también me ayuda a demostrar que mis skills en Data Science, Analytics e IA son transferibles y se pueden aplicar en muchos sectores distintos. Eso me abre puertas hacia el tipo de carrera que realmente quiero seguir: datos e inteligencia artificial, no sólo healthcare.',
+        answerEn: 'I decided to do it for two main reasons.\n\n1. Deepen my Data and AI skills\nI really enjoy this field and I wanted to refresh and strengthen my knowledge, practise more and be surrounded by people who are also working in or moving into data and artificial intelligence. For me, it was a way to keep growing in a more structured way and regain technical depth.\n\n2. Broaden my profile beyond healthcare\nBecause of my academic background and previous experience, I am often seen as a profile mainly linked to healthcare. The Master\'s also helps me show that my skills in Data Science, Analytics and AI are transferable and can be applied across many different industries. That opens more doors toward the career I actually want to build: data and artificial intelligence, not only healthcare.'
+      },
+      {
         id: 'fever-narrative-career',
         category: 'Narrativa · Career direction',
         priority: 'high',
@@ -132,6 +146,20 @@ const INTERVIEW_PACKS = [
         variantsEn: ['Why IBM?', 'Why Early Associates?', 'Why Hybrid Cloud & Data?', 'Why Strategy & Transformation as your second choice?'],
         answerEs: '1. Por qué IBM\nIBM representa justo el tipo de entorno que busco: tecnología, inteligencia artificial e innovación a gran escala. Además, su presencia internacional y el tipo de proyectos que desarrolla me parecen una muy buena oportunidad para crecer en un entorno técnico exigente.\n\n2. Por qué este programa y estas áreas\nEl Early Associates me atrae porque puedo aprender de gente con experiencia, entender cómo se trabaja en proyectos reales y aportar desde el principio. Hybrid Cloud & Data sería mi primera opción porque conecta directamente con Data Science, AI y Analytics; y Strategy & Transformation también me interesa por la parte de procesos, decisiones y aplicación de la tecnología al negocio.\n\n3. Conexión conmigo\nPor mi experiencia en ASISA y PHCA, sé que disfruto especialmente cuando puedo utilizar datos y tecnología para resolver problemas reales, así que creo que es una evolución bastante natural para mí.',
         answerEn: '1. Why IBM\nIBM represents exactly the kind of environment I am looking for: technology, artificial intelligence and innovation at scale. Its international presence and the type of projects it works on also seem like a very strong opportunity to grow in a demanding technical environment.\n\n2. Why this programme and these areas\nThe Early Associates Program attracts me because I can learn from experienced people, understand how real projects are approached and contribute from the beginning. Hybrid Cloud & Data would be my first choice because it connects directly with Data Science, AI and Analytics; Strategy & Transformation also interests me because of the focus on processes, decisions and applying technology to the business.\n\n3. Why it connects with me\nFrom my experience at ASISA and PHCA, I know that I especially enjoy using data and technology to solve real problems, so I see this as a very natural next step for me.'
+      },
+      {
+        id: 'ibm-why-master',
+        category: 'Narrativa · Why the Master',
+        priority: 'high',
+        ideaEs: '1. Profundizar en Data/AI → 2. Abrir el perfil más allá de healthcare.',
+        ideaEn: '1. Deepen Data/AI skills → 2. Broaden the profile beyond healthcare.',
+        keywords: ['master', 'data science', 'AI', 'career', 'healthcare'],
+        questionEs: '¿Por qué decidiste hacer este máster?',
+        questionEn: 'Why did you decide to do this Master\'s degree?',
+        variantsEs: ['¿Qué buscabas con el máster?', '¿Por qué ahora?', '¿Qué quieres conseguir con él?'],
+        variantsEn: ['What were you looking for from the Master\'s?', 'Why now?', 'What do you want to get from it?'],
+        answerEs: 'Lo decidí por dos razones principales.\n\n1. Profundizar en Data e IA\nMe gusta mucho este campo y quería actualizar y reforzar conocimientos, practicar más y rodearme de personas que también trabajan o quieren trabajar en datos e inteligencia artificial. Para mí era una forma de seguir creciendo de manera más estructurada y recuperar profundidad técnica.\n\n2. Abrir mi perfil a más industrias\nPor mi formación y experiencia, muchas veces se me percibe como un perfil muy ligado a healthcare. El máster también me ayuda a demostrar que mis skills en Data Science, Analytics e IA son transferibles y se pueden aplicar en muchos sectores distintos. Eso me abre puertas hacia el tipo de carrera que realmente quiero seguir: datos e inteligencia artificial, no sólo healthcare.',
+        answerEn: 'I decided to do it for two main reasons.\n\n1. Deepen my Data and AI skills\nI really enjoy this field and I wanted to refresh and strengthen my knowledge, practise more and be surrounded by people who are also working in or moving into data and artificial intelligence. For me, it was a way to keep growing in a more structured way and regain technical depth.\n\n2. Broaden my profile beyond healthcare\nBecause of my academic background and previous experience, I am often seen as a profile mainly linked to healthcare. The Master\'s also helps me show that my skills in Data Science, Analytics and AI are transferable and can be applied across many different industries. That opens more doors toward the career I actually want to build: data and artificial intelligence, not only healthcare.'
       },
       {
         id: 'ibm-narrative-career',
