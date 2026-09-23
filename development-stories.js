@@ -123,7 +123,7 @@ const LEADERSHIP_STORY_UPDATE = {
 
 const STAKEHOLDER_STORY = {
   "id": "difficult-stakeholder-asisa",
-  "contentVersion": 2,
+  "contentVersion": 3,
   "tag": "communication",
   "tagLabel": "Comunicación",
   "title": "Automatizar un informe involucrando al stakeholder",
@@ -142,11 +142,11 @@ const STAKEHOLDER_STORY = {
       "Tell me about a time when you changed a process without imposing the solution."
     ]
   },
-  "sit": "En ASISA había un informe mensual muy manual que consumía bastante tiempo. La persona responsable llevaba tiempo trabajando así y no quería imponerle una nueva forma de hacerlo.",
-  "tsk": "Mi objetivo era automatizarlo, pero haciendo que la persona responsable se sintiera parte del cambio.",
-  "act": "Primero le pedí que me explicara cómo trabajaba y fui validando cada cambio con ella. Después construí una automatización con SQL, Python y Playwright para generar el contenido y llevarlo al PowerPoint final.",
-  "res": "El informe pasó a generarse de forma mucho más automática, reduciendo trabajo manual y facilitando la adopción porque la persona había participado desde el principio.",
-  "lrn": "Aprendí que una buena solución técnica no basta: si involucras a la persona que usa el proceso, el cambio se acepta mucho mejor.",
+  "sit": "En ASISA, una compañera preparaba cada mes un informe a mano. Llevaba mucho tiempo haciéndolo así y yo quería proponerle una alternativa sin imponerla.",
+  "tsk": "Quería ahorrarle tiempo con una automatización que también le resultara cómoda.",
+  "act": "Me senté con ella, entendí cómo hacía el informe y le fui enseñando los cambios para incorporar sus sugerencias. Luego automaticé el proceso con SQL, Python y Playwright para generar el PowerPoint.",
+  "res": "Conseguimos reducir el trabajo manual y ella pudo adoptar el nuevo proceso porque había participado en su desarrollo.",
+  "lrn": "Aprendí que escuchar e involucrar a quien hace el trabajo es la mejor forma de conseguir que un cambio funcione.",
   "en": {
     "title": "Automating a report while involving the stakeholder",
     "q": "Tell us about a situation where you had to deal with a difficult team member or stakeholder. How did you handle it and what was the outcome?",
@@ -156,11 +156,11 @@ const STAKEHOLDER_STORY = {
       "How did you involve a stakeholder in an automation project?",
       "Tell me about a time when you changed a process without imposing the solution."
     ],
-    "sit": "At ASISA, there was a very manual monthly report that took a lot of time. The person responsible had been working that way for a long time, and I did not want to impose a new process.",
-    "tsk": "My goal was to automate it while making sure the person responsible felt involved in the change.",
-    "act": "I first asked her to walk me through the process and validated each change with her. Then I built an automation using SQL, Python and Playwright to generate the content and bring it into the final PowerPoint.",
-    "res": "The report became much more automated, reducing manual work and making adoption much smoother because the person had been involved from the beginning.",
-    "lrn": "I learned that a good technical solution is not enough: if you involve the person who uses the process, the change is much easier to adopt."
+    "sit": "At ASISA, a colleague prepared a monthly report by hand. She had done it that way for a long time, and I wanted to suggest a better approach without imposing it.",
+    "tsk": "I wanted to save her time with a solution she would feel comfortable using.",
+    "act": "I sat down with her to understand the process, showed her the changes and used her feedback. Then I automated it with SQL, Python and Playwright to generate the PowerPoint.",
+    "res": "We reduced the manual work, and she was comfortable adopting the new process because she had helped shape it.",
+    "lrn": "I learned that listening to and involving the person doing the work is key to making change stick."
   }
 }
 
