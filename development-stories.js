@@ -142,11 +142,11 @@ const STAKEHOLDER_STORY = {
       "Tell me about a time when you changed a process without imposing the solution."
     ]
   },
-  "sit": "En ASISA había un informe mensual que se preparaba de forma bastante manual y consumía mucho tiempo. La persona que lo realizaba llevaba tiempo trabajando con ese proceso y era importante que cualquier cambio no se percibiera como algo impuesto.",
-  "tsk": "Mi objetivo era automatizar el informe para reducir trabajo repetitivo, pero también conseguir que la persona responsable se sintiera parte del cambio y confiara en la nueva forma de trabajar.",
-  "act": "En lugar de diseñar la solución por mi cuenta, hablé con ella desde el principio, le pedí que me explicara el proceso y fui validando cada cambio con su feedback. A partir de eso, construí una automatización conectada a SQL y desarrollada en Python. Utilicé Playwright para generar las capturas necesarias a partir de un HTML y automatizar su incorporación al PowerPoint final.",
-  "res": "El informe pasó a generarse de una forma mucho más automatizada, reduciendo tiempo manual y manteniendo la estructura que el equipo ya utilizaba. Además, al haber involucrado a la persona responsable durante todo el proceso, la adopción fue mucho más sencilla.",
-  "lrn": "Aprendí que cuando cambias un proceso no basta con tener una mejor solución técnica. Involucrar a la persona que lo utiliza, escuchar cómo trabaja y construir el cambio con ella puede ser tan importante como la automatización en sí.",
+  "sit": "En ASISA había un informe mensual muy manual que consumía bastante tiempo. La persona responsable llevaba tiempo trabajando así y no quería imponerle una nueva forma de hacerlo.",
+  "tsk": "Mi objetivo era automatizarlo, pero haciendo que la persona responsable se sintiera parte del cambio.",
+  "act": "Primero le pedí que me explicara cómo trabajaba y fui validando cada cambio con ella. Después construí una automatización con SQL, Python y Playwright para generar el contenido y llevarlo al PowerPoint final.",
+  "res": "El informe pasó a generarse de forma mucho más automática, reduciendo trabajo manual y facilitando la adopción porque la persona había participado desde el principio.",
+  "lrn": "Aprendí que una buena solución técnica no basta: si involucras a la persona que usa el proceso, el cambio se acepta mucho mejor.",
   "en": {
     "title": "Automating a report while involving the stakeholder",
     "q": "Tell us about a situation where you had to deal with a difficult team member or stakeholder. How did you handle it and what was the outcome?",
@@ -156,11 +156,11 @@ const STAKEHOLDER_STORY = {
       "How did you involve a stakeholder in an automation project?",
       "Tell me about a time when you changed a process without imposing the solution."
     ],
-    "sit": "At ASISA, there was a monthly report that was prepared in a very manual way and took a significant amount of time. The person responsible had been working with that process for a long time, so it was important that any change did not feel imposed.",
-    "tsk": "My objective was to automate the report and reduce repetitive work, while also making sure the person responsible felt involved in the change and trusted the new way of working.",
-    "act": "Instead of designing the solution on my own, I spoke with her from the beginning, asked her to walk me through the process and validated each change with her feedback. Based on that, I built an automation connected to SQL and developed in Python. I used Playwright to generate the required screenshots from an HTML output and automate their inclusion in the final PowerPoint.",
-    "res": "The report became much more automated, reducing manual work while preserving the structure the team was already used to. Because the person responsible had been involved throughout the process, adoption was also much smoother.",
-    "lrn": "I learned that when you change a process, having a better technical solution is not enough. Involving the person who uses it, understanding how they work and building the change with them can be just as important as the automation itself."
+    "sit": "At ASISA, there was a very manual monthly report that took a lot of time. The person responsible had been working that way for a long time, and I did not want to impose a new process.",
+    "tsk": "My goal was to automate it while making sure the person responsible felt involved in the change.",
+    "act": "I first asked her to walk me through the process and validated each change with her. Then I built an automation using SQL, Python and Playwright to generate the content and bring it into the final PowerPoint.",
+    "res": "The report became much more automated, reducing manual work and making adoption much smoother because the person had been involved from the beginning.",
+    "lrn": "I learned that a good technical solution is not enough: if you involve the person who uses the process, the change is much easier to adopt."
   }
 }
 
